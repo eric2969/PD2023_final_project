@@ -5,7 +5,6 @@
 - [Architecture](#architecture)
 - [Version History](#version-history)
 - [Team Member](#team-member)
-- [Contact](#contact)
 
 ## What
 
@@ -23,18 +22,16 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
-- [2023/11/16](#2023/11/16)
-- [2023/11/17.a](#2023/11/17.a)
+  ### 2023/11/17.a
+  Create position returning function of "block.h"
+  Change our block data container from STL to C++ basic container (int/short...)
 
-  ## 2023/11/16
-    Construct the repository
-    Create "main.cpp", "block.h", "table.h"
-  ## 2023/11/17.a
-    Create position returning function of "block.h"
-    Change our block data container from STL to C++ basic container (int/short...)
-
+  ### 2023/11/16
+  Construct the repository
+  Create "main.cpp", "block.h", "table.h"
+  
 ## Team Member
-  趙子佾 資管一 B12705064
-  詹詠翔 資管一 B12705063
-  陳泊華 資管一 B12705014
-  吳秉哲 資管一 B12705049
+&nbsp; 趙子佾 資管一 B12705064 <br>
+&nbsp; 詹詠翔 資管一 B12705063 <br>
+&nbsp; 陳泊華 資管一 B12705014 <br>
+&nbsp; 吳秉哲 資管一 B12705049 <br>
