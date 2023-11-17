@@ -22,6 +22,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+  ### 2023/11/17.b
+  Create gitignore
+
   ### 2023/11/17.a
   Create position returning function of "block.h"
   Change our block data container from STL to C++ basic container (int/short...)
