@@ -2,10 +2,10 @@
 #include <vector>
 #include <utility>
 
-using namespace std;
-
 #include "block.h"
 #include "table.h"
+
+using namespace std;
 
 #define IO ios_base::sync_with_stdio(0),cin.tie(0);
 #define endl '\n'
