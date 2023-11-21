@@ -16,4 +16,5 @@ signed main(){
     IO;
     cout << "test" << endl;
     return 0;
+    cout << "hello bowwen" << endl;
 }
