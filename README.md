@@ -22,6 +22,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/21.a
+> Include "windows.h", add compiler optimizing pragma
+
 > ### 2023/11/17.b
 > Create gitignore
 
