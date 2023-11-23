@@ -22,6 +22,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/23.c
+> Merge test
+
 > ### 2023/11/23.b
 > Establish block::block_position
 
