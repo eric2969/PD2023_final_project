@@ -65,4 +65,39 @@ public:
     }
 };
 
+class Type_T : public Block
+{
+		
+}
+
+class Type_L : public Block 
+{
+	
+}
+
+class Type_inverseL : public Block
+{
+	
+}
+
+class Type_N : public Block 
+{
+	
+}
+
+class Type_inverseN : public Block
+{
+	
+}
+
+class Type_line : public Block
+{
+	
+}
+
+class Type_field : public Block // ¥Ð 
+{
+	
+}
+
 
