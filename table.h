@@ -6,9 +6,16 @@ private:
 public:
     table() {};
     ~table() {};
-    void print_table(const int x, const int y);
+    void add_block(block add);
+    void print_table(const int x, const int y); //print table on windows.h (x,y) is the origin of the table
 };
 
+void table::add_block(block add){
+    return;
+
+}
+
 void table::print_table(const int x, const int y){
+
     return;
 }
