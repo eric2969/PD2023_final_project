@@ -2,13 +2,19 @@
 2023 IM Program Designing Final Project
 
 - [What](#what)
+- [Team Member](#team-member)
 - [Architecture](#architecture)
 - [Version History](#version-history)
-- [Team Member](#team-member)
 
 ## What
 
 Our project is to build a tetris game by "windows.h", allowing playing in double-player or single-player mode.
+
+## Team Member
+&nbsp; 趙子佾 資管一 B12705064 <br>
+&nbsp; 詹詠翔 資管一 B12705063 <br>
+&nbsp; 陳泊華 資管一 B12705014 <br>
+&nbsp; 吳秉哲 資管一 B12705049 <br>
 
 ## Architecture
 
@@ -21,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+
+> ### 2023/11/23.g
+> Reorder the README
 
 > ### 2023/11/23.f
 > Create some functions which involv in moving or rotating blocks in table.h
@@ -56,9 +65,3 @@ And we divided our game architecture into several parts, listed at the below.
 > ### 2023/11/16
 > Construct the repository
 > Create "main.cpp", "block.h", "table.h"
-  
-## Team Member
-&nbsp; 趙子佾 資管一 B12705064 <br>
-&nbsp; 詹詠翔 資管一 B12705063 <br>
-&nbsp; 陳泊華 資管一 B12705014 <br>
-&nbsp; 吳秉哲 資管一 B12705049 <br>
