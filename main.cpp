@@ -15,6 +15,5 @@ using namespace std;
 signed main(){
     IO;
     cout << "test" << endl;
-    cout << "12345678" ;
     return 0;
 }
