@@ -43,7 +43,7 @@ public:
         (this -> location.y) += y;
         return;
     }
-    virtual void rotating(short direction){ //positive is counterclockwise
+    virtual void rotate(const short direction){ //positive is counterclockwise
         short x_tmp, y_tmp;
         for(int i = 0;i < 4;i++){
             x_tmp = x_delta[i], y_tmp = y_delta[i];
@@ -65,39 +65,35 @@ public:
     }
 };
 
-class Type_T : public Block
-{
+class block_T : public block{
 		
-}
+};
 
-class Type_L : public Block 
-{
+class block_L : public block{
 	
-}
+};
 
-class Type_inverseL : public Block
-{
+class block_J : public block{
 	
-}
+};
 
-class Type_N : public Block 
-{
+class block_S : public block{
 	
-}
+};
 
-class Type_inverseN : public Block
-{
+class block_Z : public block{
 	
-}
+};
 
-class Type_line : public Block
-{
+class block_I : public block{
 	
-}
+};
 
-class Type_field : public Block // ¥Ð 
-{
-	
-}
+class block_O : public block{
+public:
+    virtual void rotate(const short direction) override{
+        return;
+    }
+};
 
 

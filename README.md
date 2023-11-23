@@ -22,6 +22,15 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/23.f
+> Create some functions which involv in moving or rotating blocks in table.h
+
+> ### 2023/11/23.e
+> Create every specific shape block class  which inherits general block class
+
+> ### 2023/11/23.d
+> Create some functions which control the existence of block in table.h
+
 > ### 2023/11/23.c
 > Merge test
 
