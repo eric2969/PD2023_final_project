@@ -50,6 +50,7 @@ public:
             x_tmp = x_delta[i], y_tmp = y_delta[i];
             x_delta[i] = (direction>0?(-1):(1)) * y_tmp;
             y_delta[i] = (direction>0?(1):(-1)) * x_tmp; 
+            //a
         }
         return;
     }
