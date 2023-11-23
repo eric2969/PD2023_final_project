@@ -1,6 +1,3 @@
-#define ff first
-#define ss second
-
 struct point{
     short x,y;
     bool operator==(const point& tmp) const{
@@ -20,6 +17,7 @@ struct point{
 
 class block{
 private:
+    char symbol;
     point location;
 protected:
     short x_delta[4], y_delta[4];
@@ -27,6 +25,7 @@ public:
     block() {};
     ~block() {};
     const block& operator=(const block& tmp){
+        this -> symbol = tmp.symbol;
         this -> location = tmp.location;
         for(int i = 0;i < 4;i++){
             this -> x_delta[i] = tmp.x_delta[i];
@@ -44,7 +43,7 @@ public:
         (this -> location.y) += y;
         return;
     }
-    void rotating(short direction){ //positive is counterclockwise
+    virtual void rotating(short direction){ //positive is counterclockwise
         short x_tmp, y_tmp;
         for(int i = 0;i < 4;i++){
             x_tmp = x_delta[i], y_tmp = y_delta[i];
@@ -54,7 +53,7 @@ public:
         }
         return;
     }
-    std::vector<point> block_position() const{
+    virtual std::vector<point> block_position() const{
         std::vector<point> tmp;
         point ptmp;
         for(int i = 0;i < 4;i++){
