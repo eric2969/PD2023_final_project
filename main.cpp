@@ -15,5 +15,6 @@ using namespace std;
 signed main(){
     IO;
     cout << "test" << endl;
+    cout << "hello bowen" << endl;
     return 0;
 }
