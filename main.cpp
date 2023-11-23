@@ -16,5 +16,6 @@ signed main(){
     IO;
     cout << "merge_tets"
     cout << "test" << endl;
+    cout << "hello bowen" << endl;
     return 0;
 }
