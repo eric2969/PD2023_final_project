@@ -14,6 +14,7 @@ using namespace std;
 
 signed main(){
     IO;
+    cout << "merge_tets"
     cout << "test" << endl;
     return 0;
 }
