@@ -7,7 +7,7 @@ struct point{
         return (this->x == tmp.x) && (this->y == tmp.y);
     }
     point& operator[](int index){
-        if(i < 0)
+        if(index < 0)
             exit(1);
         return this[index];
     }
@@ -16,7 +16,7 @@ struct point{
         this -> y = tmp.y;
         return *this;
     }
-}
+};
 
 class block{
 private:
@@ -52,6 +52,16 @@ public:
             y_delta[i] = (direction>0?(1):(-1)) * x_tmp; 
         }
         return;
+    }
+    std::vector<point> block_position() const{
+        std::vector<point> tmp;
+        point ptmp;
+        for(int i = 0;i < 4;i++){
+            ptmp.x = (this -> location).x + (this -> x_delta)[i];
+            ptmp.y = (this -> location).y + (this -> y_delta)[i];
+            tmp.emplace_back(ptmp);
+        }
+        return tmp;
     }
 };
 

@@ -22,6 +22,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/23.b
+> Establish block::block_position
+
 > ### 2023/11/23.a
 > Modify the rotating strategy, construct point struct
 

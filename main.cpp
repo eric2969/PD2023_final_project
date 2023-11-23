@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 #include <vector>
 #include <utility>
-#include <windows.h>
+//#include <windows.h>
 
 #include "block.h"
 #include "table.h"

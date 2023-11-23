@@ -18,4 +18,4 @@ void table::add_block(block add){
 void table::print_table(const int x, const int y){
 
     return;
-}
+};
