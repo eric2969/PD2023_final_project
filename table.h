@@ -1,6 +1,6 @@
 class table{
 private:
-    short matrix[10][23]={0}; //game table
+    short matrix[10][23]; //game table
     int score = 0, clear_line = 0, level = 0;
     block current;
 public:

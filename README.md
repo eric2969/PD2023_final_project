@@ -28,11 +28,14 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/24.a
+> Debug table.h
+
 > ### 2023/11/23.g
 > Reorder the README
 
 > ### 2023/11/23.f
-> Create some functions which involv in moving or rotating blocks in table.h
+> Create some functions which involve in moving or rotating blocks in table.h
 
 > ### 2023/11/23.e
 > Create every specific shape block class  which inherits general block class
