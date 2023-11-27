@@ -3,11 +3,11 @@ struct point{
     bool operator==(const point& tmp) const{
         return (this->x == tmp.x) && (this->y == tmp.y);
     }
-    point& operator[](int index){
+    /*point& operator[](int index){
         if(index < 0)
             exit(1);
         return this[index];
-    }
+    }*/
     const point& operator=(const point& tmp){
         this -> x = tmp.x;
         this -> y = tmp.y;
@@ -16,12 +16,12 @@ struct point{
 };
 
 class block{
-private:
-    char symbol;
-    point location;
 protected:
+    point location;
+    int direction;
     short x_delta[4], y_delta[4];
 public:
+    virtual char get_symbol() = 0;
     block() {};
     ~block() {};
     const block& operator=(const block& tmp){
@@ -63,6 +63,7 @@ public:
         }
         return tmp;
     }
+    virtual const point* get_kick() const = 0;
 };
 
 class block_T : public block{
@@ -95,5 +96,6 @@ public:
         return;
     }
 };
+
 
 

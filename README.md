@@ -27,6 +27,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/11/28.a
+> Debug table.h and block.h
+> Add some abstract function to make it more completed
+> Work has been distributed
 
 > ### 2023/11/24.a
 > Debug table.h
