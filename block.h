@@ -15,7 +15,7 @@ struct Point{
 class Block{
 protected:
     char symbol;
-    short color;
+    short color, direction;
     Point location;
     short x_delta[4], y_delta[4];
 public:
@@ -38,12 +38,12 @@ public:
             (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
         return *this;
     }
-    virtual void rotate(const short direction){ //positive is counterclockwise
+    virtual void rotate(const short drc){ //positive is clockwise
+        this -> direction = ( (this -> direction) + drc ) % 4;
         short x_tmp, y_tmp;
         for(int i = 0;i < 4;i++){
             x_tmp = x_delta[i], y_tmp = y_delta[i];
-            x_delta[i] = (direction>0?(-1):(1)) * y_tmp;
-            y_delta[i] = (direction>0?(1):(-1)) * x_tmp; 
+            x_delta[i] = drc * y_tmp, y_delta[i] = -1 * drc * x_tmp; 
         }
         return;
     }
