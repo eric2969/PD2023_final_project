@@ -90,18 +90,18 @@ class Block_S : public Block{
 	
 };
 
-class block_Z : public block{
+class Block_Z : public Block{
 	
 };
 
-class block_I : public block{
+class Block_I : public Block{
 	
 };
 
-class block_O : public block{
+class Block_O : public Block{
 public:
-	block_O(const point& p) : block(p) {} ;
-	~block_O() {} ;
+	Block_O(const Point& p) : Block(p) {} ;
+	~Block_O() {} ;
     void rotate(const short direction) override{
         return;
     }
