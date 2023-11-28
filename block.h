@@ -27,7 +27,7 @@ public:
     const block& operator=(const block& tmp){
         this -> symbol = tmp.symbol;
         this -> location = tmp.location;
-        for(int i = 0;i < 4;i++){
+        for(int i=0; i<4; i++){
             this -> x_delta[i] = tmp.x_delta[i];
             this -> y_delta[i] = tmp.y_delta[i];
         }
@@ -67,27 +67,46 @@ public:
 };
 
 class block_T : public block{
+	void short rotate(const short direction)
+	{
+		block::rotate(direction) ;
+	}
 		
 };
 
 class block_L : public block{
-	
+	void short rotate(const short direction)
+	{
+		block::rotate(direction) ;
+	}
 };
 
 class block_J : public block{
-	
+	void short rotate(const short direction)
+	{
+		block::rotate(direction) ;
+	}
 };
 
 class block_S : public block{
-	
+	void short rotate(const short direction)
+	{
+		block::rotate(direction) ;
+	}
 };
 
 class block_Z : public block{
-	
+	void short rotate(const short direction)
+	{
+		block::rotate(direction) ;
+	}
 };
 
 class block_I : public block{
-	
+	void short rotate(const short direction)
+	{
+		block::rotate(direction) ;
+	}
 };
 
 class block_O : public block{
