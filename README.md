@@ -28,6 +28,12 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/28.e
+> Debug table.h and block.h
+
+> ### 2023/11/28.d
+> Change class name to upper case
+
 > ### 2023/11/28.c
 > Debug table.h and add some detail in table.h
 
