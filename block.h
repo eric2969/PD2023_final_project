@@ -1,6 +1,6 @@
-struct point{
+struct Point{
     short x,y;
-    bool operator==(const point& tmp) const{
+    bool operator==(const Point& tmp) const{
         return (this->x == tmp.x) && (this->y == tmp.y);
     }
     /*point& operator[](int index){
@@ -8,23 +8,25 @@ struct point{
             exit(1);
         return this[index];
     }*/
-    const point& operator=(const point& tmp){
+    const Point& operator=(const Point& tmp){
         this -> x = tmp.x;
         this -> y = tmp.y;
         return *this;
     }
 };
 
-class block{
+class Block{
 protected:
-    point location;
+    Point location;
     int direction;
     short x_delta[4], y_delta[4];
 public:
     virtual char get_symbol() = 0;
-    block() {};
-    ~block() {};
-    const block& operator=(const block& tmp){
+    Block(const Point& p) {
+    	location = p ;
+	}
+    ~Block() {};
+    const Block& operator=(const Block& tmp){
         this -> symbol = tmp.symbol;
         this -> location = tmp.location;
         for(int i=0; i<4; i++){
@@ -53,9 +55,9 @@ public:
         }
         return;
     }
-    virtual std::vector<point> block_position() const{
-        std::vector<point> tmp;
-        point ptmp;
+    virtual std::vector<Point> block_position() const{
+        std::vector<Point> tmp;
+        Point ptmp;
         for(int i = 0;i < 4;i++){
             ptmp.x = (this -> location).x + (this -> x_delta)[i];
             ptmp.y = (this -> location).y + (this -> y_delta)[i];
@@ -63,55 +65,44 @@ public:
         }
         return tmp;
     }
-    virtual const point* get_kick() const = 0;
+    virtual const Point* get_kick() const = 0;
 };
 
-class block_T : public block{
-	void short rotate(const short direction)
-	{
-		block::rotate(direction) ;
-	}
-		
+class Block_T : public Block{
+	public:
+		Block_T(const Point& p) : Block(p) {} ;
+		~Block_T() {} ;
 };
 
-class block_L : public block{
-	void short rotate(const short direction)
-	{
-		block::rotate(direction) ;
-	}
+class Block_L : public Block{
+	public:
+		Block_L(const Point& p) : Block(p) {} ;
+		~Block_L() {} ;
 };
 
-class block_J : public block{
-	void short rotate(const short direction)
-	{
-		block::rotate(direction) ;
-	}
+class Block_J : public Block{
+	public:
+		Block_J(const Point& p) : Block(p) {} ;
+		~Block_J() {} ;
 };
 
-class block_S : public block{
-	void short rotate(const short direction)
-	{
-		block::rotate(direction) ;
-	}
+class Block_S : public Block{
+	
 };
 
 class block_Z : public block{
-	void short rotate(const short direction)
-	{
-		block::rotate(direction) ;
-	}
+	
 };
 
 class block_I : public block{
-	void short rotate(const short direction)
-	{
-		block::rotate(direction) ;
-	}
+	
 };
 
 class block_O : public block{
 public:
-    virtual void rotate(const short direction) override{
+	block_O(const point& p) : block(p) {} ;
+	~block_O() {} ;
+    void rotate(const short direction) override{
         return;
     }
 };
