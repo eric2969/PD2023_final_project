@@ -27,6 +27,8 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/11/30.a
+> Fix print_table()
 
 > ### 2023/11/29.e
 > Fix conflict
