@@ -75,7 +75,7 @@ public:
         return;
     }
     virtual void rotate(const Table& Tb, const short& drc);
-    virtual std::vector<Point> block_position() const{
+    virtual std::vector<Point>& block_position() const{
         std::vector<Point> tmp;
         Point ptmp;
         for(int i = 0;i < 4;i++){
@@ -83,7 +83,7 @@ public:
             ptmp.y = (this -> location).y + (this -> y_delta)[i];
             tmp.emplace_back(ptmp);
         }
-        return tmp;
+        return &tmp;
     }
 };
 
