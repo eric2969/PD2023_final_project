@@ -28,7 +28,7 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 > ### 2023/11/29.d
-> Add some foundmental constuctor to the different type block
+> Add some foundmental constuctor to the different type block,
 > the initialize using point is not done yet
 
 > ### 2023/11/29.c
