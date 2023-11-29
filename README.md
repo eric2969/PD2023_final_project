@@ -27,6 +27,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/11/29.d
+> Add some foundmental constuctor to the different type block
+> the initialize using point is not done yet
+
 > ### 2023/11/29.c
 > Debug block.h and creating kick table and implement to rotation
 > Merge conflict
