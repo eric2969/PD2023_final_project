@@ -55,7 +55,7 @@ public:
             ptmp.y = (this -> location).y + (this -> y_delta)[i];
             tmp.emplace_back(ptmp);
         }
-        return tmp;
+        return &tmp;
     }
     //virtual const Point* get_kick() const = 0;
 };
