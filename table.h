@@ -74,17 +74,11 @@ void Table::rotate(const short& direction){
 void Table::print_table(const int& x, const int& y, HANDLE &hConsole){
     goto_xy(x, y, hConsole);
     for(int i=0;i<width+2; i++) std::cout << '-';
-    std::cout << '\n';
+
     for (int i = 0; i < height; ++i) {
-        goto_xy(x+i+1,y,hConsole);
+        goto_xy(x,y+i+1,hConsole);
         std::cout << '|';
         for (int j = 0; j < width; ++j) {
-            /*if (board[i][j] == 'O') {
-                SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE);
-            }
-            else {
-                SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY);
-            }*/
             if (matrix[i][j] == 0) {
                 std::cout << ' ';
                 continue;
@@ -92,8 +86,9 @@ void Table::print_table(const int& x, const int& y, HANDLE &hConsole){
             color(matrix[i][j], hConsole);
             std::cout << matrix[i][j];
         }
-        std::cout << '|' << std::endl;
+        std::cout << '|';
     }
+    goto_xy(x,y+20,hConsole);
     for(int i=0;i<width+2; i++) std::cout << '-';
     return;
 };
