@@ -28,6 +28,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/29.c
+> Debug block.h and creating kick table and implement to rotation
+
 > ### 2023/11/28.e
 > Debug table.h and block.h
 

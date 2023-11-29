@@ -15,7 +15,7 @@ public:
     void rotate(const short& direction);
     void print_table(const int& x, const int& y); //print table on windows.h (x,y) is the origin of the table
     void set_level(const int& level);
-    bool isValid();
+    bool isValid(const Block& tmp) const;
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
 };
@@ -53,6 +53,19 @@ void Table::set_level(const int& level) {
     return;
 }
 
-bool Table::isValid() {
+bool Table::isValid(const Block& tmp) const{
 
+}
+
+void Block::rotate(const Table& Tb, const short& drc){ //positive is clockwise
+    Block tmp(*this);
+    tmp.rotate(drc);
+    for(int att = 0;att < 5;att++){
+        tmp.move(Kick_Point(direction, drc, att).x, Kick_Point(direction, drc, att).y);
+        if(Tb.isValid(tmp)){
+            *this = tmp;
+            return;
+        }
+    }
+    return;
 }
