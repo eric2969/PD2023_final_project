@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/11/29.b
+> Debug table.h
+
 > ### 2023/11/29.a
 > Implement print_table aand print_block in table.h
 
