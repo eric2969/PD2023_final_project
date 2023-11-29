@@ -65,13 +65,8 @@ public:
             (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
         return *this;
     }
-<<<<<<< HEAD
-    virtual void rotate(const Table t, const short drc){ //positive is clockwise
-        this -> direction = ( (this -> direction) + drc ) % 4;
-=======
     virtual void rotate(const short& drc){ //positive is clockwise
         this -> direction = ( (this -> direction) + drc + 4) % 4;
->>>>>>> f8a5e9e7bd9c17b9efbc3105093af0fc6a11eda4
         short x_tmp, y_tmp;
         for(int i = 0;i < 4;i++){
             x_tmp = x_delta[i], y_tmp = y_delta[i];
@@ -97,7 +92,7 @@ public:
 
 class Block_T : public Block{
 public:
-    Block_T(const Point& p) : Block(p, '#', 0) {
+    Block_T(const Point& p = Point(0,0) ) : Block(p, '#', 0) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 0, y_delta[1] = 1 ;
 		x_delta[2] = 1, y_delta[2] = 0 ;
@@ -108,7 +103,7 @@ public:
 
 class Block_L : public Block{
 public:
-    Block_L(const Point& p) : Block(p, '$', 1) {
+    Block_L(const Point& p = Point(0,0) ) : Block(p, '$', 1) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = 1, y_delta[2] = 1 ;
@@ -119,7 +114,7 @@ public:
 
 class Block_J : public Block{
 public:
-    Block_J(const Point& p) : Block(p, '@', 2) {
+    Block_J(const Point& p = Point(0,0) ) : Block(p, '@', 2) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = -1, y_delta[2] = 0 ;
@@ -130,7 +125,7 @@ public:
 
 class Block_S : public Block{
 public:
-    Block_S(const Point& p) : Block(p, '%', 3) {
+    Block_S(const Point& p = Point(0,0) ) : Block(p, '%', 3) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 0, y_delta[1] = 1 ;
 		x_delta[2] = 1, y_delta[2] = 1 ;
@@ -141,7 +136,7 @@ public:
 
 class Block_Z : public Block{
 public:
-    Block_Z(const Point& p) : Block(p, '?', 4) {
+    Block_Z(const Point& p = Point(0,0) ) : Block(p, '?', 4) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 0, y_delta[1] = 1 ;
 		x_delta[2] = 1, y_delta[2] = 0 ;
@@ -152,7 +147,7 @@ public:
 
 class Block_I : public Block{
 public:
-    Block_I(const Point& p) : Block(p, '&', 5) {
+    Block_I(const Point& p = Point(0,0) ) : Block(p, '&', 5) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = 2, y_delta[2] = 0 ;
@@ -163,7 +158,7 @@ public:
 
 class Block_O : public Block{
 public:
-    Block_O(const Point& p) : Block(p, '+', 6) {
+    Block_O(const Point& p = Point(0,0) ) : Block(p, '+', 6) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = 0, y_delta[2] = -1 ;
