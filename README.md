@@ -27,6 +27,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+
+> ### 2023/11/30.b
+> Add symbol matrix in table.h, complete some functions in table.h
+> modify flush_tick, cols lines, etc... in main.cpp
+
 > ### 2023/11/30.a
 > Fix print_table()
 

@@ -5,22 +5,17 @@ struct Point{
     Point():x(0), y(0) {}
     Point(const short& X, const short& Y):x(X), y(Y) {}
     Point(const Point& tmp):x(tmp.x), y(tmp.y) {}
-    Point operator+(const Point& tmp) const{ return Point((this -> x) + tmp.x, (this -> y) + tmp.y);}
-    Point operator*(const short& tmp) const{ return Point((this -> x) * tmp, (this -> y) * tmp);}
-    bool operator==(const Point& tmp) const{return (this->x == tmp.x) && (this->y == tmp.y);}
+    inline Point operator+(const Point& tmp) const{ return Point((this -> x) + tmp.x, (this -> y) + tmp.y);}
+    inline Point operator*(const short& tmp) const{ return Point((this -> x) * tmp, (this -> y) * tmp);}
+    inline bool operator==(const Point& tmp) const{return (this->x == tmp.x) && (this->y == tmp.y);}
     const Point& operator=(const Point& tmp){
         this -> x = tmp.x;
         this -> y = tmp.y;
         return *this;
     }
-    Point& operator[](const int& index){
-        if(index < 0)
-            exit(1);
-        return this[index];
-    }
 };
 
-const Point Kick_Point(const short& start, const short& drc, const short& test){
+const Point Kick_Table(const short& start, const short& drc, const short& test){
     const static Point delta[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
     Point tmp; short factor;
     if(!test)
@@ -48,14 +43,14 @@ public:
         return;
     }
     ~Block() {}
-    char get_symbol() const {return symbol;}
-    short get_color() const {return color;}
-    short get_direction() const {return direction;}
-    short get_xdelta(const short& index) const{return x_delta[index];}
-    short get_ydelta(const short& index) const{return y_delta[index];}
-    Point get_location() const {return location;}
-    void set_location(const short& x,const short& y){ (this -> location.x) = x, (this -> location.y) = y; return; }
-    void move(const short& x, const short& y){ (this -> location.x) += x, (this -> location.y) += y; return; }
+    inline char get_symbol() const {return symbol;}
+    inline short get_color() const {return color;}
+    inline short get_direction() const {return direction;}
+    inline short get_xdelta(const short& index) const{return x_delta[index];}
+    inline short get_ydelta(const short& index) const{return y_delta[index];}
+    inline Point get_location() const {return location;}
+    inline void set_location(const short& x,const short& y){ (this -> location.x) = x, (this -> location.y) = y; return; }
+    inline void move(const short& x, const short& y){ (this -> location.x) += x, (this -> location.y) += y; return; }
     const Block& operator=(const Block& tmp){
         this -> direction = tmp.get_direction();
         this -> location = tmp.get_location();
@@ -75,7 +70,7 @@ public:
         return;
     }
     virtual void rotate(const Table& Tb, const short& drc);
-    virtual std::vector<Point>& block_position() const{
+    virtual std::vector<Point> block_position() const{
         std::vector<Point> tmp;
         Point ptmp;
         for(int i = 0;i < 4;i++){
@@ -98,7 +93,7 @@ public:
 		x_delta[2] = 1, y_delta[2] = 0 ;
 		x_delta[3] = -1, y_delta[3] = 0 ;
 	}
-    ~Block_T() {} 
+    ~Block_T() {}
 };
 
 class Block_L : public Block{
@@ -109,7 +104,7 @@ public:
 		x_delta[2] = 1, y_delta[2] = 1 ;
 		x_delta[3] = -1, y_delta[3] = 0 ;
 	}
-    ~Block_L() {} 
+    ~Block_L() {}
 };
 
 class Block_J : public Block{
@@ -120,7 +115,7 @@ public:
 		x_delta[2] = -1, y_delta[2] = 0 ;
 		x_delta[3] = -1, y_delta[3] = 1 ;
 	}
-    ~Block_J() {} 
+    ~Block_J() {}
 };
 
 class Block_S : public Block{
@@ -153,7 +148,7 @@ public:
 		x_delta[2] = 2, y_delta[2] = 0 ;
 		x_delta[3] = -1, y_delta[3] = 0 ;
 	}
-    ~Block_I() {}    
+    ~Block_I() {}
 };
 
 class Block_O : public Block{

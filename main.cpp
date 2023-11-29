@@ -1,34 +1,27 @@
-#pragma GCC optimize("O3")
-#include <bits/stdc++.h>
+#include <iostream>
 #include <vector>
 #include <utility>
+#include <string>
 #include <windows.h>
-#include <stdio.h>
 
 #include "block.h"
 #include "table.h"
 
 using namespace std;
 
-#define IO ios_base::sync_with_stdio(0),cin.tie(0);
-#define endl '\n'
+const short flush_tick = 200;
 
 signed main(){
-    
-    Table player;
-    Block_Z z(Point(0,0));
-    system("mode con cols=70 lines=50");//?置窗口大小
-    //player.add_block(z);
-    //player.move_block(2,5);
+    Table player, opponent;
+    system("mode con cols=100 lines=50");//?置窗口大小
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     while(1){
-        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
         player.print_table(0,1,hConsole);
-        player.print_table(20,1,hConsole);
-        Sleep(1000);
+        opponent.print_table(60,1,hConsole);
+        Sleep(flush_tick);
         system("cls");
     }
-    
-    
+
+
     return 0;
 }
