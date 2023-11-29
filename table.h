@@ -1,16 +1,13 @@
 void goto_xy(int x, int y, HANDLE &hout) {
-    COORD pos = { x,y };
+    COORD pos = {x, y};
     SetConsoleCursorPosition(hout, pos);
 }
 
-void color(const unsigned short textColor, HANDLE &hout)
-{
-    if (textColor >= 0 && textColor <= 15) {
+void color(const unsigned short textColor, HANDLE &hout) {
+    if (textColor >= 0 && textColor <= 15)
         SetConsoleTextAttribute(hout, textColor);
-    }
-    else {
+    else
         SetConsoleTextAttribute(hout, 7);
-    }
 }
 
 class Table{
@@ -35,7 +32,7 @@ public:
     void print_table(const int& x, const int& y, HANDLE &hConsole); //print table on windows.h (x,y) is the origin of the table
     void print_block(HANDLE &hConsole);
     void set_level(const int& level);
-    bool isValid();
+    bool isValid(const Block& tmp) const;
     bool isT_Spin();
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
@@ -116,6 +113,19 @@ void Table::set_level(const int& level) {
     return;
 }
 
-bool Table::isValid() {
+bool Table::isValid(const Block& tmp) const{
 
+}
+
+void Block::rotate(const Table& Tb, const short& drc){ //positive is clockwise
+    Block tmp(*this);
+    tmp.rotate(drc);
+    for(int att = 0;att < 5;att++){
+        tmp.move(Kick_Point(direction, drc, att).x, Kick_Point(direction, drc, att).y);
+        if(Tb.isValid(tmp)){
+            *this = tmp;
+            return;
+        }
+    }
+    return;
 }

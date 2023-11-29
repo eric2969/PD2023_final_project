@@ -1,4 +1,5 @@
 .*
+*.h.gch
 *.exe
 *.o
 tmp
