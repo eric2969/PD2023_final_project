@@ -1,7 +1,9 @@
+#include<vector>
 struct Point{
     short x,y;
     Point():x(0), y(0) {}
-    Point(const Point& tmp):x(tmp.x), y(tmp.y) {}
+    Point(int x, int y):x(x), y(y) {}
+		Point(const Point& tmp):x(tmp.x), y(tmp.y) {}
     bool operator==(const Point& tmp) const{
         return (this->x == tmp.x) && (this->y == tmp.y);
     }
@@ -47,7 +49,7 @@ public:
         }
         return;
     }
-    virtual std::vector<Point> block_position() const{
+    virtual std::vector<Point> &block_position() const{
         std::vector<Point> tmp;
         Point ptmp;
         for(int i = 0;i < 4;i++){
@@ -55,7 +57,7 @@ public:
             ptmp.y = (this -> location).y + (this -> y_delta)[i];
             tmp.emplace_back(ptmp);
         }
-        return &tmp;
+        return tmp;
     }
     //virtual const Point* get_kick() const = 0;
 };
