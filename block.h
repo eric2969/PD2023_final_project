@@ -13,24 +13,22 @@ struct Point{
 
 class Block{
 protected:
-    char symbol;
-    short color, direction, x_delta[4], y_delta[4];
+    short ID, direction, x_delta[4], y_delta[4];
     Point location;
 public:
     //constructor and destructor
     Block() {}
     Block(const Point& p):location(p) {}
-    Block(const char& sym, const short& colour):symbol(sym), color(colour) {}
-    Block(const Point& p, const char& sym, const short& colour):location(p), symbol(sym), color(colour) {}
-    Block(const Block& b):symbol(b.get_symbol()), color(b.get_color()), direction(b.get_direction()), location(b.get_location()){
+    Block(const short& id):ID(id) {}
+    Block(const Point& p, const short& id):location(p), ID(id) {}
+    Block(const Block& b):ID(b.get_ID()), direction(b.get_direction()), location(b.get_location()){
         for(int i = 0;i < 4;i++)
             x_delta[i] = get_xdelta(i), y_delta[i] = get_ydelta(i);
         return;
     }
     ~Block() {}
     //for get block data (const)
-    inline char get_symbol() const {return symbol;}
-    inline short get_color() const {return color;}
+    inline short get_ID() const {return ID;}
     inline short get_direction() const {return direction;}
     inline short get_xdelta(const short& index) const{return x_delta[index];}
     inline short get_ydelta(const short& index) const{return y_delta[index];}
@@ -72,8 +70,7 @@ public:
     const Block& operator=(const Block& tmp){
         this -> direction = tmp.get_direction();
         this -> location = tmp.get_location();
-        this -> symbol = tmp.get_symbol();
-        this -> color = tmp.get_color();
+        this -> ID = tmp.get_ID();
         for(int i = 0;i < 4;i++)
             (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
         return *this;
@@ -86,7 +83,7 @@ public:
 
 class Block_T : public Block{
 public:
-    Block_T(const Point& p = Point(0,0) ) : Block(p, '#', 0) {
+    Block_T(const Point& p = Point(0,0) ) : Block(p, 1) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 0, y_delta[1] = 1 ;
 		x_delta[2] = 1, y_delta[2] = 0 ;
@@ -97,7 +94,7 @@ public:
 
 class Block_L : public Block{
 public:
-    Block_L(const Point& p = Point(0,0) ) : Block(p, '$', 1) {
+    Block_L(const Point& p = Point(0,0) ) : Block(p, 2) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = 1, y_delta[2] = 1 ;
@@ -108,7 +105,7 @@ public:
 
 class Block_J : public Block{
 public:
-    Block_J(const Point& p = Point(0,0) ) : Block(p, '@', 2) {
+    Block_J(const Point& p = Point(0,0) ) : Block(p, 3) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = -1, y_delta[2] = 0 ;
@@ -119,7 +116,7 @@ public:
 
 class Block_S : public Block{
 public:
-    Block_S(const Point& p = Point(0,0) ) : Block(p, '%', 3) {
+    Block_S(const Point& p = Point(0,0) ) : Block(p, 4) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 0, y_delta[1] = 1 ;
 		x_delta[2] = 1, y_delta[2] = 1 ;
@@ -130,7 +127,7 @@ public:
 
 class Block_Z : public Block{
 public:
-    Block_Z(const Point& p = Point(0,0) ) : Block(p, '?', 4) {
+    Block_Z(const Point& p = Point(0,0) ) : Block(p, 5) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 0, y_delta[1] = 1 ;
 		x_delta[2] = 1, y_delta[2] = 0 ;
@@ -141,7 +138,7 @@ public:
 
 class Block_I : public Block{
 public:
-    Block_I(const Point& p = Point(0,0) ) : Block(p, '&', 5) {
+    Block_I(const Point& p = Point(0,0) ) : Block(p, 6) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = 2, y_delta[2] = 0 ;
@@ -157,7 +154,7 @@ public:
 
 class Block_O : public Block{
 public:
-    Block_O(const Point& p = Point(0,0) ) : Block(p, '+', 6) {
+    Block_O(const Point& p = Point(0,0) ) : Block(p, 7) {
 		x_delta[0] = 0, y_delta[0] = 0 ;
 		x_delta[1] = 1, y_delta[1] = 0 ;
 		x_delta[2] = 0, y_delta[2] = -1 ;

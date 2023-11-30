@@ -28,6 +28,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/12/01.a
+> Simplify the basic data of block (symbol, color => id)
+
 > ### 2023/11/30.d
 > Change the architecture of block and table
 
