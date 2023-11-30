@@ -10,6 +10,16 @@ void set_color(const unsigned short textColor, HANDLE &hout) {
         SetConsoleTextAttribute(hout, 7);
 }
 
+const Point Kick_Table(const short& start, const short& drc, const short& test){
+    const static Point delta[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
+    Point tmp; short factor;
+    if(start % 2)
+        factor = (start>>1)?1:-1;
+    else
+        factor = drc * ((start>>1)?-1:1);
+    return delta[test] * factor;
+}
+
 class Table{
 private:
     Block current, next;
@@ -122,20 +132,4 @@ bool Table::isValid(const Block& tmp) const{
         if(symbol[i.y][i.x])
             return 0;
     return 1;
-}
-
-void Block::rotate(const Table& Tb, const short& drc){ //positive is clockwise
-    short x_del, y_del;
-    Block tmp(*this);
-    tmp.rotate(drc);
-    for(int att = 0;att < 5;att++){
-        x_del = Kick_Table(direction, drc, att).x, y_del = Kick_Table(direction, drc, att).y;
-        tmp.move(x_del, y_del);
-        if(Tb.isValid(tmp)){
-            *this = tmp;
-            return;
-        }
-        tmp.move((x_del * -1), (y_del * -1));
-    }
-    return;
 }

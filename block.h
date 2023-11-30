@@ -8,18 +8,8 @@ struct Point{
     inline Point operator+(const Point& tmp) const{ return Point((this -> x) + tmp.x, (this -> y) + tmp.y);}
     inline Point operator*(const short& tmp) const{ return Point((this -> x) * tmp, (this -> y) * tmp);}
     inline bool operator==(const Point& tmp) const{return (this->x == tmp.x) && (this->y == tmp.y);}
-    const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
+    inline const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
 };
-
-const Point Kick_Table(const short& start, const short& drc, const short& test){
-    const static Point delta[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
-    Point tmp; short factor;
-    if(start % 2)
-        factor = (start>>1)?1:-1;
-    else
-        factor = drc * ((start>>1)?-1:1);
-    return delta[test] * factor;
-}
 
 class Block{
 protected:
@@ -27,6 +17,7 @@ protected:
     short color, direction, x_delta[4], y_delta[4];
     Point location;
 public:
+    //constructor and destructor
     Block() {}
     Block(const Point& p):location(p) {}
     Block(const char& sym, const short& colour):symbol(sym), color(colour) {}
@@ -37,34 +28,14 @@ public:
         return;
     }
     ~Block() {}
+    //for get block data (const)
     inline char get_symbol() const {return symbol;}
     inline short get_color() const {return color;}
     inline short get_direction() const {return direction;}
     inline short get_xdelta(const short& index) const{return x_delta[index];}
     inline short get_ydelta(const short& index) const{return y_delta[index];}
     inline Point get_location() const {return location;}
-    inline void set_location(const short& x,const short& y){ (this -> location.x) = x, (this -> location.y) = y; return; }
-    inline void move(const short& x, const short& y){ (this -> location.x) += x, (this -> location.y) += y; return; }
-    const Block& operator=(const Block& tmp){
-        this -> direction = tmp.get_direction();
-        this -> location = tmp.get_location();
-        this -> symbol = tmp.get_symbol();
-        this -> color = tmp.get_color();
-        for(int i = 0;i < 4;i++)
-            (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
-        return *this;
-    }
-    virtual void rotate(const short& drc){ //positive is clockwise
-        this -> direction = ( (this -> direction) + drc + 4) % 4;
-        short x_tmp, y_tmp;
-        for(int i = 0;i < 4;i++){
-            x_tmp = x_delta[i], y_tmp = y_delta[i];
-            x_delta[i] = drc * x_tmp, y_delta[i] = drc * (-1) * y_tmp;
-        }
-        return;
-    }
-    virtual void rotate(const Table& Tb, const short& drc);
-    virtual std::vector<Point> block_position() const{
+    virtual std::vector<Point> block_position() const{ //need to override block_I
         std::vector<Point> tmp;
         Point ptmp;
         for(int i = 0;i < 4;i++){
@@ -74,6 +45,40 @@ public:
         }
         return tmp;
     }
+    //return pre-modified data (const)
+    Block move(const short& x, const short& y) const{ Block pTmp(*this); pTmp += Point(x, y); return pTmp;}
+    Block move(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
+    Block operator+(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
+
+    virtual Point rotate(const short& drc) const{ Point pTmp(*this); pTmp.rotate_set(drc); return *this;}
+    //data setting
+    inline void move_set(const Point& tmp){ (this -> location.x) += tmp.x, (this -> location.y) += tmp.y; return;}
+    inline void move_set(const short& x, const short& y){ (this -> location.x) += x, (this -> location.y) += y; return;}
+    const Block& operator+=(const Point& tmp){ (this -> location.x) += tmp.x, (this -> location.y) += tmp.y; return *this;}
+
+    inline void set_location(const short& x,const short& y){ (this -> location.x) = x, (this -> location.y) = y; return;}
+    inline void set_location(const Point& tmp){ (this -> location.x) = tmp.x, (this -> location.y) = tmp.y; return;}
+    const Block& operator=(const Point& tmp){ (this -> location.x) = tmp.x, (this -> location.y) = tmp.y; return *this;}
+
+    virtual void rotate_set(const short& drc){ //positive is clockwise
+        this -> direction = ( (this -> direction) + drc + 4) % 4;
+        short x_tmp, y_tmp;
+        for(int i = 0;i < 4;i++){
+            x_tmp = x_delta[i], y_tmp = y_delta[i];
+            x_delta[i] = drc * x_tmp, y_delta[i] = drc * (-1) * y_tmp;
+        }
+        return;
+    }
+    const Block& operator=(const Block& tmp){
+        this -> direction = tmp.get_direction();
+        this -> location = tmp.get_location();
+        this -> symbol = tmp.get_symbol();
+        this -> color = tmp.get_color();
+        for(int i = 0;i < 4;i++)
+            (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
+        return *this;
+    }
+    
 };
 
 /*all of the symbol and color is for temporary use, and color and symbol will be confirmed and modified later
@@ -143,7 +148,8 @@ public:
 		x_delta[3] = -1, y_delta[3] = 0 ;
 	}
     ~Block_I() {}
-    void rotate(const short& direction) override{
+    Point rotate(const short& drc) const override{ Point pTmp(*this); return *this;}
+    void rotate_set(const short& direction) override{
         //to be finished
         return;
     }
@@ -158,5 +164,6 @@ public:
 		x_delta[3] = 1, y_delta[3] = -1 ;
 	}
     ~Block_O() {}
-    void rotate(const short& direction) override{}
+    Point rotate(const short& drc) const override{ Point pTmp(*this); return *this;}
+    void rotate_set(const short& direction) override{}
 };
