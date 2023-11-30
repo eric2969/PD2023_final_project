@@ -28,6 +28,9 @@ And we divided our game architecture into several parts, listed at the below.
 
 ## Version History
 
+> ### 2023/11/30.c
+> Small modify in block.h
+
 > ### 2023/11/30.b
 > Add symbol matrix in table.h, complete some functions in table.h
 > modify flush_tick, cols lines, etc... in main.cpp

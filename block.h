@@ -8,18 +8,12 @@ struct Point{
     inline Point operator+(const Point& tmp) const{ return Point((this -> x) + tmp.x, (this -> y) + tmp.y);}
     inline Point operator*(const short& tmp) const{ return Point((this -> x) * tmp, (this -> y) * tmp);}
     inline bool operator==(const Point& tmp) const{return (this->x == tmp.x) && (this->y == tmp.y);}
-    const Point& operator=(const Point& tmp){
-        this -> x = tmp.x;
-        this -> y = tmp.y;
-        return *this;
-    }
+    const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
 };
 
 const Point Kick_Table(const short& start, const short& drc, const short& test){
     const static Point delta[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
     Point tmp; short factor;
-    if(!test)
-        return tmp;
     if(start % 2)
         factor = (start>>1)?1:-1;
     else
@@ -149,6 +143,10 @@ public:
 		x_delta[3] = -1, y_delta[3] = 0 ;
 	}
     ~Block_I() {}
+    void rotate(const short& direction) override{
+        //to be finished
+        return;
+    }
 };
 
 class Block_O : public Block{
