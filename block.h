@@ -50,7 +50,7 @@ public:
     Block move(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
     Block operator+(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
 
-    virtual Point rotate(const short& drc) const{ Point pTmp(*this); pTmp.rotate_set(drc); return *this;}
+    virtual Block rotate(const short& drc) const{ Block pTmp(*this); pTmp.rotate_set(drc); return *this;}
     //data setting
     inline void move_set(const Point& tmp){ (this -> location.x) += tmp.x, (this -> location.y) += tmp.y; return;}
     inline void move_set(const short& x, const short& y){ (this -> location.x) += x, (this -> location.y) += y; return;}
@@ -78,7 +78,7 @@ public:
             (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
         return *this;
     }
-    
+
 };
 
 /*all of the symbol and color is for temporary use, and color and symbol will be confirmed and modified later
@@ -148,7 +148,7 @@ public:
 		x_delta[3] = -1, y_delta[3] = 0 ;
 	}
     ~Block_I() {}
-    Point rotate(const short& drc) const override{ Point pTmp(*this); return *this;}
+    Block rotate(const short& drc) const override{ Block pTmp(*this); return *this;}
     void rotate_set(const short& direction) override{
         //to be finished
         return;
@@ -164,6 +164,6 @@ public:
 		x_delta[3] = 1, y_delta[3] = -1 ;
 	}
     ~Block_O() {}
-    Point rotate(const short& drc) const override{ Point pTmp(*this); return *this;}
+    Block rotate(const short& drc) const override{ Block pTmp(*this); return *this;}
     void rotate_set(const short& direction) override{}
 };
