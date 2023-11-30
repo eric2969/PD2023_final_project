@@ -38,7 +38,7 @@ And we divided our game architecture into several parts, listed at the below.
 > Add symbol matrix in table.h, complete some functions in table.h
 > modify flush_tick, cols lines, etc... in main.cpp
 
-> ### 2023/11/30.a
+> ### 2023/11/30.a (v0.0)
 > Fix print_table()
 
 > ### 2023/11/29.e
@@ -56,7 +56,7 @@ And we divided our game architecture into several parts, listed at the below.
 > ### 2023/11/29.b
 > Debug table.h
 
-> ### 2023/11/29.a
+> ### 2023/11/29.a (v0.0beta)
 > Implement print_table aand print_block in table.h
 
 > ### 2023/11/28.e
