@@ -1,3 +1,5 @@
+#define DEFAULT_COLOR 7
+ 
 void goto_xy(int x, int y, HANDLE &hout) {
     COORD pos = {x, y};
     SetConsoleCursorPosition(hout, pos);
@@ -82,8 +84,8 @@ void Table::move_block(const short& x, const short& y){
     Point pTmp(x, y);
     if(isValid(current + pTmp)){
         std::vector<Point> p = current.block_position();
-        for(auto i : p)
-            id[i.y + y][i.x + x] = current.get_ID(), id[i.y][i.x] = 0;
+//        for(auto i : p)
+//            id[i.y + y][i.x + x] = current.get_ID(), id[i.y][i.x] = 0;
         current += pTmp;
     }
     return;
@@ -97,6 +99,7 @@ void Table::rotate(const short& direction){
 //printing
 void Table::print_table(const int& x, const int& y, HANDLE &hConsole) const{
     goto_xy(x, y, hConsole);
+    set_color(DEFAULT_COLOR, hConsole);
     for(int i = 0;i < width + 2; i++)
         std::cout << '-';
     for (int i = 0; i < height; ++i) {
@@ -109,6 +112,7 @@ void Table::print_table(const int& x, const int& y, HANDLE &hConsole) const{
             }
             set_color(color_table[ id[i][j] ], hConsole);
             std::cout << symbol_table[ id[i][j] ];
+            set_color(DEFAULT_COLOR, hConsole);
         }
         std::cout << '|';
     }

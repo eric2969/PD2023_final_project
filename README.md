@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/01.b
+> Add key press detector
+> print_block is yet to be fixed
 
 > ### 2023/12/01.a
 > Simplify the basic data of block (symbol, color => id)
