@@ -22,7 +22,7 @@ public:
     Block(const short& id):ID(id) {}
     Block(const Point& p, const short& id):location(p), ID(id) {}
     Block(const Block& b):ID(b.get_ID()), direction(b.get_direction()), location(b.get_location()){
-        for(int i = 0;i < 4;i++)
+        for(int i = 0; i < 4; i++)
             x_delta[i] = get_xdelta(i), y_delta[i] = get_ydelta(i);
         return;
     }
@@ -61,7 +61,7 @@ public:
     virtual void rotate_set(const short& drc){ //positive is clockwise
         this -> direction = ( (this -> direction) + drc + 4) % 4;
         short x_tmp, y_tmp;
-        for(int i = 0;i < 4;i++){
+        for(int i = 0; i < 4; i++){
             x_tmp = x_delta[i], y_tmp = y_delta[i];
             x_delta[i] = drc * x_tmp, y_delta[i] = drc * (-1) * y_tmp;
         }
@@ -71,7 +71,7 @@ public:
         this -> direction = tmp.get_direction();
         this -> location = tmp.get_location();
         this -> ID = tmp.get_ID();
-        for(int i = 0;i < 4;i++)
+        for(int i = 0; i < 4; i++)
             (this -> x_delta[i]) = tmp.get_xdelta(i), (this -> y_delta[i]) = tmp.get_ydelta(i);
         return *this;
     }
@@ -146,8 +146,17 @@ public:
 	}
     ~Block_I() {}
     Block rotate(const short& drc) const override{ Block pTmp(*this); return *this;}
-    void rotate_set(const short& direction) override{
-        //to be finished
+    void rotate_set(const short& direction, int drc) override{
+        short x_tmp, y_tmp;
+        for(int i = 0; i < 4; i++){
+            x_tmp = x_delta[i], y_tmp = y_delta[i]; //swap
+            x_delta[i] = drc * x_tmp, y_delta[i] = drc * (-1) * y_tmp;
+        }
+        if (direction == 0){
+            
+        }
+        this -> direction = ( (this -> direction) + drc + 4) % 4; //update direction
+        
         return;
     }
 };
