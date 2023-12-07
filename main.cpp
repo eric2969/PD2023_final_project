@@ -13,31 +13,42 @@ const short flush_tick = 200;
 
 signed main(){
     Table player, opponent;
-    system("mode con cols=100 lines=50");//?¸mµ¡¤f¤j¤p
+    system("mode con cols=100 lines=50");//?ï¿½mï¿½ï¿½ï¿½fï¿½jï¿½p
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     bool isUpPressed = false;
     bool isDownPressed = false;
     bool isLeftPressed = false;
     bool isRightPressed = false;
+    bool isZPressed = false;
 
     while (true) {
-        // ÀË¬d¤è¦VÁä¬O§_³Q«ö¤U
+        // ï¿½Ë¬dï¿½ï¿½Vï¿½ï¿½Oï¿½_ï¿½Qï¿½ï¿½ï¿½U
         isUpPressed = GetAsyncKeyState(VK_UP) & 0x8000;
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
         isRightPressed = GetAsyncKeyState(VK_RIGHT) & 0x8000;
-        Block_Z z(Point{0,0});
+        isZPressed = GetAsyncKeyState(VK_RIGHT) & 0x8000; //counterclockwise rotate
+        Block_Z z(Point{0,0}); //randomize?
         player.add_block(z);
-        // ³B²z¤è¦VÁäªº¨Æ¥ó
-        if (isUpPressed) {
-          player.move_block(0,1);
-        } else if (isDownPressed) {
+        
+        // ï¿½Bï¿½zï¿½ï¿½Vï¿½äªºï¿½Æ¥ï¿½
+        // moving blocks
+        if (isDownPressed) {
           player.move_block(0,-1);
         } else if (isLeftPressed) {
           player.move_block(-1,0);
         } else if (isRightPressed) {
           player.move_block(1,0);
         }
+
+        // rotating blocks
+        // the second parameter is drc, marking clockwise or counterclockwise, storing whether 1 or -1
+        if (isUpPressed) {
+          player.rotate(player.get_current().get_direction(), 1);
+        } else if (isZPressed){
+          player.rotate(player.get_current().get_direction(), -1);
+        }
+
         
         player.print_table(0,1,hConsole);
         player.print_block(hConsole);

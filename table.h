@@ -15,18 +15,34 @@ void set_color(const unsigned short textColor, HANDLE &hout) {
 const short color_table[8] = {0, 1, 2, 3, 4, 5, 6, 7}; //[0] for none
 const char symbol_table[8] = {' ', '#', '@', '?', '$', '&', '%', '+'}; //[0] for none
 
+//5-stage test for kick_table
+//deal with different state (e.g 0>>1, 1>>0, etc.)
 const Point Kick_Table(bool isI, const short& start, const short& drc, const short& test){
-    const static Point delta[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
+    const static Point delta_notI[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
+    const static Point delta_I1[5] = { Point(0, 0), Point(-1, 0), Point(2, 0), Point(-1, 2), Point(2, -1) };
+    const static Point delta_I2[5] = { Point(0, 0), Point(-2, 0), Point(1, 0), Point(-2, -1), Point(1, 2) };
     if(!isI){
         Point tmp; short factor;
         if(start % 2)
             factor = (start>>1)?1:-1;
         else
             factor = drc * ((start>>1)?-1:1);
-        return delta[test] * factor;
+        return delta_notI[test] * factor;
     }
+    //I block special case
+    //assume the center point is on the right center
     else{
-
+        Point tmp; short factor;
+        if(start % 2 && drc || !(start % 2) && drc == -1)
+            if (start == 0 || start == 3)
+                return delta_I2[test];
+            else 
+                return delta_I2[test] * (-1);
+        else
+            if (start == 0 || start == 3)
+                return delta_I1[test];
+            else 
+                return delta_I1[test] * (-1); 
     }
 }
 
@@ -70,6 +86,7 @@ void Table::fix_block() {
 }
 
 void Table::del_block(){
+    
     return;
 }
 
@@ -82,17 +99,19 @@ void Table::add_block(const Block& add){
 //block move
 void Table::move_block(const short& x, const short& y){
     Point pTmp(x, y);
-    if(isValid(current + pTmp)){
-        std::vector<Point> p = current.block_position();
-//        for(auto i : p)
-//            id[i.y + y][i.x + x] = current.get_ID(), id[i.y][i.x] = 0;
+    if(isValid(current + pTmp))
         current += pTmp;
-    }
     return;
 }
 
 void Table::rotate(const short& direction){
-    current.rotate(direction);
+    Block tmp(current);
+    tmp.rotate_set(direction);
+    for(int i = 0; i < 5; i++){
+        if(isValid(tmp + Kick_Table(isI, tmp.get_direction(), direction, i)))
+            current = (tmp + Kick_Table(isI, tmp.get_direction(), direction, i));
+            break;
+    }
     return;
 }
 
@@ -146,7 +165,7 @@ bool Table::isValid(const Block& tmp) const{
     return 1;
 }
 
-bool Table::isT_Spin() const{
+bool Table::isT_Spinmemset() const{
 
 }
 
