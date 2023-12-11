@@ -27,6 +27,8 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+>### 2023/12/11.a
+>Finish all the initialize of seven blocks(using the "location" point)
 > ### 2023/12/07.a
 > Add I block kick table
 > Add I block rotate_set function (still working on)
