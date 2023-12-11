@@ -83,11 +83,12 @@ public:
 
 class Block_T : public Block{
 public:
-    Block_T(const Point& p = Point(0,0) ) : Block(p, 1) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 0, y_delta[1] = 1 ;
-		x_delta[2] = 1, y_delta[2] = 0 ;
-		x_delta[3] = -1, y_delta[3] = 0 ;
+    Block_T(const Point& p = Point(0,0) ) : Block(p, 1) 
+	{
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x, y_delta[1] = this->location.y+1 ;// (0,01)
+		x_delta[2] = this->location.x+1, y_delta[2] = this->location.y ;//(1, 0)
+		x_delta[3] = this->location.x-1, y_delta[3] = this->location.y ;// (-1, 0)
 	}
     ~Block_T() {}
 };
@@ -95,10 +96,10 @@ public:
 class Block_L : public Block{
 public:
     Block_L(const Point& p = Point(0,0) ) : Block(p, 2) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 1, y_delta[1] = 0 ;
-		x_delta[2] = 1, y_delta[2] = 1 ;
-		x_delta[3] = -1, y_delta[3] = 0 ;
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x+1, y_delta[1] = this->location.y ;// (1, 0)
+		x_delta[2] = this->location.x+1, y_delta[2] = this->location.y+1 ;// (1, 1)
+		x_delta[3] = this->location.x-1, y_delta[3] = this->location.y ;// (-1, 0)
 	}
     ~Block_L() {}
 };
@@ -106,10 +107,10 @@ public:
 class Block_J : public Block{
 public:
     Block_J(const Point& p = Point(0,0) ) : Block(p, 3) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 1, y_delta[1] = 0 ;
-		x_delta[2] = -1, y_delta[2] = 0 ;
-		x_delta[3] = -1, y_delta[3] = 1 ;
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x+1, y_delta[1] = this->location.y ;// (1, 0)
+		x_delta[2] = this->location.x-1, y_delta[2] = this->location.y ;// (-1, 0)
+		x_delta[3] = this->location.x-1, y_delta[3] = this->location.y+1 ;// (-1, 1)
 	}
     ~Block_J() {}
 };
@@ -117,10 +118,10 @@ public:
 class Block_S : public Block{
 public:
     Block_S(const Point& p = Point(0,0) ) : Block(p, 4) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 0, y_delta[1] = 1 ;
-		x_delta[2] = 1, y_delta[2] = 1 ;
-		x_delta[3] = -1, y_delta[3] = 0 ;
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x, y_delta[1] = this->location.y+1 ;// (0, 1)
+		x_delta[2] = this->location.x+1, y_delta[2] = this->location.y+1 ;// (1, 1)
+		x_delta[3] = this->location.x-1, y_delta[3] = this->location.y ;// (-1, 0)
 	}
     ~Block_S() {}
 };
@@ -128,10 +129,10 @@ public:
 class Block_Z : public Block{
 public:
     Block_Z(const Point& p = Point(0,0) ) : Block(p, 5) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 0, y_delta[1] = 1 ;
-		x_delta[2] = 1, y_delta[2] = 0 ;
-		x_delta[3] = -1, y_delta[3] = 1 ;
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x, y_delta[1] = this->location.y+1 ;// (0, 1)
+		x_delta[2] = this->location.x+1, y_delta[2] = this->location.y ;// (1, 0)
+		x_delta[3] = this->location.x-1, y_delta[3] = this->location.y+1 ;// (-1, 1)
 	}
     ~Block_Z() {}
 };
@@ -139,10 +140,10 @@ public:
 class Block_I : public Block{
 public:
     Block_I(const Point& p = Point(0,0) ) : Block(p, 6) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 1, y_delta[1] = 0 ;
-		x_delta[2] = 2, y_delta[2] = 0 ;
-		x_delta[3] = -1, y_delta[3] = 0 ;
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x+1, y_delta[1] = this->location.y ;// (1, 0)
+		x_delta[2] = this->location.x+2, y_delta[2] = this->location.y ;// (2, 0)
+		x_delta[3] = this->location.x-1, y_delta[3] = this->location.y ;// (-1, 0)
 	}
     ~Block_I() {}
     Block rotate(const short& drc) const override{ Block pTmp(*this); return *this;}
@@ -164,10 +165,10 @@ public:
 class Block_O : public Block{
 public:
     Block_O(const Point& p = Point(0,0) ) : Block(p, 7) {
-		x_delta[0] = 0, y_delta[0] = 0 ;
-		x_delta[1] = 1, y_delta[1] = 0 ;
-		x_delta[2] = 0, y_delta[2] = -1 ;
-		x_delta[3] = 1, y_delta[3] = -1 ;
+		x_delta[0] = this->location.x, y_delta[0] = this->location.y ;// (0, 0)
+		x_delta[1] = this->location.x+1, y_delta[1] = this->location.y ;// (1, 0)
+		x_delta[2] = this->location.x, y_delta[2] = this->location.y-1 ;// (0, -1)
+		x_delta[3] = this->location.x+1, y_delta[3] = this->location.y-1 ;// (1, -1)
 	}
     ~Block_O() {}
     Block rotate(const short& drc) const override{ Block pTmp(*this); return *this;}
