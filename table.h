@@ -234,10 +234,9 @@ void Table::set_level(const int level) {
 
 //checking
 bool Table::isValid(const Block& tmp) const{
-    return 1;
     std::vector<Point> p = tmp.block_position();
     for(auto i : p)
-        if(board[i.y][i.x])
+        if(i.x < 0 || i.x >= 10 || i.y < 0 || i.y >= 20 || board[i.y][i.x])
             return 0;
     return 1;
 }
