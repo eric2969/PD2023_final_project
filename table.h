@@ -75,6 +75,7 @@ public:
     //checking
     bool isValid(const Block& tmp) const;
     bool isT_Spin() const;
+    int removeLine() ;
     //multi playing
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
@@ -139,6 +140,51 @@ void Table::rotate(const short direction){
             break;
     }
     return;
+}
+
+int Table::removeLine()
+{
+	bool allExist = true ;// see if the whole row is filled
+	int cnt=0, clearedId=0 ;// the total line num cleared
+	for(int i=0; i<20; i++)
+	{
+		for(int j=0; j<10; j++)
+		{
+			if(!this->board[i][j])
+			{
+				allExist = false ;
+				break ;
+			}
+		}
+		if(allExist)
+		{
+			cnt++ ;
+			// 將上方的東西下移一格 
+			for(int p=i; p>=1; p--)
+			{
+				for(int q=0; q<10; q++)
+				{
+					this->board[p][q] = this->board[p-1][q] ;
+				}
+			}
+		}
+	}
+	if(cnt == 1)
+	{
+		return 10 ;
+	}
+	else if(cnt == 2)
+	{
+		return 20 ;
+	}
+	else if(cnt == 3)
+	{
+		return 40 ;
+	}
+	else if(cnt == 4)
+	{
+		return 80 ;
+	}
 }
 
 //printing
