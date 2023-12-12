@@ -80,6 +80,10 @@ public:
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
     void pop_block();
+    void cancelLine(); //cancel the whole line
+    void isGameover();
+    void getNext();
+
 };
 
 void Table::set_position(int x, int y){
@@ -209,3 +213,5 @@ void Table::send_garbage(){
 void Table::get_garbage(){
     // Implement logic for receiving garbage in multiplayer
 }
+
+
