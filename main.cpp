@@ -10,6 +10,7 @@
 #include <time.h>
 #include "block.h"
 #include "table.h"
+#include "VK.h" 
 
 #define notDEBUG
 using namespace std;
@@ -42,10 +43,12 @@ signed main(){
     bool isLeftPressed = false;
     bool isRightPressed = false;
     bool isZPressed = false;
+    bool isXPressed = false;
+    bool isSPACEPressed = false;
     clock_t before, now, down, left, right;
     bool bDown, bLeft, bRight, bkeyZ, bkeyX;
     before = clock();
-    int wait = 10;
+    int wait = 10; 
     player.set_position(0,0);
     opponent.set_position(60,1); 
     
@@ -79,8 +82,6 @@ signed main(){
             player.move_block(0,1);
             down = clock();
           }
-           //change into 'move fast to the bottom'
-        }
         else
           bDown = 0;
 
@@ -125,28 +126,25 @@ signed main(){
           bKeyX = 0;
         //fixed
         if (isSPACEPressed){
-          
           player.print_block(hConsole);
           player.pop_block();
           if (player.getNext() <= 1){
             add_shuffle_block();
           }
         }
-        
         Sleep(flush_tick);
         //system("cls");
     }
 
     return 0;
 }
-#endif
 
-void add_shuffle_block(){
+void add_shuffle_block(Table &player){
     //randomly generate 
     srand( time(NULL) );
     int shuffle_block[7];
-    for (int i = 0; i < 7; i++) a[i] = i;
-    random_shuffle(shuffle_block);
+    for (int i = 0; i < 7; i++) shuffle_block[i] = i;
+    random_shuffle(shuffle_block,shuffle_block+7);
     for (int i = 0; i < 7; i++){
       switch(a[i]){
         case 0:
@@ -170,6 +168,10 @@ void add_shuffle_block(){
         case 6:
           Block_Z z(Point{1,5});
           player.add_block(z);
+        default:
+            exit(1);
+            break;
       }
     }
 }
+#endif

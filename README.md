@@ -34,8 +34,8 @@ And we divided our game architecture into several parts, listed at the below.
 > finished remove line
 
 > ### 2023/12/12.e
-> add hard_drop
 > add_shuffle_block
+> Finished hard_drop
 
 > ### 2023/12/12.d
 > Fixed conflict

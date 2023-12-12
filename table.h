@@ -62,9 +62,9 @@ public:
     void set_position(int x, int y);
     //block existence
     bool fix_block();
-    void del_block();
     void add_block(Block& add);
     //block move
+    void hard_drop();
     void move_block(const short x, const short y);
     void rotate(const short direction);
     //printing
@@ -75,6 +75,7 @@ public:
     //checking
     bool isValid(const Block& tmp) const;
     bool isT_Spin() const;
+    int removeLine() ;
     //multi playing
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
@@ -93,17 +94,14 @@ void Table::set_position(int x, int y){
 //block existence
 bool Table::fix_block() {
     std::vector<Point> p = current->block_position(); // Change here
-    for (auto i : p)
+    for (auto i : p){
         board[i.y][i.x] = current -> get_ID(); // Change here
-        for (int i = 0; i < 10; i++){
-        if(board[0][i]) return 0;
+        for (int i = 0; i < 10; i++)
+            if(board[0][i]) return 0;
     }
     return 1;
 }
 
-void Table::del_block(){
-    return;
-}
 
 void Table::add_block(Block &add){
     next.push(&add);// Change here
@@ -116,6 +114,16 @@ void Table::pop_block(){
 }
 
 //block move
+void Table::hard_drop(){
+    Block bTmp(*current);
+    for(int i = 20;i >= 0;i--){
+        if(isValid(bTmp + Point(0,-i))){
+            *current += Point(0,-i);
+            break;
+        }
+    }
+}
+
 void Table::move_block(const short x, const short y){
     Point pTmp(x, y);
     if(isValid(current->move(pTmp))) // Change here
@@ -134,6 +142,51 @@ void Table::rotate(const short direction){
             break;
     }
     return;
+}
+
+int Table::removeLine()
+{
+	bool allExist = true ;// see if the whole row is filled
+	int cnt=0, clearedId=0 ;// the total line num cleared
+	for(int i=0; i<20; i++)
+	{
+		for(int j=0; j<10; j++)
+		{
+			if(!this->board[i][j])
+			{
+				allExist = false ;
+				break ;
+			}
+		}
+		if(allExist)
+		{
+			cnt++ ;
+			// 將上方的東西下移一格 
+			for(int p=i; p>=1; p--)
+			{
+				for(int q=0; q<10; q++)
+				{
+					this->board[p][q] = this->board[p-1][q] ;
+				}
+			}
+		}
+	}
+	if(cnt == 1)
+	{
+		return 10 ;
+	}
+	else if(cnt == 2)
+	{
+		return 20 ;
+	}
+	else if(cnt == 3)
+	{
+		return 40 ;
+	}
+	else if(cnt == 4)
+	{
+		return 80 ;
+	}
 }
 
 //printing
@@ -183,10 +236,9 @@ void Table::set_level(const int level) {
 
 //checking
 bool Table::isValid(const Block& tmp) const{
-    return 1;
     std::vector<Point> p = tmp.block_position();
     for(auto i : p)
-        if(board[i.y][i.x])
+        if(i.x < 0 || i.x >= 10 || i.y < 0 || i.y >= 20 || board[i.y][i.x])
             return 0;
     return 1;
 }
