@@ -52,12 +52,12 @@ private:
     Block current;
     std::queue<Block> next;
     const static short height = 20, width = 10;
-    short id[height][width]; //game id table
+    short board[height][width]; //game id table
     int score = 0, clear_line = 0, level = 0;
     int arr, gravity, das, multiplier = 0, garbage = 0, B2B = 0;
     int x,y;
 public:
-    Table() { memset(id, 0, sizeof(id)); return;}
+    Table() { memset(board, 0, sizeof(board)); return;}
     ~Table() {}
     void set_position(int x, int y);
     //block existence
@@ -91,7 +91,7 @@ void Table::set_position(int x, int y){
 void Table::fix_block() {
     std::vector<Point> p = current.block_position();
     for (auto i : p)
-        id[i.y][i.x] = current.get_ID();
+        board[i.y][i.x] = current.get_ID();
 }
 
 void Table::del_block(){
@@ -119,6 +119,8 @@ void Table::move_block(const short x, const short y){
 void Table::rotate(const short direction){
     Block tmp(current);
     tmp.rotate_set(direction);
+
+    //current.rotate;
     for(int i = 0; i < 5; i++){
         if(isValid(tmp + Kick_Table(isI, tmp.get_direction(), direction, i)))
             current = (tmp + Kick_Table(isI, tmp.get_direction(), direction, i));
@@ -137,12 +139,12 @@ void Table::print_table(HANDLE &hConsole) const{
         goto_xy(x, y + i + 1, hConsole);
         std::cout << '|';
         for (int j = 0; j < width; ++j) {
-            if (id[i][j] == 0) {
+            if (board[i][j] == 0) {
                 std::cout << ' '; 
             }
             else{
-                 set_color(color_table[ id[i][j] ], hConsole);
-                 std::cout << symbol_table[ id[i][j] ];
+                 set_color(color_table[ board[i][j] ], hConsole);
+                 std::cout << symbol_table[ board[i][j] ];
                  set_color(DEFAULT_COLOR, hConsole);
             }
         }
@@ -174,7 +176,7 @@ bool Table::isValid(const Block& tmp) const{
     return 1;
     std::vector<Point> p = tmp.block_position();
     for(auto i : p)
-        if(id[i.y][i.x])
+        if(board[i.y][i.x])
             return 0;
     return 1;
 }
