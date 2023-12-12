@@ -61,7 +61,7 @@ public:
     ~Table() {}
     void set_position(int x, int y);
     //block existence
-    void fix_block();
+    bool fix_block();
     void del_block();
     void add_block(Block& add);
     //block move
@@ -83,7 +83,6 @@ public:
     void cancelLine(); //cancel the whole line
     void isGameover();
     void getNext();
-
 };
 
 void Table::set_position(int x, int y){
@@ -92,10 +91,14 @@ void Table::set_position(int x, int y){
 }
 
 //block existence
-void Table::fix_block() {
+bool Table::fix_block() {
     std::vector<Point> p = current->block_position(); // Change here
     for (auto i : p)
         board[i.y][i.x] = current -> get_ID(); // Change here
+        for (int i = 0; i < 10; i++){
+        if(board[0][i]) return 0;
+    }
+    return 1;
 }
 
 void Table::del_block(){
@@ -206,4 +209,6 @@ void Table::get_garbage(){
     // Implement logic for receiving garbage in multiplayer
 }
 
-
+std::queue<Block*> Table::getNext(){
+    return next.size();
+}
