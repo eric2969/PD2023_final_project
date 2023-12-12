@@ -44,24 +44,7 @@ signed main(){
     bool isZPressed = false;
     player.set_position(0,0);
     opponent.set_position(60,1); 
-
-    //randomly generate 
-    srand( time(NULL) );
-    int shuffle_block[7];
-    for (int i = 0; i < 7; i++) a[i] = i;
-    random_shuffle(shuffle_block);
-    for (int i = 0; i < 7; i++){
-      switch(a[i]){
-        case 0:
-          Block_Z z
-        case 1:
-          Block_I 
-        case 2:
-          
-      }
-    }
     
-    Block_Z z(Point{0,0}); //randomize?
     player.add_block(z);
     
     
@@ -95,6 +78,7 @@ signed main(){
         if (isEnterPressed){
           player.print_block(hConsole);
           player.pop_block();
+          if
         }
         
         Sleep(flush_tick);
@@ -108,3 +92,36 @@ signed main(){
     return 0;
 }
 #endif
+
+void add_shuffle_block(){
+    //randomly generate 
+    srand( time(NULL) );
+    int shuffle_block[7];
+    for (int i = 0; i < 7; i++) a[i] = i;
+    random_shuffle(shuffle_block);
+    for (int i = 0; i < 7; i++){
+      switch(a[i]){
+        case 0:
+          Block_I i(Point{0,5});
+          player.add_block(i);
+        case 1:
+          Block_J j(Point{0,5});
+          player.add_block(j);
+        case 2:
+          Block_L l(Point{0,5});
+          player.add_block(l);
+        case 3:
+          Block_O o(Point{0,5});
+          player.add_block(o);
+        case 4:
+          Block_S s(Point{0,5});
+          player.add_block(s);
+        case 5:
+          Block_T t(Point{0,5});
+          player.add_block(t);
+        case 6:
+          Block_Z z(Point{0,5});
+          player.add_block(z);
+      }
+    }
+}
