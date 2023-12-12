@@ -49,26 +49,29 @@ const Point Kick_Table(bool isI, const short& start, const short& drc, const sho
 class Table{
 private:
     bool isI, n_isI; //for kick table
-    Block current, next;
+    Block current;
+    std::queue<Block> next;
     const static short height = 20, width = 10;
     short id[height][width]; //game id table
     int score = 0, clear_line = 0, level = 0;
     int arr, gravity, das, multiplier = 0, garbage = 0, B2B = 0;
+    int x,y;
 public:
     Table() { memset(id, 0, sizeof(id)); return;}
     ~Table() {}
+    void set_position(int x, int y);
     //block existence
     void fix_block();
     void del_block();
     void add_block(const Block& add);
     //block move
-    void move_block(const short& x, const short& y);
-    void rotate(const short& direction);
+    void move_block(const short x, const short y);
+    void rotate(const short direction);
     //printing
-    void print_table(const int& x, const int& y, HANDLE &hConsole) const; //print table on windows.h (x,y) is the origin of the table
+    void print_table(HANDLE &hConsole) const; //print table on windows.h (x,y) is the origin of the table
     void print_block(HANDLE &hConsole) const;
     //set level
-    void set_level(const int& level);
+    void set_level(const int level);
     //checking
     bool isValid(const Block& tmp) const;
     bool isT_Spin() const;
@@ -76,7 +79,13 @@ public:
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
+    void pop_block();
 };
+
+void Table::set_position(int x, int y){
+    this->x = x;
+    this->y = y; 
+}
 
 //block existence
 void Table::fix_block() {
@@ -86,25 +95,28 @@ void Table::fix_block() {
 }
 
 void Table::del_block(){
-    
     return;
 }
 
 void Table::add_block(const Block& add){
-    current = next;
-    next = add;
+    next.push(add);
     return;
+}
+
+void Table::pop_block(){
+    current = next.front();
+    next.pop();
 }
 
 //block move
-void Table::move_block(const short& x, const short& y){
+void Table::move_block(const short x, const short y){
     Point pTmp(x, y);
-    if(isValid(current + pTmp))
-        current += pTmp;
+    if(isValid(current.move(pTmp)))
+        current.move_set(pTmp);
     return;
 }
 
-void Table::rotate(const short& direction){
+void Table::rotate(const short direction){
     Block tmp(current);
     tmp.rotate_set(direction);
     for(int i = 0; i < 5; i++){
@@ -116,7 +128,7 @@ void Table::rotate(const short& direction){
 }
 
 //printing
-void Table::print_table(const int& x, const int& y, HANDLE &hConsole) const{
+void Table::print_table(HANDLE &hConsole) const{
     goto_xy(x, y, hConsole);
     set_color(DEFAULT_COLOR, hConsole);
     for(int i = 0;i < width + 2; i++)
@@ -126,12 +138,13 @@ void Table::print_table(const int& x, const int& y, HANDLE &hConsole) const{
         std::cout << '|';
         for (int j = 0; j < width; ++j) {
             if (id[i][j] == 0) {
-                std::cout << ' ';
-                continue;
+                std::cout << ' '; 
             }
-            set_color(color_table[ id[i][j] ], hConsole);
-            std::cout << symbol_table[ id[i][j] ];
-            set_color(DEFAULT_COLOR, hConsole);
+            else{
+                 set_color(color_table[ id[i][j] ], hConsole);
+                 std::cout << symbol_table[ id[i][j] ];
+                 set_color(DEFAULT_COLOR, hConsole);
+            }
         }
         std::cout << '|';
     }
@@ -145,19 +158,20 @@ void Table::print_block(HANDLE &hConsole) const{
     std::vector<Point> p = current.block_position();
     short c = current.get_ID();
     for (int i = 0; i < 4; i++) {
-        goto_xy(p[i].y, p[i].x, hConsole);
+        goto_xy(x+1+p[i].x, y+1+p[i].y, hConsole);
         set_color(color_table[c], hConsole);
         std::cout << symbol_table[c];
     }
 }
 
-void Table::set_level(const int& level) {
+void Table::set_level(const int level) {
     this -> level = level;
     return;
 }
 
 //checking
 bool Table::isValid(const Block& tmp) const{
+    return 1;
     std::vector<Point> p = tmp.block_position();
     for(auto i : p)
         if(id[i.y][i.x])
@@ -165,7 +179,7 @@ bool Table::isValid(const Block& tmp) const{
     return 1;
 }
 
-bool Table::isT_Spinmemset() const{
+bool Table::isT_Spin() const{
 
 }
 

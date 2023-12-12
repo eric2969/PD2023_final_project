@@ -27,6 +27,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/12.a
+> Temporary merge
+> Fix move_block
+
 > ### 2023/12/07.a
 > Add I block kick table
 > Add I block rotate_set function (still working on)

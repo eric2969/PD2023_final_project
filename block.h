@@ -15,6 +15,7 @@ class Block{
 protected:
     short ID, direction, x_delta[4], y_delta[4];
     Point location;
+    
 public:
     //constructor and destructor
     Block() {}
@@ -26,7 +27,7 @@ public:
             x_delta[i] = get_xdelta(i), y_delta[i] = get_ydelta(i);
         return;
     }
-    ~Block() {}
+    virtual ~Block() {}
     //for get block data (const)
     inline short get_ID() const {return ID;}
     inline short get_direction() const {return direction;}
@@ -35,18 +36,18 @@ public:
     inline Point get_location() const {return location;}
     virtual std::vector<Point> block_position() const{ //need to override block_I
         std::vector<Point> tmp;
-        Point ptmp;
         for(int i = 0;i < 4;i++){
+            Point ptmp;
             ptmp.x = (this -> location).x + (this -> x_delta)[i];
             ptmp.y = (this -> location).y + (this -> y_delta)[i];
-            tmp.emplace_back(ptmp);
+            tmp.push_back(ptmp);
         }
         return tmp;
     }
     //return pre-modified data (const)
     Block move(const short& x, const short& y) const{ Block pTmp(*this); pTmp += Point(x, y); return pTmp;}
     Block move(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
-    Block operator+(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
+    Block &operator+(const Point& tmp) const{ Block pTmp(*this); pTmp += tmp; return pTmp;}
 
     virtual Block rotate(const short& drc) const{ Block pTmp(*this); pTmp.rotate_set(drc); return *this;}
     //data setting
@@ -146,7 +147,7 @@ public:
 	}
     ~Block_I() {}
     Block rotate(const short& drc) const override{ Block pTmp(*this); return *this;}
-    void rotate_set(const short& direction, int drc) override{
+    void rotate_set(const short& direction, int drc) {
         short x_tmp, y_tmp;
         for(int i = 0; i < 4; i++){
             x_tmp = x_delta[i], y_tmp = y_delta[i]; //swap
