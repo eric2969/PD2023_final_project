@@ -10,6 +10,7 @@
 #include <time.h>
 #include "block.h"
 #include "table.h"
+#include "VK.h" 
 
 #define notDEBUG
 using namespace std;
@@ -42,11 +43,11 @@ signed main(){
     bool isLeftPressed = false;
     bool isRightPressed = false;
     bool isZPressed = false;
+    bool isXPressed = false;
+    bool isEnterPressed = false;
+    
     player.set_position(0,0);
     opponent.set_position(60,1); 
-    
-    player.add_block(z);
-    
     
     player.print_table(hConsole);
     //opponent.print_table(hConsole);
@@ -69,7 +70,8 @@ signed main(){
           player.move_block(-1,0);
         } else if (isRightPressed) {
           player.move_block(1,0);
-        } else if (isZPressed) {
+        } 
+        if (isZPressed) {
           player.rotate(-1);
         } else if (isXPressed) {
           player.rotate(1);
@@ -78,50 +80,72 @@ signed main(){
         if (isEnterPressed){
           player.print_block(hConsole);
           player.pop_block();
-          if
+          
         }
         
         Sleep(flush_tick);
         //system("cls");
 
       //Gameover
-      if (board)
+      
 
     }
 
     return 0;
 }
-#endif
 
-void add_shuffle_block(){
+void add_shuffle_block(Table &player){
     //randomly generate 
     srand( time(NULL) );
     int shuffle_block[7];
-    for (int i = 0; i < 7; i++) a[i] = i;
-    random_shuffle(shuffle_block);
+    for (int i = 0; i < 7; i++) shuffle_block[i] = i;
+    random_shuffle(shuffle_block,shuffle_block+7);
     for (int i = 0; i < 7; i++){
-      switch(a[i]){
-        case 0:
-          Block_I i(Point{0,5});
-          player.add_block(i);
-        case 1:
-          Block_J j(Point{0,5});
-          player.add_block(j);
-        case 2:
-          Block_L l(Point{0,5});
-          player.add_block(l);
-        case 3:
-          Block_O o(Point{0,5});
-          player.add_block(o);
-        case 4:
-          Block_S s(Point{0,5});
-          player.add_block(s);
-        case 5:
-          Block_T t(Point{0,5});
-          player.add_block(t);
-        case 6:
-          Block_Z z(Point{0,5});
-          player.add_block(z);
+      switch(shuffle_block[i]){
+        case 0:{
+            Block_I I(Point{0,5});
+            player.add_block(I);
+            break;
+        }
+        case 1:{
+            Block_J J(Point{0,5});
+            player.add_block(J);
+            break;
+        }
+        case 2:{
+            Block_L L(Point{0,5});
+            player.add_block(L);
+            break;
+        }
+          
+        case 3:{
+            Block_O O(Point{0,5});
+            player.add_block(O);
+            break;
+        }
+        
+        case 4:{
+            Block_S S(Point{0,5});
+            player.add_block(S);
+            break;
+        }
+          
+        case 5:{
+            Block_T T(Point{0,5});
+            player.add_block(T);
+            break;
+        }
+          
+        case 6:{
+            Block_Z Z(Point{0,5});
+            player.add_block(Z);
+            break;
+        }
+        
+        default:
+            exit(1);
+            break;
       }
     }
 }
+#endif
