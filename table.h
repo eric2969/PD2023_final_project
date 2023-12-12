@@ -61,10 +61,10 @@ public:
     ~Table() {}
     void set_position(int x, int y);
     //block existence
-    void fix_block();
-    void del_block();
+    bool fix_block();
     void add_block(Block& add);
     //block move
+    void hard_drop();
     void move_block(const short x, const short y);
     void rotate(const short direction);
     //printing
@@ -92,15 +92,13 @@ void Table::set_position(int x, int y){
 }
 
 //block existence
-void Table::fix_block() {
+bool Table::fix_block() {
     std::vector<Point> p = current->block_position(); // Change here
-    for (auto i : p)
+    for (auto i : p){
         board[i.y][i.x] = current -> get_ID(); // Change here
+    }
 }
 
-void Table::del_block(){
-    return;
-}
 
 void Table::add_block(Block &add){
     next.push(&add);// Change here
@@ -113,6 +111,16 @@ void Table::pop_block(){
 }
 
 //block move
+void Table::hard_drop(){
+    Block bTmp(*current);
+    for(int i = 20;i >= 0;i--){
+        if(isValid(bTmp + Point(0,-i))){
+            *current += Point(0,-i);
+            break;
+        }
+    }
+}
+
 void Table::move_block(const short x, const short y){
     Point pTmp(x, y);
     if(isValid(current->move(pTmp))) // Change here
