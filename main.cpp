@@ -69,13 +69,6 @@ signed main(){
     //opponent.print_table(hConsole);
     //gameover
     while (true) {
-<<<<<<< HEAD
-        isUpPressed = GetAsyncKeyState(VK_UP) & 0x8000;
-=======
-        // �ˬd��V��O�_�Q���U
-        //virtual key code
-        //isUpPressed = GetAsyncKeyState(VK_UP) & 0x8000;
->>>>>>> 918ace06fb5f74e7651e39ae912fdcb5da9990b6
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
         isRightPressed = GetAsyncKeyState(VK_RIGHT) & 0x8000;
@@ -103,7 +96,6 @@ signed main(){
           player.print_block(hConsole);
           player.pop_block();
         }
-        
         
         Sleep(flush_tick);
         //system("cls");
