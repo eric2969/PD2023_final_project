@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/12.e
+> Finished hard_drop
+
 > ### 2023/12/12.d
 > Fixed conflict
 
