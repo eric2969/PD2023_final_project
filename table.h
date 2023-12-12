@@ -49,21 +49,21 @@ const Point Kick_Table(bool isI, const short& start, const short& drc, const sho
 class Table{
 private:
     bool isI, n_isI; //for kick table
-    Block current;
-    std::queue<Block> next;
+    Block *current; // Change here
+    std::queue<Block*> next;
     const static short height = 20, width = 10;
     short id[height][width]; //game id table
     int score = 0, clear_line = 0, level = 0;
     int arr, gravity, das, multiplier = 0, garbage = 0, B2B = 0;
     int x,y;
 public:
-    Table() { memset(id, 0, sizeof(id)); return;}
+    Table() : current(nullptr) { memset(id, 0, sizeof(id)); return; }
     ~Table() {}
     void set_position(int x, int y);
     //block existence
     void fix_block();
     void del_block();
-    void add_block(const Block& add);
+    void add_block(Block& add);
     //block move
     void move_block(const short x, const short y);
     void rotate(const short direction);
@@ -89,39 +89,39 @@ void Table::set_position(int x, int y){
 
 //block existence
 void Table::fix_block() {
-    std::vector<Point> p = current.block_position();
+    std::vector<Point> p = current->block_position(); // Change here
     for (auto i : p)
-        id[i.y][i.x] = current.get_ID();
+        id[i.y][i.x] = current->get_ID(); // Change here
 }
 
 void Table::del_block(){
     return;
 }
 
-void Table::add_block(const Block& add){
-    next.push(add);
+void Table::add_block(Block &add){
+    next.push(&add);// Change here
     return;
 }
 
 void Table::pop_block(){
-    current = next.front();
+    current = next.front(); // Change here
     next.pop();
 }
 
 //block move
 void Table::move_block(const short x, const short y){
     Point pTmp(x, y);
-    if(isValid(current.move(pTmp)))
-        current.move_set(pTmp);
+    if(isValid(current->move(pTmp))) // Change here
+        current->move_set(pTmp); // Change here
     return;
 }
 
 void Table::rotate(const short direction){
-    Block tmp(current);
+    Block tmp(*current); // Change here
     tmp.rotate_set(direction);
     for(int i = 0; i < 5; i++){
         if(isValid(tmp + Kick_Table(isI, tmp.get_direction(), direction, i)))
-            current = (tmp + Kick_Table(isI, tmp.get_direction(), direction, i));
+            *current = (tmp + Kick_Table(isI, tmp.get_direction(), direction, i)); // Change here
             break;
     }
     return;
@@ -155,17 +155,20 @@ void Table::print_table(HANDLE &hConsole) const{
 };
 
 void Table::print_block(HANDLE &hConsole) const{
-    std::vector<Point> p = current.block_position();
-    short c = current.get_ID();
+    std::vector<Point> p;
+    p = current->block_position(); // Change here
+    short c = current->get_ID(); // Change here
+    set_color(color_table[c], hConsole);
     for (int i = 0; i < 4; i++) {
-        goto_xy(x+1+p[i].x, y+1+p[i].y, hConsole);
-        set_color(color_table[c], hConsole);
+        goto_xy(this->x+1+p[i].x, this->y+1+p[i].y, hConsole);
         std::cout << symbol_table[c];
+        //std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
     }
+    std::cout << std::endl;
 }
 
 void Table::set_level(const int level) {
-    this -> level = level;
+    this->level = level;
     return;
 }
 
@@ -175,18 +178,24 @@ bool Table::isValid(const Block& tmp) const{
     std::vector<Point> p = tmp.block_position();
     for(auto i : p)
         if(id[i.y][i.x])
-            return 0;
-    return 1;
+            return false;
+    return true;
 }
 
-bool Table::isT_Spin() const{
-
+bool Table::isT_Spin() const {
+    // Implement the logic for T-Spin check
+    return false;
 }
 
 //multi playing
 void Table::getTable(){
+    // Implement logic for getting table in multiplayer
 }
+
 void Table::send_garbage(){
+    // Implement logic for sending garbage in multiplayer
 }
+
 void Table::get_garbage(){
+    // Implement logic for receiving garbage in multiplayer
 }

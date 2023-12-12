@@ -11,29 +11,22 @@
 #define notDEBUG
 using namespace std;
 
-const short flush_tick = 100;
+const short flush_tick = 10;
 
 signed main(){
 #ifdef DEBUG
-    Block_Z z(Point(0,0));
+    Block_Z tz(Point(0,0));
+    
+    vector<Block> q;
+    q.push_back(tz);
+    Block *z = &q.back();
+    q.pop_back(); 
     for(int i=0;i<4;i++){
-        cout << z.get_xdelta(i) << ' ' << z.get_ydelta(i) << ',';
+        cout << z->get_xdelta(i) << ' ' << z->get_ydelta(i) << ',';
     }
+    
     cout << endl;
-    cout << z.get_location().x << z.get_location().y << endl;
-    vector<Point> v;
-    v = z.block_position();
-    cout << &v;
-    for(auto p:v){
-        cout << p.x << ' ' << p.y << ',';
-    }
-    cout << endl;
-    z.move_set(1,0);
-    v = z.block_position();
-    cout << &v;
-    for(auto p:v){
-        cout << p.x << ' ' << p.y << ',';
-    }
+    
     return 0;
 }
 #else
@@ -52,7 +45,6 @@ signed main(){
     player.pop_block();
     
     while (true) {
-        // �ˬd��V��O�_�Q���U
         isUpPressed = GetAsyncKeyState(VK_UP) & 0x8000;
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
@@ -60,7 +52,6 @@ signed main(){
         isZPressed = GetAsyncKeyState(VK_UP) & 0x8000; //counterclockwise rotate
         
         
-        // �B�z��V�䪺�ƥ�
         // moving blocks
         if (isDownPressed) {
           player.move_block(0,1);
