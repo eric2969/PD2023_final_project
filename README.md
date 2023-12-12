@@ -27,6 +27,18 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/12.d
+> Fixed conflict
+
+> ### 2023/12/12.c
+> turn current's type from block to block_pointer
+> fixed block printing
+> XDTurtleXD is horny
+
+> ### 2023/12/12.b
+> Rearrange main function
+> Set randomizing block
+> Turn 'id' into 'board' 
 
 > ### 2023/12/12.a
 > Temporary merge
