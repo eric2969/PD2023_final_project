@@ -1,5 +1,5 @@
 #define DEFAULT_COLOR 7
- 
+
 void goto_xy(int x, int y, HANDLE &hout) {
     COORD pos = {x, y};
     SetConsoleCursorPosition(hout, pos);
@@ -12,7 +12,7 @@ void set_color(const unsigned short textColor, HANDLE &hout) {
         SetConsoleTextAttribute(hout, DEFAULT_COLOR);
 }
 
-const short color_table[8] = {0, 1, 2, 3, 4, 5, 6, 9}; //[0] for none
+const short color_table[8] = {DEFAULT_COLOR, 1, 2, 3, 4, 5, 6, 9}; //[0] for none
 const char symbol_table[8] = {' ', '#', '@', '?', '$', '&', '%', '+'}; //[0] for none
 
 //5-stage test for kick_table
@@ -36,30 +36,28 @@ const Point Kick_Table(bool isI, const short& start, const short& drc, const sho
         if(start % 2 && drc || !(start % 2) && drc == -1)
             if (start == 0 || start == 3)
                 return delta_I2[test];
-            else 
+            else
                 return delta_I2[test] * (-1);
         else
             if (start == 0 || start == 3)
                 return delta_I1[test];
-            else 
-                return delta_I1[test] * (-1); 
+            else
+                return delta_I1[test] * (-1);
     }
 }
 
 class Table{
 private:
-    bool isI, n_isI; //for kick table
     Block *current; // Change here
     std::queue<Block*> next;
     const static short height = 20, width = 10;
     short board[height][width]; //game id table
-    int score = 0, clear_line = 0, level = 0;
-    int arr, gravity, das, multiplier = 0, garbage = 0, B2B = 0, combo = 0;
-    int x,y;
+    short x, y;
+    int score = 0, clear_line = 0, level = 0, multiplier = 0, garbage = 0, B2B = 0, combo = 0;
 public:
     Table() : current(nullptr) { memset(board, 0, sizeof(board)); return;}
     ~Table() {}
-    void set_position(int x, int y);
+    void set_position(const short x, const short y){this -> x = x, this -> y = y;}
     //block existence
     bool fix_block();
     void add_block(Block* add);
@@ -83,22 +81,15 @@ public:
     void pop_block();
     void cancelLine(); //cancel the whole line
     void isGameover();
-    int getNext();
+    int getNext(){return next.size();}
 };
-
-void Table::set_position(int x, int y){
-    this->x = x;
-    this->y = y; 
-}
-
 //block existence
 bool Table::fix_block() {
-    std::vector<Point> p = current->block_position(); // Change here
-    for (auto i : p){
+    std::vector<Point> p = current -> block_position(); // Change here
+    for (auto i : p)
         board[i.y][i.x] = current -> get_ID(); // Change here
-        for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
             if(board[0][i]) return 0;
-    }
     return 1;
 }
 
@@ -116,32 +107,39 @@ void Table::pop_block(){
 
 //block move
 void Table::hard_drop(){
-    Block *bTmp = current->clone();
+    Block *bTmp = current -> clone();
     for(int i = 20;i >= 0;i--){
-        if(isValid(*bTmp + Point(0,-i))){
-            *current += Point(0,-i);
+        (*bTmp) += Point(0, -i);
+        if(isValid(*bTmp)){
+            (*current) += Point(0,-i);
             break;
         }
+        (*bTmp) += Point(0, i);
+
     }
+    delete bTmp;
 }
 
 void Table::move_block(const short x, const short y){
-    Point pTmp(x, y);
-    if(isValid(*current->move(pTmp))) // Change here
-        current->move_set(pTmp); // Change here
+    Block *bTmp = current -> clone();
+    if(isValid((*bTmp) += Point(x, y))) // Change here
+        (*current) += Point(x, y); // Change here
+    delete bTmp;
     return;
 }
 
 void Table::rotate(const short direction){
-    Block *tmp = current->clone(); // Change here
-    tmp->rotate_set(direction);
-
+    Block *bTmp = current -> clone(); // Change here
+    bTmp -> rotate_set(direction);
     //current.rotate;
     for(int i = 0; i < 5; i++){
-        if(isValid(*tmp + Kick_Table(isI, tmp->get_direction(), direction, i)))
-            *current = (*tmp + Kick_Table(isI, tmp->get_direction(), direction, i)); // Change here
+        if(isValid((*bTmp) += Kick_Table(bTmp -> isI(), bTmp -> get_direction(), direction, i))){
+            current -> rotate_set(direction); // Change here
+            (*current) += Kick_Table(current -> isI(), current -> get_direction(), direction, i);
             break;
+        }
     }
+    delete bTmp;
     return;
 }
 
@@ -162,7 +160,7 @@ int Table::removeLine()
 		if(allExist)
 		{
 			cnt++ ;
-			// 將上方的東西下移一格 
+			// 將上方的東西下移一格
 			for(int p=i; p>=1; p--)
 			{
 				for(int q=0; q<10; q++)
@@ -201,7 +199,7 @@ void Table::print_table(HANDLE &hConsole) const{
         std::cout << '|';
         for (int j = 0; j < width; ++j) {
             if (board[i][j] == 0) {
-                std::cout << ' '; 
+                std::cout << ' ';
             }
             else{
                  set_color(color_table[ board[i][j] ], hConsole);
@@ -218,17 +216,14 @@ void Table::print_table(HANDLE &hConsole) const{
 };
 
 void Table::print_block(HANDLE &hConsole) const{
-    std::vector<Point> p;
-    p = current->block_position(); // Change here
     short c = current->get_ID(); // Change here
     set_color(color_table[c], hConsole);
-    for (int i = 0; i < 4; i++) {
-        goto_xy(this->x+p[i].x+1, this->y+1+p[i].y, hConsole);
+    for (auto i: current -> block_position()) {
+        goto_xy(this->x+i.x+1, this->y+20-i.y, hConsole);
         std::cout << symbol_table[c];
-        
         //std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
 }
 
 void Table::set_level(const int level) {
@@ -238,10 +233,9 @@ void Table::set_level(const int level) {
 
 //checking
 bool Table::isValid(const Block& tmp) const{
-    std::vector<Point> p = tmp.block_position();
-    for(auto i : p){
+    for(auto i : tmp.block_position()){
         //std::cout << i.x << " " << i.y << std::endl;
-        if(i.x < 0 || i.x >= 10 || i.y < 0 || i.y >= 20 || board[i.y][i.x])
+        if(i.x < 0 || i.x >= 10 || i.y <= 0 || board[i.y][i.x])
             return 0;
     }
     return 1;
@@ -263,8 +257,4 @@ void Table::send_garbage(){
 
 void Table::get_garbage(){
     // Implement logic for receiving garbage in multiplayer
-}
-
-int Table::getNext(){
-    return next.size();
 }

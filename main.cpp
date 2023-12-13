@@ -7,10 +7,11 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <random>
+#include <typeinfo>
 #include <time.h>
 #include "block.h"
 #include "table.h"
-#include "VK.h" 
+#include "VK.h"
 
 #define notDEBUG
 using namespace std;
@@ -22,11 +23,11 @@ void add_shuffle_block(Table&);
 signed main(){
 #ifdef DEBUG
     Block_Z tz(Point(0,0));
-    
+
     vector<Block> q;
     q.push_back(tz);
     Block *z = &q.back();
-    q.pop_back(); 
+    q.pop_back();
     for(int i=0;i<4;i++){
         cout << z->get_xdelta(i) << ' ' << z->get_ydelta(i) << ',';
     }
@@ -49,9 +50,9 @@ signed main(){
     clock_t before, now, down, left, right;
     bool bDown, bLeft, bRight, bKeyZ, bKeyX;
     before = clock();
-    int wait = 500; 
+    int wait = 500;
     player.set_position(2,2);
-    opponent.set_position(60,1); 
+    opponent.set_position(60,1);
     add_shuffle_block(player);
 
     player.pop_block(); //move next to current
@@ -64,18 +65,13 @@ signed main(){
         isZPressed = GetAsyncKeyState(VK_Z) & 0x8000; //counterclockwise rotate
         isXPressed = GetAsyncKeyState(VK_X) & 0x8000;
         isSPACEPressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
-        
-        
+
         now = clock();
         if (clock() - before > wait){
-          player.move_block(0,1);
+          player.move_block(0,-1);
           before = clock();
         }
-        
 
-        // moving blocks
-        // rotating blocks
-        // the second parameter is drc, marking clockwise or counterclockwise, storing whether 1 or -1
         wait = (isDownPressed)?100:1000;
 
         if (isLeftPressed) {
@@ -93,7 +89,7 @@ signed main(){
         }
         else
           bLeft = 0;
-        
+
         if (isRightPressed) {
           if(bRight){
             if(clock() - right > 500){
@@ -106,26 +102,28 @@ signed main(){
             right = clock();
           }
           bRight = 1;
-        } 
+        }
         else
           bRight = 0;
-        
+
         if (isZPressed) {
           if(!bKeyZ)
             player.rotate(-1);
+            bKeyZ = 1;
         }
         else
           bKeyZ = 0;
-        
+
         if (isXPressed) {
           if(!bKeyX)
             player.rotate(1);
+            bKeyX = 1;
         }
         else
           bKeyX = 0;
         //fixed
         if (isSPACEPressed){
-          
+
           player.pop_block();
           if (player.getNext() <= 1){
             add_shuffle_block(player);
@@ -140,8 +138,10 @@ signed main(){
     return 0;
 }
 
+const short d_x = 5, d_y = 19;
+
 void add_shuffle_block(Table &player){
-    //randomly generate 
+    //randomly generate
     srand( time(NULL) );
     int shuffle_block[10];
     for (int i = 0; i < 7; i++) shuffle_block[i] = i;
@@ -149,46 +149,46 @@ void add_shuffle_block(Table &player){
     for (int i = 0; i < 7; i++){
       switch(shuffle_block[i]){
         case 0:{
-            Block *I = new Block_I(Point(5,1));
+            Block *I = new Block_I(Point(d_x, d_y));
             player.add_block(I);
             break;
         }
         case 1:{
-            Block *J = new Block_J(Point(5,1));
+            Block *J = new Block_J(Point(d_x, d_y));
             player.add_block(J);
             break;
         }
-          
+
         case 2:{
-            Block *L = new Block_L(Point(5,1));
+            Block *L = new Block_L(Point(d_x, d_y));
             player.add_block(L);
             break;
         }
-          
+
         case 3:{
-            Block *O = new Block_O(Point(5,1));
+            Block *O = new Block_O(Point(d_x, d_y));
             player.add_block(O);
             break;
         }
-          
+
         case 4:{
-            Block *S = new Block_S(Point(5,1));
+            Block *S = new Block_S(Point(d_x, d_y));
             player.add_block(S);
             break;
         }
-          
+
         case 5:{
-            Block *T = new Block_T(Point(5,1));
+            Block *T = new Block_T(Point(d_x, d_y));
             player.add_block(T);
             break;
         }
-          
+
         case 6:{
-            Block *Z = new Block_Z(Point(5,1));
+            Block *Z = new Block_Z(Point(d_x, d_y));
             player.add_block(Z);
             break;
         }
-          
+
         default:
             exit(1);
             break;
