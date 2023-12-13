@@ -37,7 +37,7 @@ signed main(){
 #else
     Table player, opponent;
 
-    system("mode con cols=100 lines=50");//?�m���f�j�p
+    system("mode con cols=100 lines=50");
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     bool isUpPressed = false;
     bool isDownPressed = false;
@@ -49,13 +49,11 @@ signed main(){
     clock_t before, now, down, left, right;
     bool bDown, bLeft, bRight, bKeyZ, bKeyX;
     before = clock();
-    int wait = 10; 
-    player.set_position(10,20);
+    int wait = 500; 
+    player.set_position(2,2);
     opponent.set_position(60,1); 
-    
-
-    player.print_table(hConsole);
     add_shuffle_block(player);
+
     player.pop_block(); //move next to current
     //opponent.print_table(hConsole);
     //gameover
@@ -67,32 +65,25 @@ signed main(){
         isXPressed = GetAsyncKeyState(VK_X) & 0x8000;
         isSPACEPressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
         
-        //
-//        now = clock();
-//        if (now - before > wait){
-//          player.move_block(0,1);
-//          before = now;
-//        }
+        
+        now = clock();
+        if (clock() - before > wait){
+          player.move_block(0,1);
+          before = clock();
+        }
         
 
         // moving blocks
         // rotating blocks
         // the second parameter is drc, marking clockwise or counterclockwise, storing whether 1 or -1
-        if (isDownPressed) {
-          if(bDown){
-            if(down - clock() > 100) player.move_block(0,1);
-          }
-          else{
-            player.move_block(0,1);
-            down = clock();
-          }
-        }
-        else
-          bDown = 0;
+        wait = (isDownPressed)?100:1000;
 
         if (isLeftPressed) {
           if (bLeft){
-            if(left - clock() > 100) player.move_block(-1,0);
+            if(clock() - left > 500){
+                player.move_block(-1,0);
+                player.move_block(-1,0);
+            }
           }
           else{
             player.move_block(-1,0);
@@ -105,7 +96,10 @@ signed main(){
         
         if (isRightPressed) {
           if(bRight){
-            if(right - clock() > 100) player.move_block(1,0);
+            if(clock() - right > 500){
+                player.move_block(1,0);
+                player.move_block(1,0);
+            }
           }
           else{
             player.move_block(1,0);
@@ -137,9 +131,10 @@ signed main(){
             add_shuffle_block(player);
           }
         }
+        player.print_table(hConsole);
         player.print_block(hConsole);
         Sleep(flush_tick);
-        //system("cls");
+        system("cls");
     }
 
     return 0;
@@ -154,42 +149,42 @@ void add_shuffle_block(Table &player){
     for (int i = 0; i < 7; i++){
       switch(shuffle_block[i]){
         case 0:{
-            Block_I I(Point(5,10));
+            Block *I = new Block_I(Point(5,1));
             player.add_block(I);
             break;
         }
         case 1:{
-            Block_J J(Point(5,10));
+            Block *J = new Block_J(Point(5,1));
             player.add_block(J);
             break;
         }
           
         case 2:{
-            Block_L L(Point(5,10));
+            Block *L = new Block_L(Point(5,1));
             player.add_block(L);
             break;
         }
           
         case 3:{
-            Block_O O(Point(5,10));
+            Block *O = new Block_O(Point(5,1));
             player.add_block(O);
             break;
         }
           
         case 4:{
-            Block_S S(Point(5,1));
+            Block *S = new Block_S(Point(5,1));
             player.add_block(S);
             break;
         }
           
         case 5:{
-            Block_T T(Point(5,1));
+            Block *T = new Block_T(Point(5,1));
             player.add_block(T);
             break;
         }
           
         case 6:{
-            Block_Z Z(Point(5,1));
+            Block *Z = new Block_Z(Point(5,1));
             player.add_block(Z);
             break;
         }

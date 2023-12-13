@@ -9,10 +9,10 @@ void set_color(const unsigned short textColor, HANDLE &hout) {
     if (textColor >= 0 && textColor <= 15)
         SetConsoleTextAttribute(hout, textColor);
     else
-        SetConsoleTextAttribute(hout, 7);
+        SetConsoleTextAttribute(hout, DEFAULT_COLOR);
 }
 
-const short color_table[8] = {0, 1, 2, 3, 4, 5, 6, 7}; //[0] for none
+const short color_table[8] = {0, 1, 2, 3, 4, 5, 6, 9}; //[0] for none
 const char symbol_table[8] = {' ', '#', '@', '?', '$', '&', '%', '+'}; //[0] for none
 
 //5-stage test for kick_table
@@ -54,7 +54,7 @@ private:
     const static short height = 20, width = 10;
     short board[height][width]; //game id table
     int score = 0, clear_line = 0, level = 0;
-    int arr, gravity, das, multiplier = 0, garbage = 0, B2B = 0;
+    int arr, gravity, das, multiplier = 0, garbage = 0, B2B = 0, combo = 0;
     int x,y;
 public:
     Table() : current(nullptr) { memset(board, 0, sizeof(board)); return;}
@@ -62,7 +62,7 @@ public:
     void set_position(int x, int y);
     //block existence
     bool fix_block();
-    void add_block(Block& add);
+    void add_block(Block* add);
     //block move
     void hard_drop();
     void move_block(const short x, const short y);
@@ -103,21 +103,22 @@ bool Table::fix_block() {
 }
 
 
-void Table::add_block(Block &add){
-    next.push(&add);// Change here
+void Table::add_block(Block *add){
+    next.push(add);// Change here
     return;
 }
 
 void Table::pop_block(){
+    delete current;
     current = next.front(); // Change here
     next.pop();
 }
 
 //block move
 void Table::hard_drop(){
-    Block bTmp(*current);
+    Block *bTmp = current->clone();
     for(int i = 20;i >= 0;i--){
-        if(isValid(bTmp + Point(0,-i))){
+        if(isValid(*bTmp + Point(0,-i))){
             *current += Point(0,-i);
             break;
         }
@@ -126,19 +127,19 @@ void Table::hard_drop(){
 
 void Table::move_block(const short x, const short y){
     Point pTmp(x, y);
-    if(isValid(current->move(pTmp))) // Change here
+    if(isValid(*current->move(pTmp))) // Change here
         current->move_set(pTmp); // Change here
     return;
 }
 
 void Table::rotate(const short direction){
-    Block tmp(*current); // Change here
-    tmp.rotate_set(direction);
+    Block *tmp = current->clone(); // Change here
+    tmp->rotate_set(direction);
 
     //current.rotate;
     for(int i = 0; i < 5; i++){
-        if(isValid(tmp + Kick_Table(isI, tmp.get_direction(), direction, i)))
-            *current = (tmp + Kick_Table(isI, tmp.get_direction(), direction, i)); // Change here
+        if(isValid(*tmp + Kick_Table(isI, tmp->get_direction(), direction, i)))
+            *current = (*tmp + Kick_Table(isI, tmp->get_direction(), direction, i)); // Change here
             break;
     }
     return;
@@ -222,10 +223,10 @@ void Table::print_block(HANDLE &hConsole) const{
     short c = current->get_ID(); // Change here
     set_color(color_table[c], hConsole);
     for (int i = 0; i < 4; i++) {
-        goto_xy(this->x+1+p[i].x, this->y+1+p[i].y, hConsole);
+        goto_xy(this->x+p[i].x+1, this->y+1+p[i].y, hConsole);
         std::cout << symbol_table[c];
         
-        std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
+        //std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
     }
     std::cout << std::endl;
 }
@@ -237,11 +238,12 @@ void Table::set_level(const int level) {
 
 //checking
 bool Table::isValid(const Block& tmp) const{
-    return 1;
     std::vector<Point> p = tmp.block_position();
-    for(auto i : p)
+    for(auto i : p){
+        //std::cout << i.x << " " << i.y << std::endl;
         if(i.x < 0 || i.x >= 10 || i.y < 0 || i.y >= 20 || board[i.y][i.x])
             return 0;
+    }
     return 1;
 }
 

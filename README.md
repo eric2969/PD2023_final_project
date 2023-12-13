@@ -27,6 +27,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/13.b
+> Fixed the copy issue by adding clone<br>
+> Added createKickTable <br>
+> Changed some Block into Block* in order to fix block-copy issue
+
 > ### 2023/12/13.a
 > Fixed some bugs
 
