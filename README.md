@@ -27,6 +27,14 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/14.a (v1.0)
+> Fix some major issue in game<br>
+> Fix isValid bug<br>
+> Fix rotating bug<br>
+> changed y-axis direction<br>
+> Change block verifying in table.h<br>
+> this version has completed some major function in tetris
+
 > ### 2023/12/13.b
 > Fixed the copy issue by adding clone<br>
 > Added createKickTable <br>
