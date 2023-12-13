@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/13.a
+> Fixed some bugs
+
 > ### 2023/12/12.g
 > finished key timer
 
@@ -34,37 +37,37 @@ And we divided our game architecture into several parts, listed at the below.
 > finished remove line
 
 > ### 2023/12/12.e
-> add_shuffle_block
+> add_shuffle_block<br>
 > Finished hard_drop
 
 > ### 2023/12/12.d
 > Fixed conflict
 
 > ### 2023/12/12.c
-> turn current's type from block to block_pointer
-> fixed block printing
-> XDTurtleXD is horny
+> turn current's type from block to block_pointer <br>
+> fixed block printing <br>
+> XDTurtleXD is horny <br>
 
 > ### 2023/12/12.b
-> Rearrange main function
-> Set randomizing block
-> Turn 'id' into 'board' 
+> Rearrange main function <br>
+> Set randomizing block <br>
+> Turn 'id' into 'board' <br>
 
 > ### 2023/12/12.a
-> Temporary merge
-> Fix move_block
+> Temporary merge <br>
+> Fix move_block <br>
 
 > ### 2023/12/11.a
 > Finish all the initialize of seven blocks(using the "location" point)
 > 
 > ### 2023/12/07.a
-> Add I block kick table
-> Add I block rotate_set function (still working on)
-> Modify rotate_set function
+> Add I block kick table <br>
+> Add I block rotate_set function (still working on) <br>
+> Modify rotate_set function <br>
 > Add rotating detection in main
 
 > ### 2023/12/01.b
-> Add key press detector
+> Add key press detector <br>
 > print_block is yet to be fixed
 
 > ### 2023/12/01.a
@@ -77,14 +80,14 @@ And we divided our game architecture into several parts, listed at the below.
 > Small modify in block.h
 
 > ### 2023/11/30.b
-> Add symbol matrix in table.h, complete some functions in table.h
+> Add symbol matrix in table.h, complete some functions in table.h <br>
 > modify flush_tick, cols lines, etc... in main.cpp
 
 > ### 2023/11/30.a (v0.0)
 > Fix print_table()
 
 > ### 2023/11/29.e
-> Fix conflict
+> Fix conflict <br>
 > modify constructor
 
 > ### 2023/11/29.d
@@ -92,7 +95,7 @@ And we divided our game architecture into several parts, listed at the below.
 > the initialize is not done yet
 
 > ### 2023/11/29.c (there is a typo "2023/11/28.c")
-> Debug block.h and creating kick table and implement to rotation
+> Debug block.h and creating kick table and implement to rotation <br>
 > Merge conflict
 
 > ### 2023/11/29.b
@@ -114,9 +117,9 @@ And we divided our game architecture into several parts, listed at the below.
 > Create some functions in block
 
 > ### 2023/11/28.a
-> Debug table.h and block.h
-> Add some abstract function to make it more completed
-> Work has been distributed
+> Debug table.h and block.h <br>
+> Add some abstract function to make it more completed <br>
+> Work has been distributed <br>
 
 > ### 2023/11/24.a
 > Debug table.h
@@ -152,9 +155,9 @@ And we divided our game architecture into several parts, listed at the below.
 > Create gitignore
 
 > ### 2023/11/17.a
-> Create position returning function of "block.h"
+> Create position returning function of "block.h" <br>
 > Change our block data container from STL to C++ basic container (int/short...)
 
 > ### 2023/11/16
-> Construct the repository
+> Construct the repository <br>
 > Create "main.cpp", "block.h", "table.h"

@@ -16,6 +16,8 @@
 using namespace std;
 
 const short flush_tick = 10;
+void add_shuffle_block(Table&);
+
 
 signed main(){
 #ifdef DEBUG
@@ -28,11 +30,10 @@ signed main(){
     for(int i=0;i<4;i++){
         cout << z->get_xdelta(i) << ' ' << z->get_ydelta(i) << ',';
     }
-    
     cout << endl;
-    
+    cout << z->get_ID();
     return 0;
-
+}
 #else
     Table player, opponent;
 
@@ -46,16 +47,19 @@ signed main(){
     bool isXPressed = false;
     bool isSPACEPressed = false;
     clock_t before, now, down, left, right;
-    bool bDown, bLeft, bRight, bkeyZ, bkeyX;
+    bool bDown, bLeft, bRight, bKeyZ, bKeyX;
     before = clock();
     int wait = 10; 
-    player.set_position(0,0);
+    player.set_position(10,20);
     opponent.set_position(60,1); 
     
+
     player.print_table(hConsole);
+    add_shuffle_block(player);
+    player.pop_block(); //move next to current
     //opponent.print_table(hConsole);
     //gameover
-    while (player.fix_block()) {
+    while (1) {
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
         isRightPressed = GetAsyncKeyState(VK_RIGHT) & 0x8000;
@@ -64,11 +68,11 @@ signed main(){
         isSPACEPressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
         
         //
-        now = clock();
-        if (now - before > wait){
-          player.move_block(0,1);
-          before = now;
-        }
+//        now = clock();
+//        if (now - before > wait){
+//          player.move_block(0,1);
+//          before = now;
+//        }
         
 
         // moving blocks
@@ -82,6 +86,7 @@ signed main(){
             player.move_block(0,1);
             down = clock();
           }
+        }
         else
           bDown = 0;
 
@@ -112,26 +117,27 @@ signed main(){
           bRight = 0;
         
         if (isZPressed) {
-          if(!bkeyZ)
+          if(!bKeyZ)
             player.rotate(-1);
         }
         else
-          bkeyZ = 0;
+          bKeyZ = 0;
         
         if (isXPressed) {
-          if(!bkeyX)
+          if(!bKeyX)
             player.rotate(1);
         }
         else
           bKeyX = 0;
         //fixed
         if (isSPACEPressed){
-          player.print_block(hConsole);
+          
           player.pop_block();
           if (player.getNext() <= 1){
-            add_shuffle_block();
+            add_shuffle_block(player);
           }
         }
+        player.print_block(hConsole);
         Sleep(flush_tick);
         //system("cls");
     }
@@ -142,32 +148,52 @@ signed main(){
 void add_shuffle_block(Table &player){
     //randomly generate 
     srand( time(NULL) );
-    int shuffle_block[7];
+    int shuffle_block[10];
     for (int i = 0; i < 7; i++) shuffle_block[i] = i;
     random_shuffle(shuffle_block,shuffle_block+7);
     for (int i = 0; i < 7; i++){
-      switch(a[i]){
-        case 0:
-          Block_I i(Point{1,5});
-          player.add_block(i);
-        case 1:
-          Block_J j(Point{1,5});
-          player.add_block(j);
-        case 2:
-          Block_L l(Point{1,5});
-          player.add_block(l);
-        case 3:
-          Block_O o(Point{1,5});
-          player.add_block(o);
-        case 4:
-          Block_S s(Point{1,5});
-          player.add_block(s);
-        case 5:
-          Block_T t(Point{1,5});
-          player.add_block(t);
-        case 6:
-          Block_Z z(Point{1,5});
-          player.add_block(z);
+      switch(shuffle_block[i]){
+        case 0:{
+            Block_I I(Point(5,10));
+            player.add_block(I);
+            break;
+        }
+        case 1:{
+            Block_J J(Point(5,10));
+            player.add_block(J);
+            break;
+        }
+          
+        case 2:{
+            Block_L L(Point(5,10));
+            player.add_block(L);
+            break;
+        }
+          
+        case 3:{
+            Block_O O(Point(5,10));
+            player.add_block(O);
+            break;
+        }
+          
+        case 4:{
+            Block_S S(Point(5,1));
+            player.add_block(S);
+            break;
+        }
+          
+        case 5:{
+            Block_T T(Point(5,1));
+            player.add_block(T);
+            break;
+        }
+          
+        case 6:{
+            Block_Z Z(Point(5,1));
+            player.add_block(Z);
+            break;
+        }
+          
         default:
             exit(1);
             break;

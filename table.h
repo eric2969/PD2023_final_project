@@ -83,7 +83,7 @@ public:
     void pop_block();
     void cancelLine(); //cancel the whole line
     void isGameover();
-    void getNext();
+    int getNext();
 };
 
 void Table::set_position(int x, int y){
@@ -224,7 +224,8 @@ void Table::print_block(HANDLE &hConsole) const{
     for (int i = 0; i < 4; i++) {
         goto_xy(this->x+1+p[i].x, this->y+1+p[i].y, hConsole);
         std::cout << symbol_table[c];
-        //std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
+        
+        std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
     }
     std::cout << std::endl;
 }
@@ -236,6 +237,7 @@ void Table::set_level(const int level) {
 
 //checking
 bool Table::isValid(const Block& tmp) const{
+    return 1;
     std::vector<Point> p = tmp.block_position();
     for(auto i : p)
         if(i.x < 0 || i.x >= 10 || i.y < 0 || i.y >= 20 || board[i.y][i.x])
@@ -261,6 +263,6 @@ void Table::get_garbage(){
     // Implement logic for receiving garbage in multiplayer
 }
 
-std::queue<Block*> Table::getNext(){
+int Table::getNext(){
     return next.size();
 }
