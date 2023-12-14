@@ -28,7 +28,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
-> ### 2023/12/15.a (v1.3rc)
+> ### 2023/12/15.b (v1.4)
+> Complete block keep (need to complete keep block display)
+
+> ### 2023/12/15.a (v1.3)
 > Fix some bugs <br>
 > Complete game over and verify every Block's rotation <br>
 > Modify our introduction <br>

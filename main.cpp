@@ -10,6 +10,10 @@
 #include <algorithm>
 #include <random>
 #include <time.h>
+
+#define d_x 5
+#define d_y 20
+
 #include "block.h"
 #include "table.h"
 #include "VK.h"
@@ -40,9 +44,10 @@ signed main(){
     bool isRightPressed = false;
     bool isZPressed = false;
     bool isXPressed = false;
+    bool isCPressed = false;
     bool isSPACEPressed = false;
     clock_t before, now, down, left, right, tStuck;
-    bool bUp, bDown, bLeft, bRight, bKeyZ, bKeyX, bSpace, stuck = 0;
+    bool bUp, bDown, bLeft, bRight, bKeyZ, bKeyX, bSpace, bKeyC, stuck = 0;
     before = clock();
     short fwait = 100, wait = 700, das = 500, sWait = 700, sCnt, sTick = 70, sLimit = 10;
     short fall_tick = wait, fall_wait = sWait;
@@ -63,6 +68,7 @@ start:
         isRightPressed = GetAsyncKeyState(VK_RIGHT) & 0x8000;
         isZPressed = GetAsyncKeyState(VK_Z) & 0x8000; //counterclockwise rotate
         isXPressed = GetAsyncKeyState(VK_X) & 0x8000;
+        isCPressed = GetAsyncKeyState(VK_C) & 0x8000;
         isSPACEPressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
         //down
         now = clock();
@@ -73,10 +79,12 @@ start:
                     player.print_table(hConsole);
                     try{player.set_clear();}
                     catch(runtime_error e){break;}
-                    stuck = 0;
+                    player.print_table(hConsole);
                     if(player.getNext() <= 1)
                         add_shuffle_block(player);
                     player.pop_block();
+                    stuck = 0;
+                    bKeyC = 0;
                 }
                 else
                     stuck = !player.move_block(0,-1);
@@ -126,6 +134,15 @@ start:
         }
         else
             bRight = 0;
+
+        if (isCPressed) {
+            if(!bKeyC){
+                if(player.getNext() <= 1)
+                    add_shuffle_block(player);
+                player.keep_block(); //keep
+                bKeyC = 1;
+            }
+        }
         //key z
         if (isZPressed) {
             if(!bKeyZ){
@@ -164,10 +181,12 @@ start:
                 player.print_table(hConsole);
                 try{player.set_clear();}
                 catch(runtime_error e){break;}
+                player.print_table(hConsole);
                 if(player.getNext() <= 1)
                     add_shuffle_block(player);
                 player.pop_block();
                 stuck = 0;
+                bKeyC = 0;
             }
             bSpace = 1;
         }
@@ -204,8 +223,6 @@ start:
     }
     return 0;
 }
-
-const short d_x = 5, d_y = 20;
 
 void add_shuffle_block(Table &player){
     //randomly generate

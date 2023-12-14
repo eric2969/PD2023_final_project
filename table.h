@@ -49,7 +49,7 @@ void qClear(std::queue<Block*>& q){
 
 class Table{
 private:
-    Block *current = nullptr, *before = nullptr;
+    Block *current = nullptr, *before = nullptr, *keep = nullptr;
     std::queue<Block*> next;
     const static short height = 20, width = 10;
     short board[height+2][width]; //game id table
@@ -62,11 +62,12 @@ public:
     //block existence
     void reset() {
         score = 0, clear_line = 0; memset(board, 0, sizeof(board));
-        current = nullptr, before = nullptr;
+        current = nullptr, before = nullptr, keep = nullptr;
         qClear(next);
     }
     void fix_block() {for (auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
     void add_block(Block* add) {next.push(add);}
+    void keep_block();
     void pop_block() {delete before; delete current; current = next.front(); before = current->clone(); next.pop();}
     int getNext() {return next.size();}
     //block move
@@ -94,6 +95,19 @@ public:
     void get_garbage();  //part of the code depending on socket can wait
     void cancelLine(); //cancel the whole line
 };
+
+void Table::keep_block(){
+    if(keep){
+        std::swap(current, keep);
+        (*keep)  = Point(d_x, d_y);
+    }
+    else{
+        keep = current;
+        (*keep) = Point(d_x, d_y);
+        current = next.front();
+        next.pop();
+    }
+}
 //block move
 void Table::hard_drop(){
     Block *bTmp = current -> clone();
