@@ -19,7 +19,8 @@ Our project is to build a tetris game by "windows.h", allowing playing in double
 ## Architecture
 
 Our game is based on cpp, and interface is powered by "windows.h".
-We would like to use socket as our api to transmit enemy player data by UDP protocol
+We would like to use socket as our api to transmit enemy player data by TCP protocol
+We about to use some techniques like File I/O, Polymorphism, Operator Overloading, Inheritance, Exception Handling, etc...
 And we divided our game architecture into several parts, listed at the below.
   - [Main](#main)
   - [Table](#table)
@@ -27,6 +28,12 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/15.a (v1.3rc)
+> Fix some bugs <br>
+> Complete game over and verify every Block's rotation <br>
+> Modify our introduction <br>
+> Create game menu (when game is over) (can be better)
+
 > ### 2023/12/14.g
 > Add server.h v1
 > Add client.h v1
@@ -43,7 +50,7 @@ And we divided our game architecture into several parts, listed at the below.
 > Fixed Block_I rotation (still need to implement delta in x/y axis)
 
 > ### 2023/12/14.c (v1.2)
-> Fix bugs
+> Fix bugs <br>
 > Improve color displaying (clear column)
 
 > ### 2023/12/14.b (v1.1beta)

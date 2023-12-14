@@ -29,7 +29,7 @@ public:
     //for get block data (const)
     inline short get_ID() const {return ID;}
     inline short get_direction() const {return direction;}
-    virtual std::vector<Point> block_position() const{ //need to override block_I
+    std::vector<Point> block_position() const{ //need to override block_I
         std::vector<Point> tmp;
         for(int i = 0;i < 4;i++)
             tmp.push_back(location + delta[i]);
@@ -57,17 +57,8 @@ public:
         return *this;
     }
     virtual bool isI() {return 0;}
-    virtual bool is_same_position(Block *right){
-        if(location != right->location) return false;
-        for(int i=0;i<4;i++){
-            if(delta[i] != right->delta[i])return false;
-        }
-        return true;
-    }
+    bool is_same_position(Block *right){return (ID == right -> ID && location == right -> location && direction == right -> direction);}
 };
-
-/*all of the symbol and color is for temporary use, and color and symbol will be confirmed and modified later
- *rotate of block_o is complete*/
 
 class Block_T : public Block{
 private:
@@ -121,7 +112,7 @@ public:
 
 class Block_I : public Block{
 private:
-    void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(2, 0), delta[3] = Point(-1, 0);}
+    void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(-2, 0), delta[3] = Point(-1, 0);}
 public:
     Block_I(const Point& p = Point(0,0) ) : Block(p, 6) {createDeltaTable();}
     Block_I(const Block &b) : Block(b) {createDeltaTable();}
@@ -134,11 +125,7 @@ public:
             x_tmp = delta[i].x, y_tmp = delta[i].y;
             delta[i].x = drc * y_tmp, delta[i].y = drc * (-1) * x_tmp;
         }
-        short x_delta = (direction%2) * (direction>>1)?1:-1, y_delta = (direction%2 - 1) * (direction>>1)?1:-1;
-        if(direction%2)
-            y_delta = 0;
-        else
-            x_delta = 0;
+        short x_delta = (direction%2) * ((direction>>1)?1:-1), y_delta = (direction%2 - 1) * ((direction>>1)?-1:1);
         if(drc == 1)
             (*this) += Point(x_delta, y_delta);
         else

@@ -42,20 +42,29 @@ const Point Kick_Table(bool isI, const short& start, const short& drc, const sho
     }
 }
 
+void qClear(std::queue<Block*>& q){
+    std::queue<Block*> empty;
+    std::swap(empty, q);
+}
+
 class Table{
 private:
-    Block *current; // Change here
-    Block *before; 
+    Block *current = nullptr, *before = nullptr;
     std::queue<Block*> next;
     const static short height = 20, width = 10;
     short board[height+2][width]; //game id table
     short x, y;
     int score = 0, clear_line = 0, level = 0, multiplier = 0, garbage = 0, B2B = 0, combo = 0;
 public:
-    Table() : current(nullptr) { memset(board, 0, sizeof(board)); return;}
+    Table() : current(nullptr) { memset(board, 0, sizeof(board));}
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
     //block existence
+    void reset() {
+        score = 0, clear_line = 0; memset(board, 0, sizeof(board));
+        current = nullptr, before = nullptr;
+        qClear(next);
+    }
     void fix_block() {for (auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
     void add_block(Block* add) {next.push(add);}
     void pop_block() {delete before; delete current; current = next.front(); before = current->clone(); next.pop();}
@@ -84,7 +93,6 @@ public:
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
     void cancelLine(); //cancel the whole line
-    void isGameover();
 };
 //block move
 void Table::hard_drop(){
@@ -97,8 +105,6 @@ void Table::hard_drop(){
         }
         (*bTmp) += Point(0, i);
     }
-    //for(auto i :current->block_position())
-    //std::cout << i.x << ' ' << i.y << std::endl; 
     delete bTmp;
 }
 
@@ -129,6 +135,9 @@ void Table::rotate(const short direction){
 void Table::set_clear(){ //need to append b2b, t-spin, etc...
     multiplier = 1;
     this -> score += (removeLine() * multiplier);
+    for(int i = 0;i < 10;i++)
+        if(board[20][i])
+            throw std::runtime_error("game over");
 }
 
 int Table::removeLine() {
@@ -189,27 +198,30 @@ void Table::print_table(HANDLE &hConsole) const{
     goto_xy(x, y + 21, hConsole); //row 21
     for(int i = 0;i < width + 2; i++)
         std::cout << '-';
+    goto_xy(x + 15, y + 4, hConsole);
+    set_color(7, hConsole);
+    std::cout << "Score:" << score;
+    goto_xy(x + 15, y + 5, hConsole);
+    set_color(7, hConsole);
+    std::cout << "Clear Line:" << clear_line;
     return;
 };
 
 void Table::print_block(HANDLE &hConsole) {
-    short c = current->get_ID(); // Change here
-    std::vector<Point> pClone = before->block_position();
-    if(current->is_same_position(before)) return;
-    for (auto i: before -> block_position()) {
+    if(current -> is_same_position(before)) return;
+    short c = current -> get_ID(); // Change here
+    for (auto i: before -> block_position())
         if(i.y < 20){
             goto_xy(this->x + i.x + 1, this->y + 20 - i.y, hConsole);
             set_color(color_table[0]+(i.x%2?128:0), hConsole);
             std::cout << ' ';
         }
-    }
-    for (auto i: current -> block_position()) {
+    for (auto i: current -> block_position())
         if(i.y < 20){
             goto_xy(this->x + i.x + 1, this->y + 20 - i.y, hConsole);
             set_color(color_table[c] + (i.x%2?128:0), hConsole);
             std::cout << symbol_table[c];
         }
-    }
     delete before;
     before = current->clone();
 }
