@@ -1,3 +1,4 @@
+#pragma comment(lib, "User32.lib") //User32.lib library for event listener
 #include <iostream>
 #include <vector>
 #include <utility>
@@ -11,6 +12,8 @@
 #include "block.h"
 #include "table.h"
 #include "VK.h"
+#include "server.h"
+#include "client.h"
 
 #define nDEBUG
 using namespace std;
@@ -125,7 +128,7 @@ signed main(){
 #else
         //player.print_table(hConsole);
         player.print_block(hConsole);
-        //opponent.print_table(hConsole);
+        opponent.print_table(hConsole);
         //system("cls");
         Sleep(flush_tick);
 #endif 
