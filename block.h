@@ -7,7 +7,8 @@ struct Point{
     Point(const Point& tmp):x(tmp.x), y(tmp.y) {}
     Point operator+(const Point& tmp) const{ return Point((this -> x) + tmp.x, (this -> y) + tmp.y);}
     Point operator*(const short& tmp) const{ return Point((this -> x) * tmp, (this -> y) * tmp);}
-    bool operator==(const Point& tmp) const{return (this->x == tmp.x) && (this->y == tmp.y);}
+    bool operator==(const Point& tmp) const{ return (this->x == tmp.x) && (this->y == tmp.y);}
+    bool operator!=(const Point& tmp) const{ return !(*this == tmp);}
     const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
 };
 
@@ -56,6 +57,13 @@ public:
         return *this;
     }
     virtual bool isI() {return 0;}
+    virtual bool is_same_position(Block *right){
+        if(location != right->location) return false;
+        for(int i=0;i<4;i++){
+            if(delta[i] != right->delta[i])return false;
+        }
+        return true;
+    }
 };
 
 /*all of the symbol and color is for temporary use, and color and symbol will be confirmed and modified later

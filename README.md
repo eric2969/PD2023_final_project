@@ -27,11 +27,16 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/14.e (v1.2.1)
+> Fixed display issue by adding Block *before <br>
+> Added SetFont() <br>
+> Modified print_block()
+
 > ### 2023/12/14.d (v1.2.1beta)
-> fixed Block_I rotation (still need to implement delta in x/y axis)
+> Fixed Block_I rotation (still need to implement delta in x/y axis)
 
 > ### 2023/12/14.c (v1.2)
-> fix bugs
+> Fix bugs
 > Improve color displaying (clear column)
 
 > ### 2023/12/14.b (v1.1beta)

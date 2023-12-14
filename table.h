@@ -45,6 +45,7 @@ const Point Kick_Table(bool isI, const short& start, const short& drc, const sho
 class Table{
 private:
     Block *current; // Change here
+    Block *before; 
     std::queue<Block*> next;
     const static short height = 20, width = 10;
     short board[height+2][width]; //game id table
@@ -57,7 +58,7 @@ public:
     //block existence
     void fix_block() {for (auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
     void add_block(Block* add) {next.push(add);}
-    void pop_block() {delete current; current = next.front(); next.pop();}
+    void pop_block() {delete before; delete current; current = next.front(); before = current->clone(); next.pop();}
     int getNext() {return next.size();}
     //block move
     void hard_drop();
@@ -65,7 +66,7 @@ public:
     void rotate(const short direction);
     //printing
     void print_table(HANDLE &hConsole) const; //print table on windows.h (x,y) is the origin of the table
-    void print_block(HANDLE &hConsole) const;
+    void print_block(HANDLE &hConsole);
     //set level
     void set_level(const int level) {this -> level = level;}
     //checking
@@ -191,8 +192,17 @@ void Table::print_table(HANDLE &hConsole) const{
     return;
 };
 
-void Table::print_block(HANDLE &hConsole) const{
+void Table::print_block(HANDLE &hConsole) {
     short c = current->get_ID(); // Change here
+    std::vector<Point> pClone = before->block_position();
+    if(current->is_same_position(before)) return;
+    for (auto i: before -> block_position()) {
+        if(i.y < 20){
+            goto_xy(this->x + i.x + 1, this->y + 20 - i.y, hConsole);
+            set_color(color_table[0]+(i.x%2?128:0), hConsole);
+            std::cout << ' ';
+        }
+    }
     for (auto i: current -> block_position()) {
         if(i.y < 20){
             goto_xy(this->x + i.x + 1, this->y + 20 - i.y, hConsole);
@@ -200,6 +210,8 @@ void Table::print_block(HANDLE &hConsole) const{
             std::cout << symbol_table[c];
         }
     }
+    delete before;
+    before = current->clone();
 }
 
 //checking

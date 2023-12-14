@@ -17,11 +17,13 @@ using namespace std;
 
 const short flush_tick = 10;
 void add_shuffle_block(Table&);
+void SetFont(int);
 
 signed main(){
     Table player, opponent;
     system("mode con cols=100 lines=50");
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetFont(30);
     bool isUpPressed = false;
     bool isDownPressed = false;
     bool isLeftPressed = false;
@@ -37,6 +39,7 @@ signed main(){
     opponent.set_position(60,1);
     add_shuffle_block(player);
     player.pop_block(); //move next to current
+    player.print_table(hConsole);
     while (1) {
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
@@ -52,6 +55,7 @@ signed main(){
             if(stuck){
                 player.fix_block();
                 player.set_clear();
+                player.print_table(hConsole);
                 stuck = 0;
                 if(player.getNext() <= 1)
                     add_shuffle_block(player);
@@ -108,6 +112,7 @@ signed main(){
                 player.hard_drop();
                 player.fix_block();
                 player.set_clear();
+                player.print_table(hConsole);
                 if(player.getNext() <= 1)
                     add_shuffle_block(player);
                 player.pop_block();
@@ -118,7 +123,7 @@ signed main(){
             bSpace = 0;
 #ifdef DEBUG
 #else
-        player.print_table(hConsole);
+        //player.print_table(hConsole);
         player.print_block(hConsole);
         //opponent.print_table(hConsole);
         //system("cls");
@@ -186,3 +191,16 @@ void add_shuffle_block(Table &player){
       }
     }
 }
+
+void SetFont(int size = 30) {
+	CONSOLE_FONT_INFOEX cfi;
+	cfi.cbSize = sizeof cfi;
+	cfi.nFont = 0;
+	cfi.dwFontSize.X = 0;
+	cfi.dwFontSize.Y = size;
+	cfi.FontFamily = FF_DONTCARE;
+	cfi.FontWeight = FW_NORMAL; 
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+	
+}
+
