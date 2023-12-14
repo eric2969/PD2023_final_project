@@ -134,6 +134,15 @@ public:
             x_tmp = delta[i].x, y_tmp = delta[i].y;
             delta[i].x = drc * y_tmp, delta[i].y = drc * (-1) * x_tmp;
         }
+        short x_delta = (direction%2) * (direction>>1)?1:-1, y_delta = (direction%2 - 1) * (direction>>1)?1:-1;
+        if(direction%2)
+            y_delta = 0;
+        else
+            x_delta = 0;
+        if(drc == 1)
+            (*this) += Point(x_delta, y_delta);
+        else
+            (*this) += Point(y_delta, (-1) * x_delta);
         this -> direction = ( (this -> direction) + drc + 4) % 4;
         return;
     }

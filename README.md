@@ -27,7 +27,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
-> ### 2023/12/14.e (v1.2.1)
+> ### 2023/12/14.f (v1.2.2)
+> Fixed delta Position of Block_I rotation
+
+> ### 2023/12/14.e (v1.2.2beta)
 > Fixed display issue by adding Block *before <br>
 > Added SetFont() <br>
 > Modified print_block()
