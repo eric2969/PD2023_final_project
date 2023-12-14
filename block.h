@@ -124,7 +124,7 @@ public:
         short x_tmp, y_tmp;
         for(int i = 0; i < 4; i++){
             x_tmp = delta[i].x, y_tmp = delta[i].y;
-            delta[i].x = drc * x_tmp, delta[i].y = drc * (-1) * y_tmp;
+            delta[i].x = drc * y_tmp, delta[i].y = drc * (-1) * x_tmp;
         }
         this -> direction = ( (this -> direction) + drc + 4) % 4;
         return;
