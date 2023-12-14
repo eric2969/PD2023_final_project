@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <random>
-#include <typeinfo>
 #include <time.h>
 #include "block.h"
 #include "table.h"
 #include "VK.h"
 
+#define nDEBUG
 using namespace std;
 
 const short flush_tick = 10;
@@ -29,7 +29,7 @@ signed main(){
     bool isZPressed = false;
     bool isXPressed = false;
     bool isSPACEPressed = false;
-    clock_t before, now, down, left, right,;
+    clock_t before, now, down, left, right;
     bool bDown, bLeft, bRight, bKeyZ, bKeyX, bSpace, stuck = 0;
     before = clock();
     int wait = 500;
@@ -47,7 +47,7 @@ signed main(){
         //down
         now = clock();
         if (clock() - before > wait){
-            stuck = player.move_block(0,-1);
+            stuck = !player.move_block(0,-1);
             before = clock();
             if(stuck){
                 player.fix_block();
@@ -63,10 +63,8 @@ signed main(){
         //left arrow
         if (isLeftPressed) {
             if (bLeft)
-                if(clock() - left > 500){
+                if(clock() - left > 500)
                     player.move_block(-1,0);
-                    player.move_block(-1,0);
-                }
             else{
                 player.move_block(-1,0);
                 left = clock();
@@ -78,10 +76,8 @@ signed main(){
         //right arrow
         if (isRightPressed) {
             if(bRight)
-                if(clock() - right > 500){
+                if(clock() - right > 500)
                     player.move_block(1,0);
-                    player.move_block(1,0);
-                }
             else{
                 player.move_block(1,0);
                 right = clock();
@@ -120,12 +116,14 @@ signed main(){
         }
         else
             bSpace = 0;
-
+#ifdef DEBUG
+#else
         player.print_table(hConsole);
         player.print_block(hConsole);
-        opponent.print_table(hConsle);
+        //opponent.print_table(hConsole);
+        //system("cls");
         Sleep(flush_tick);
-        system("cls");
+#endif 
     }
 
     return 0;

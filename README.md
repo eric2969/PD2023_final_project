@@ -27,6 +27,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/14.c (v1.2)
+> fix bugs
+> Improve color displaying (clear column)
+
 > ### 2023/12/14.b (v1.1beta)
 > finished hard_drop fix_line and line_clear
 

@@ -1,18 +1,14 @@
-#define DEFAULT_COLOR 7
+#define DEFAULT_COLOR 0
+#define BG 112
 
 void goto_xy(int x, int y, HANDLE &hout) {
     COORD pos = {x, y};
     SetConsoleCursorPosition(hout, pos);
 }
 
-void set_color(const unsigned short textColor, HANDLE &hout) {
-    if (textColor >= 0 && textColor <= 15)
-        SetConsoleTextAttribute(hout, textColor);
-    else
-        SetConsoleTextAttribute(hout, DEFAULT_COLOR);
-}
+void set_color(const unsigned short textColor, HANDLE &hout) {SetConsoleTextAttribute(hout, textColor);}
 
-const short color_table[8] = {DEFAULT_COLOR, 1, 2, 3, 4, 5, 6, 9}; //[0] for none
+const short color_table[8] = {DEFAULT_COLOR+BG, 1+BG, 2+BG, 3+BG, 4+BG, 5+BG, 9+BG, 10+BG}; //[0] for none
 const char symbol_table[8] = {' ', '#', '@', '?', '$', '&', '%', '+'}; //[0] for none
 
 //5-stage test for kick_table
@@ -51,7 +47,7 @@ private:
     Block *current; // Change here
     std::queue<Block*> next;
     const static short height = 20, width = 10;
-    short board[height][width]; //game id table
+    short board[height+2][width]; //game id table
     short x, y;
     int score = 0, clear_line = 0, level = 0, multiplier = 0, garbage = 0, B2B = 0, combo = 0;
 public:
@@ -59,8 +55,9 @@ public:
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
     //block existence
-    void fix_block();
+    void fix_block() {for (auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
     void add_block(Block* add) {next.push(add);}
+    void pop_block() {delete current; current = next.front(); next.pop();}
     int getNext() {return next.size();}
     //block move
     void hard_drop();
@@ -85,23 +82,9 @@ public:
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
-    void pop_block();
     void cancelLine(); //cancel the whole line
     void isGameover();
 };
-//block existence
-void Table::fix_block() {
-    std::vector<Point> p = current -> block_position(); // Change here
-    for (auto i : p)
-        board[i.y][i.x] = current -> get_ID(); // Change here
-}
-
-void Table::pop_block(){
-    delete current;
-    current = next.front(); // Change here
-    next.pop();
-}
-
 //block move
 void Table::hard_drop(){
     Block *bTmp = current -> clone();
@@ -113,6 +96,8 @@ void Table::hard_drop(){
         }
         (*bTmp) += Point(0, i);
     }
+    //for(auto i :current->block_position())
+    //std::cout << i.x << ' ' << i.y << std::endl; 
     delete bTmp;
 }
 
@@ -139,29 +124,28 @@ void Table::rotate(const short direction){
     delete bTmp;
 }
 
-//filled check
+//line clear
 void Table::set_clear(){ //need to append b2b, t-spin, etc...
     multiplier = 1;
-    this -> level += (removeLine() * multiplier);
+    this -> score += (removeLine() * multiplier);
 }
 
-int Table::removeLine()
-{
+int Table::removeLine() {
 	bool allExist;// see if the whole row is filled
-	int cnt=0;// the total line num cleared
+	int cnt = 0;// the total line num cleared
 	for(int i=0; i<20; i++){
         allExist = true;
 		for(int j=0; j<10; j++){
 			if(!this->board[i][j]){
-				allExist = false ;
-				break ;
+				allExist = false;
+				break;
 			}
 		}
 		if(allExist){
 			cnt++;
-			for(int p=i;p>=1; p--)
+			for(int p=i;p<20; p++)
 				for(int q=0; q<10; q++)
-					this->board[p][q] = this->board[p-1][q];
+					this->board[p][q] = this->board[p+1][q];
             i--; //check the line that have cleared. because move down
 		}
 	}
@@ -188,21 +172,17 @@ int Table::removeLine()
 //printing
 void Table::print_table(HANDLE &hConsole) const{
     goto_xy(x, y, hConsole);
-    set_color(DEFAULT_COLOR, hConsole);
+    set_color(color_table[0], hConsole);
     for(int i = 0;i < width + 2; i++) //row 0
         std::cout << '-';
     for (int i = 0; i < height; ++i) { //row 1-20
         goto_xy(x, y + i + 1, hConsole); //column 0
         std::cout << '|';
         for (int j = 0; j < width; ++j) { //column 1-10
-            if (board[i][j] == 0)
-                std::cout << ' ';
-            else{
-                 set_color(color_table[ board[i][j] ], hConsole);
-                 std::cout << symbol_table[ board[i][j] ];
-                 set_color(DEFAULT_COLOR, hConsole);
-            }
+            set_color(color_table[ board[19-i][j] ] + (j%2?128:0), hConsole); //inverse y-axis(19-i)
+            std::cout << symbol_table[ board[19-i][j] ];
         }
+        set_color(color_table[0], hConsole);
         std::cout << '|'; //column 11
     }
     goto_xy(x, y + 21, hConsole); //row 21
@@ -213,10 +193,10 @@ void Table::print_table(HANDLE &hConsole) const{
 
 void Table::print_block(HANDLE &hConsole) const{
     short c = current->get_ID(); // Change here
-    set_color(color_table[c], hConsole);
     for (auto i: current -> block_position()) {
-        if(i.y <= 20){
-            goto_xy(this->x + i.x + 1, this->y + 21 - i.y, hConsole);
+        if(i.y < 20){
+            goto_xy(this->x + i.x + 1, this->y + 20 - i.y, hConsole);
+            set_color(color_table[c] + (i.x%2?128:0), hConsole);
             std::cout << symbol_table[c];
         }
     }
