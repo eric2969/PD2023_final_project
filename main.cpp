@@ -13,31 +13,13 @@
 #include "table.h"
 #include "VK.h"
 
-#define notDEBUG
 using namespace std;
 
 const short flush_tick = 10;
 void add_shuffle_block(Table&);
 
-
 signed main(){
-#ifdef DEBUG
-    Block_Z tz(Point(0,0));
-
-    vector<Block> q;
-    q.push_back(tz);
-    Block *z = &q.back();
-    q.pop_back();
-    for(int i=0;i<4;i++){
-        cout << z->get_xdelta(i) << ' ' << z->get_ydelta(i) << ',';
-    }
-    cout << endl;
-    cout << z->get_ID();
-    return 0;
-}
-#else
     Table player, opponent;
-
     system("mode con cols=100 lines=50");
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     bool isUpPressed = false;
@@ -47,17 +29,14 @@ signed main(){
     bool isZPressed = false;
     bool isXPressed = false;
     bool isSPACEPressed = false;
-    clock_t before, now, down, left, right;
-    bool bDown, bLeft, bRight, bKeyZ, bKeyX;
+    clock_t before, now, down, left, right,;
+    bool bDown, bLeft, bRight, bKeyZ, bKeyX, bSpace, stuck = 0;
     before = clock();
     int wait = 500;
     player.set_position(2,2);
     opponent.set_position(60,1);
     add_shuffle_block(player);
-
     player.pop_block(); //move next to current
-    //opponent.print_table(hConsole);
-    //gameover
     while (1) {
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
@@ -65,72 +44,86 @@ signed main(){
         isZPressed = GetAsyncKeyState(VK_Z) & 0x8000; //counterclockwise rotate
         isXPressed = GetAsyncKeyState(VK_X) & 0x8000;
         isSPACEPressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
-
+        //down
         now = clock();
         if (clock() - before > wait){
-          player.move_block(0,-1);
-          before = clock();
+            stuck = player.move_block(0,-1);
+            before = clock();
+            if(stuck){
+                player.fix_block();
+                player.set_clear();
+                stuck = 0;
+                if(player.getNext() <= 1)
+                    add_shuffle_block(player);
+                player.pop_block();
+            }
         }
-
+        //down arrow
         wait = (isDownPressed)?100:1000;
-
+        //left arrow
         if (isLeftPressed) {
-          if (bLeft){
-            if(clock() - left > 500){
+            if (bLeft)
+                if(clock() - left > 500){
+                    player.move_block(-1,0);
+                    player.move_block(-1,0);
+                }
+            else{
                 player.move_block(-1,0);
-                player.move_block(-1,0);
+                left = clock();
             }
-          }
-          else{
-            player.move_block(-1,0);
-            left = clock();
-          }
-          bLeft = 1;
+            bLeft = 1;
         }
         else
-          bLeft = 0;
-
+            bLeft = 0;
+        //right arrow
         if (isRightPressed) {
-          if(bRight){
-            if(clock() - right > 500){
+            if(bRight)
+                if(clock() - right > 500){
+                    player.move_block(1,0);
+                    player.move_block(1,0);
+                }
+            else{
                 player.move_block(1,0);
-                player.move_block(1,0);
+                right = clock();
             }
-          }
-          else{
-            player.move_block(1,0);
-            right = clock();
-          }
-          bRight = 1;
+            bRight = 1;
         }
         else
-          bRight = 0;
-
+            bRight = 0;
+        //key z
         if (isZPressed) {
-          if(!bKeyZ)
-            player.rotate(-1);
+            if(!bKeyZ)
+                player.rotate(-1);
             bKeyZ = 1;
         }
         else
-          bKeyZ = 0;
-
+            bKeyZ = 0;
+        //key x
         if (isXPressed) {
-          if(!bKeyX)
-            player.rotate(1);
+            if(!bKeyX)
+                player.rotate(1);
             bKeyX = 1;
         }
         else
-          bKeyX = 0;
-        //fixed
+            bKeyX = 0;
+        //space
         if (isSPACEPressed){
-
-          player.pop_block();
-          if (player.getNext() <= 1){
-            add_shuffle_block(player);
-          }
+            if(!bSpace){
+                player.hard_drop();
+                player.fix_block();
+                player.set_clear();
+                if(player.getNext() <= 1)
+                    add_shuffle_block(player);
+                player.pop_block();
+            }
+            bSpace = 1;
         }
+        else
+            bSpace = 0;
+
         player.print_table(hConsole);
         player.print_block(hConsole);
+        opponent.print_table(hConsle);
         Sleep(flush_tick);
         system("cls");
     }
@@ -195,4 +188,3 @@ void add_shuffle_block(Table &player){
       }
     }
 }
-#endif

@@ -59,21 +59,28 @@ public:
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
     //block existence
-    bool fix_block();
-    void add_block(Block* add);
+    void fix_block();
+    void add_block(Block* add) {next.push(add);}
+    int getNext() {return next.size();}
     //block move
     void hard_drop();
-    void move_block(const short x, const short y);
+    bool move_block(const short x, const short y);
     void rotate(const short direction);
     //printing
     void print_table(HANDLE &hConsole) const; //print table on windows.h (x,y) is the origin of the table
     void print_block(HANDLE &hConsole) const;
     //set level
-    void set_level(const int level);
+    void set_level(const int level) {this -> level = level;}
     //checking
     bool isValid(const Block& tmp) const;
     bool isT_Spin() const;
-    int removeLine() ;
+    //filled check
+    void set_clear();
+    int removeLine();
+    //return table data
+    int get_score() const {return this -> score;}
+    int get_line() const {return this -> clear_line;}
+    int get_level() const {return this -> level;}
     //multi playing
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
@@ -81,22 +88,12 @@ public:
     void pop_block();
     void cancelLine(); //cancel the whole line
     void isGameover();
-    int getNext(){return next.size();}
 };
 //block existence
-bool Table::fix_block() {
+void Table::fix_block() {
     std::vector<Point> p = current -> block_position(); // Change here
     for (auto i : p)
         board[i.y][i.x] = current -> get_ID(); // Change here
-    for (int i = 0; i < 10; i++)
-            if(board[0][i]) return 0;
-    return 1;
-}
-
-
-void Table::add_block(Block *add){
-    next.push(add);// Change here
-    return;
 }
 
 void Table::pop_block(){
@@ -115,17 +112,17 @@ void Table::hard_drop(){
             break;
         }
         (*bTmp) += Point(0, i);
-
     }
     delete bTmp;
 }
 
-void Table::move_block(const short x, const short y){
+bool Table::move_block(const short x, const short y){
     Block *bTmp = current -> clone();
-    if(isValid((*bTmp) += Point(x, y))) // Change here
+    bool valid = isValid((*bTmp) += Point(x, y));
+    if(valid)// Change here
         (*current) += Point(x, y); // Change here
     delete bTmp;
-    return;
+    return valid;
 }
 
 void Table::rotate(const short direction){
@@ -140,76 +137,75 @@ void Table::rotate(const short direction){
         }
     }
     delete bTmp;
-    return;
+}
+
+//filled check
+void Table::set_clear(){ //need to append b2b, t-spin, etc...
+    multiplier = 1;
+    this -> level += (removeLine() * multiplier);
 }
 
 int Table::removeLine()
 {
-	bool allExist = true ;// see if the whole row is filled
-	int cnt=0, clearedId=0 ;// the total line num cleared
-	for(int i=0; i<20; i++)
-	{
-		for(int j=0; j<10; j++)
-		{
-			if(!this->board[i][j])
-			{
+	bool allExist;// see if the whole row is filled
+	int cnt=0;// the total line num cleared
+	for(int i=0; i<20; i++){
+        allExist = true;
+		for(int j=0; j<10; j++){
+			if(!this->board[i][j]){
 				allExist = false ;
 				break ;
 			}
 		}
-		if(allExist)
-		{
-			cnt++ ;
-			// 將上方的東西下移一格
-			for(int p=i; p>=1; p--)
-			{
+		if(allExist){
+			cnt++;
+			for(int p=i;p>=1; p--)
 				for(int q=0; q<10; q++)
-				{
-					this->board[p][q] = this->board[p-1][q] ;
-				}
-			}
+					this->board[p][q] = this->board[p-1][q];
+            i--; //check the line that have cleared. because move down
 		}
 	}
-	if(cnt == 1)
-	{
-		return 10 ;
-	}
-	else if(cnt == 2)
-	{
-		return 20 ;
-	}
-	else if(cnt == 3)
-	{
-		return 40 ;
-	}
-	else if(cnt == 4)
-	{
-		return 80 ;
-	}
+    this -> clear_line += cnt;
+    switch (cnt){
+        case 1:{
+            return 10;
+        }
+        case 2:{
+            return 20;
+        }
+        case 3:{
+            return 40;
+        }
+        case 4:{
+            return 80;
+        }
+        default:{
+            return 0;
+        }
+    }
 }
 
 //printing
 void Table::print_table(HANDLE &hConsole) const{
     goto_xy(x, y, hConsole);
     set_color(DEFAULT_COLOR, hConsole);
-    for(int i = 0;i < width + 2; i++)
+    for(int i = 0;i < width + 2; i++) //row 0
         std::cout << '-';
-    for (int i = 0; i < height; ++i) {
-        goto_xy(x, y + i + 1, hConsole);
+    for (int i = 0; i < height; ++i) { //row 1-20
+        goto_xy(x, y + i + 1, hConsole); //column 0
         std::cout << '|';
-        for (int j = 0; j < width; ++j) {
-            if (board[i][j] == 0) {
+        for (int j = 0; j < width; ++j) { //column 1-10
+            if (board[i][j] == 0)
                 std::cout << ' ';
-            }
             else{
                  set_color(color_table[ board[i][j] ], hConsole);
                  std::cout << symbol_table[ board[i][j] ];
                  set_color(DEFAULT_COLOR, hConsole);
             }
         }
-        std::cout << '|';
+        std::cout << '|'; //column 11
     }
-    goto_xy(x, y + 20, hConsole);
+    goto_xy(x, y + 21, hConsole); //row 21
     for(int i = 0;i < width + 2; i++)
         std::cout << '-';
     return;
@@ -219,25 +215,18 @@ void Table::print_block(HANDLE &hConsole) const{
     short c = current->get_ID(); // Change here
     set_color(color_table[c], hConsole);
     for (auto i: current -> block_position()) {
-        goto_xy(this->x+i.x+1, this->y+20-i.y, hConsole);
-        std::cout << symbol_table[c];
-        //std::cout << this->x+1+p[i].x << ' ' << this->y+1+p[i].y << ',';
+        if(i.y <= 20){
+            goto_xy(this->x + i.x + 1, this->y + 21 - i.y, hConsole);
+            std::cout << symbol_table[c];
+        }
     }
-    //std::cout << std::endl;
-}
-
-void Table::set_level(const int level) {
-    this->level = level;
-    return;
 }
 
 //checking
 bool Table::isValid(const Block& tmp) const{
-    for(auto i : tmp.block_position()){
-        //std::cout << i.x << " " << i.y << std::endl;
-        if(i.x < 0 || i.x >= 10 || i.y <= 0 || board[i.y][i.x])
+    for(auto i : tmp.block_position())
+        if(i.x < 0 || i.x >= 10 || i.y < 0 || board[i.y][i.x])
             return 0;
-    }
     return 1;
 }
 

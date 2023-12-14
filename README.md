@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/14.b (v1.1beta)
+> finished hard_drop fix_line and line_clear
+
 > ### 2023/12/14.a (v1.0)
 > Fix some major issue in game<br>
 > Fix isValid bug<br>
