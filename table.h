@@ -93,6 +93,7 @@ public:
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
+    void cancelLine(); //cancel the whole line
 };
 
 void Table::keep_block(){
@@ -110,13 +111,12 @@ void Table::keep_block(){
 //block move
 void Table::hard_drop(){
     Block *bTmp = current -> clone();
-    for(int i = 20;i >= 0;i--){
-        (*bTmp) += Point(0, -i);
-        if(isValid(*bTmp)){
-            (*current) += Point(0,-i);
-            break;
-        }
-        (*bTmp) += Point(0, i);
+    while(isValid(*bTmp)){
+        (*bTmp) += Point(0, -1);
+    }
+    *bTmp += Point(0, 1);
+    if(isValid(*bTmp)){
+        *current = bTmp->get_location();
     }
     delete bTmp;
 }

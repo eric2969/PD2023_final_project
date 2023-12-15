@@ -28,7 +28,12 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
-> ###2023/12/15.c (v.1.5)
+> ### 2023/12/15.d (v1.5.1)
+> Fixed the bug that blocks can sometimes pass through each other <br>
+> Added the function "single_player()"
+> Trying to add a new menu
+
+> ### 2023/12/15.c (v1.5)
 > Refine socket server-client mechanism
 
 > ### 2023/12/15.b (v1.4)

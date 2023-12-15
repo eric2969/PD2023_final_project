@@ -29,6 +29,7 @@ public:
     //for get block data (const)
     inline short get_ID() const {return ID;}
     inline short get_direction() const {return direction;}
+    inline Point get_location() const {return location;}
     std::vector<Point> block_position() const{ //need to override block_I
         std::vector<Point> tmp;
         for(int i = 0;i < 4;i++)

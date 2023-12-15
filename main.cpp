@@ -10,12 +10,6 @@
 #include <algorithm>
 #include <random>
 #include <time.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 #define d_x 5
 #define d_y 20
@@ -23,22 +17,175 @@
 #include "block.h"
 #include "table.h"
 #include "VK.h"
-#include "server.h"
-#include "client.h"
+//#include "server.h"
+//#include "client.h"
 
 #define nDEBUG
-#define nFONT
+#define FONT
 using namespace std;
 
-const short flush_tick = 10;
+const short flush_tick = 3;
 void add_shuffle_block(Table&);
 void game_exit();
 #ifdef FONT
 void SetFont(int);
+void single_player();
 #endif
 
-int server_sockfd = 0, client_sockfd = 0;
-signed main(){
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void CreateGameMenu(HWND hwnd);
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    // 注?窗口?
+    WNDCLASS wc = {};
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = "GameMenuWindowClass";
+
+    RegisterClass(&wc);
+
+    // ?建窗口
+    HWND hwnd = CreateWindowEx(
+        0,                               // ?展?式
+        "GameMenuWindowClass",          // 窗口?名
+        "Game Menu",                    // 窗口??
+        WS_OVERLAPPEDWINDOW,             // 窗口?式
+        CW_USEDEFAULT, CW_USEDEFAULT,     // 窗口位置
+        800, 600,                         // 窗口大小
+        0, 0,                             // 父窗口和菜?句柄
+        hInstance,                        // ?例句柄
+        0);                               // 其他??
+
+    if (hwnd == NULL) {
+        return 0;
+    }
+
+    // ?示窗口
+    ShowWindow(hwnd, nCmdShow);
+
+    // ?入消息循?
+    MSG msg = {};
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return 0;
+}
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+        case WM_CREATE:
+            // ?建游?菜?
+            CreateGameMenu(hwnd);
+            break;
+
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            break;
+
+        default:
+            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    }
+
+    return 0;
+}
+
+void CreateGameMenu(HWND hwnd) {
+    HMENU hMenu, hSubMenu;
+
+    // ?建主菜?
+    hMenu = CreateMenu();
+
+    // ?建子菜?
+    hSubMenu = CreatePopupMenu();
+    AppendMenu(hSubMenu, MF_STRING, 101, "Start Game");
+    AppendMenu(hSubMenu, MF_STRING, 102, "Options");
+    AppendMenu(hSubMenu, MF_STRING, 103, "Exit");
+
+    // ?子菜?添加到主菜?
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, "File");
+
+    // ?菜???到窗口
+    SetMenu(hwnd, hMenu);
+}
+
+void add_shuffle_block(Table &player){
+    //randomly generate
+    srand( time(NULL) );
+    int shuffle_block[10];
+    for (int i = 0; i < 7; i++) shuffle_block[i] = i;
+    random_shuffle(shuffle_block,shuffle_block+7);
+    for (int i = 0; i < 7; i++){
+      switch(shuffle_block[i]){
+        case 0:{
+            Block *I = new Block_I(Point(d_x, d_y));
+            player.add_block(I);
+            break;
+        }
+        case 1:{
+            Block *J = new Block_J(Point(d_x, d_y));
+            player.add_block(J);
+            break;
+        }
+
+        case 2:{
+            Block *L = new Block_L(Point(d_x, d_y));
+            player.add_block(L);
+            break;
+        }
+
+        case 3:{
+            Block *O = new Block_O(Point(d_x, d_y));
+            player.add_block(O);
+            break;
+        }
+
+        case 4:{
+            Block *S = new Block_S(Point(d_x, d_y));
+            player.add_block(S);
+            break;
+        }
+
+        case 5:{
+            Block *T = new Block_T(Point(d_x, d_y));
+            player.add_block(T);
+            break;
+        }
+
+        case 6:{
+            Block *Z = new Block_Z(Point(d_x, d_y));
+            player.add_block(Z);
+            break;
+        }
+
+        default:
+            exit(1);
+            break;
+      }
+    }
+}
+
+void game_exit(){
+    //for file i/o record data used;
+    exit(0);
+}
+
+#ifdef FONT
+void SetFont(int size = 30) {
+	CONSOLE_FONT_INFOEX cfi;
+	cfi.cbSize = sizeof cfi;
+	cfi.nFont = 0;
+	cfi.dwFontSize.X = 20;
+	cfi.dwFontSize.Y = size;
+	cfi.FontFamily = FF_DONTCARE;
+	cfi.FontWeight = FW_NORMAL;
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+
+}
+#endif // FONT
+
+void single_player(){
     Table player, opponent;
     system("mode con cols=100 lines=50");
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -58,11 +205,8 @@ signed main(){
     before = clock();
     short fwait = 100, wait = 700, das = 500, sWait = 700, sCnt, sTick = 70, sLimit = 10;
     short fall_tick = wait, fall_wait = sWait;
-    short identity = 0;
-    char send_message[256] = {}, receive_message[256] = {}; //need to discuss information packing logics
     player.set_position(2,2);
     opponent.set_position(60,2);
-start:
     set_color(0, hConsole);
     system("cls");
     player.reset();
@@ -70,34 +214,7 @@ start:
     player.pop_block(); //move next to current
     player.print_table(hConsole);
     opponent.print_table(hConsole);
-
-    //confirming identity
-    //if player opens a room -> server
-        server_sockfd = server(); //listening port
-        identity = 1;
-    //if player joins a room -> client
-        client_sockfd = client(); //connect to server
-        identity = -1;
-
     while (1) {
-        //multiplaying
-        //exchange information with each other every designated amount of time
-        if (identity == 1){
-            send_message = 
-            send_to_client(send_message, server_sockfd);
-            receive_message = receive_from_client();
-        }
-        if (identity == -1){
-            //pack and send
-            send_message = 
-            send_to_server(send_message, client_sockfd);
-            receive_message = receive_from_server(client_sockfd);
-            //unpack
-            //print out opponent's table
-        }
-        
-        opponent.print_table(hConsole); //print out opponent's table after receiving information
-        
         isUpPressed = GetAsyncKeyState(VK_UP) & 0x8000;
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;
@@ -231,7 +348,7 @@ start:
 #ifdef DEBUG
 #else
         player.print_block(hConsole);
-        opponent.print_table(hConsole);
+        //opponent.print_table(hConsole);
         Sleep(flush_tick);
 #endif
     }
@@ -243,7 +360,7 @@ start:
         cin >> inTmp;
         switch(inTmp){
             case 1:{
-                goto start;
+                return;
                 break;
             }
             case 2:{
@@ -257,81 +374,6 @@ start:
             }
         }
     }
-    return 0;
 }
 
-void add_shuffle_block(Table &player){
-    //randomly generate
-    srand( time(NULL) );
-    int shuffle_block[10];
-    for (int i = 0; i < 7; i++) shuffle_block[i] = i;
-    random_shuffle(shuffle_block,shuffle_block+7);
-    for (int i = 0; i < 7; i++){
-      switch(shuffle_block[i]){
-        case 0:{
-            Block *I = new Block_I(Point(d_x, d_y));
-            player.add_block(I);
-            break;
-        }
-        case 1:{
-            Block *J = new Block_J(Point(d_x, d_y));
-            player.add_block(J);
-            break;
-        }
-
-        case 2:{
-            Block *L = new Block_L(Point(d_x, d_y));
-            player.add_block(L);
-            break;
-        }
-
-        case 3:{
-            Block *O = new Block_O(Point(d_x, d_y));
-            player.add_block(O);
-            break;
-        }
-
-        case 4:{
-            Block *S = new Block_S(Point(d_x, d_y));
-            player.add_block(S);
-            break;
-        }
-
-        case 5:{
-            Block *T = new Block_T(Point(d_x, d_y));
-            player.add_block(T);
-            break;
-        }
-
-        case 6:{
-            Block *Z = new Block_Z(Point(d_x, d_y));
-            player.add_block(Z);
-            break;
-        }
-
-        default:
-            exit(1);
-            break;
-      }
-    }
-}
-
-void game_exit(){
-    //for file i/o record data used;
-    exit(0);
-}
-
-#ifdef FONT
-void SetFont(int size = 30) {
-	CONSOLE_FONT_INFOEX cfi;
-	cfi.cbSize = sizeof cfi;
-	cfi.nFont = 0;
-	cfi.dwFontSize.X = 0;
-	cfi.dwFontSize.Y = size;
-	cfi.FontFamily = FF_DONTCARE;
-	cfi.FontWeight = FW_NORMAL;
-	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
-
-}
-#endif // FONT
 
