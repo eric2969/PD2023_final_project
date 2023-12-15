@@ -10,6 +10,12 @@
 #include <algorithm>
 #include <random>
 #include <time.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #define d_x 5
 #define d_y 20
@@ -17,8 +23,8 @@
 #include "block.h"
 #include "table.h"
 #include "VK.h"
-//#include "server.h"
-//#include "client.h"
+#include "server.h"
+#include "client.h"
 
 #define nDEBUG
 #define nFONT
@@ -31,6 +37,7 @@ void game_exit();
 void SetFont(int);
 #endif
 
+int server_sockfd = 0, client_sockfd = 0;
 signed main(){
     Table player, opponent;
     system("mode con cols=100 lines=50");
@@ -51,6 +58,8 @@ signed main(){
     before = clock();
     short fwait = 100, wait = 700, das = 500, sWait = 700, sCnt, sTick = 70, sLimit = 10;
     short fall_tick = wait, fall_wait = sWait;
+    short identity = 0;
+    char send_message[256] = {}, receive_message[256] = {}; //need to discuss information packing logics
     player.set_position(2,2);
     opponent.set_position(60,2);
 start:
@@ -61,7 +70,34 @@ start:
     player.pop_block(); //move next to current
     player.print_table(hConsole);
     opponent.print_table(hConsole);
+
+    //confirming identity
+    //if player opens a room -> server
+        server_sockfd = server(); //listening port
+        identity = 1;
+    //if player joins a room -> client
+        client_sockfd = client(); //connect to server
+        identity = -1;
+
     while (1) {
+        //multiplaying
+        //exchange information with each other every designated amount of time
+        if (identity == 1){
+            send_message = 
+            send_to_client(send_message, server_sockfd);
+            receive_message = receive_from_client();
+        }
+        if (identity == -1){
+            //pack and send
+            send_message = 
+            send_to_server(send_message, client_sockfd);
+            receive_message = receive_from_server(client_sockfd);
+            //unpack
+            //print out opponent's table
+        }
+        
+        opponent.print_table(hConsole); //print out opponent's table after receiving information
+        
         isUpPressed = GetAsyncKeyState(VK_UP) & 0x8000;
         isDownPressed = GetAsyncKeyState(VK_DOWN) & 0x8000;
         isLeftPressed = GetAsyncKeyState(VK_LEFT) & 0x8000;

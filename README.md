@@ -28,6 +28,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ###2023/12/15.c (v.1.5)
+> Refine socket server-client mechanism
+
 > ### 2023/12/15.b (v1.4)
 > Complete block keep (need to complete keep block display)
 

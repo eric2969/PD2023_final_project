@@ -93,7 +93,6 @@ public:
     void getTable(); //part of the code depending on socket, only for opponent's table
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
-    void cancelLine(); //cancel the whole line
 };
 
 void Table::keep_block(){
