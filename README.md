@@ -28,7 +28,14 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
-> ### 2023/12/15.d (v1.5.1)
+> ### 2023/12/16.a (v2.0beta)
+> Rebuild game architecture by encapsulate game playing section <br>
+> Added singlePlayer and multiPlayer func. <br>
+> Added game_init/exit, record_update/reset, conf setting func. <br>
+> Finishing the part of record playing data and settings (record reset, conf setting, etc...) <br>
+> Create bright/dark mode
+
+> ### 2023/12/15.d (v1.5.1beta)
 > Fixed the bug that blocks can sometimes pass through each other <br>
 > Added the function "single_player()"
 > Trying to add a new menu

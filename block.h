@@ -30,7 +30,7 @@ public:
     inline short get_ID() const {return ID;}
     inline short get_direction() const {return direction;}
     inline Point get_location() const {return location;}
-    std::vector<Point> block_position() const{ //need to override block_I
+    std::vector<Point> block_position() const{
         std::vector<Point> tmp;
         for(int i = 0;i < 4;i++)
             tmp.push_back(location + delta[i]);
@@ -138,7 +138,7 @@ public:
 
 class Block_O : public Block{
 private:
-    void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(0, -1), delta[3] = Point(1, -1);}
+    void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(-1, 0), delta[2] = Point(-1, -1), delta[3] = Point(0, -1);}
 public:
     Block_O(const Point& p = Point(0,0) ) : Block(p, 7) {createDeltaTable();}
 	Block_O(const Block &b) : Block(b) {createDeltaTable();}
