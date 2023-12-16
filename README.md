@@ -28,6 +28,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
+> ### 2023/12/17.a (v2.1beta2)
+> Added Menu.cpp <br>
+> Added a new game menu <br>
+> The game is still broken
+  
 > ### 2023/12/16.c (v2.1beta)
 > Encaosulated game_cycle
 > Finish isT_spin chk, board de/compression
