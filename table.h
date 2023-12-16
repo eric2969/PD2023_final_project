@@ -44,15 +44,17 @@ private:
     Block *current = nullptr, *before = nullptr, *hold = nullptr;
     std::queue<Block*> next;
     const static short height = 20, width = 10;
+    HANDLE hConsole;
     short board[height+2][width]; //game id table
     short x, y;
     bool bright_mode;
-    int score = 0, clear_line = 0, level = 0, garbage = 0;
+    int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
 public:
     Table() : current(nullptr) { memset(board, 0, sizeof(board));}
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
-    void init(const bool& bri) {
+    void init(HANDLE &hConsole, const bool& bri) {
+        this -> hConsole = hConsole;
         bright_mode = bri, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
         qClear(next);
@@ -66,20 +68,20 @@ public:
     bool move_block(const short x, const short y);
     void rotate(const short direction);
     //printing
-    void print_table(HANDLE &hConsole) const; //print table on windows.h (x,y) is the origin of the table
-    void print_block(HANDLE &hConsole);
+    void print_table() const; //print table on windows.h (x,y) is the origin of the table
+    void print_block();
     //checking
     bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= 10 || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
     bool isT_Spin() const;
     //filled check
-    bool chk_clear(const int& combo, const bool& tspin);
+    bool chk_clear(const bool& tspin);
     //return table data
     inline int get_score() const {return this -> score;}
     inline int get_line() const {return this -> clear_line;}
     inline int get_level() const {return this -> level;}
     //multi playing
     void SendTable(char str[]); //convert table into cstring (compression)
-    void RecvTable(HANDLE &hConsole, const char str[]); //convert cstring into table and print it(decompression)
+    void RecvTable(const char str[]); //convert cstring into table and print it(decompression)
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
 };
@@ -191,7 +193,7 @@ void Table::rotate(const short direction){
 }
 
 //line clear
-bool Table::chk_clear(const int& combo = 0, const bool& tspin = 0){ //need to append b2b, t-spin, etc...
+bool Table::chk_clear(const bool& tspin = 0){ //need to append t-spin, etc...
     bool allExist;// see if the whole row is filled
     int cnt = 0, point = 5, multiplier = 1;// the total line num cleared
     for(int i=0; i<20; i++){
@@ -211,8 +213,9 @@ bool Table::chk_clear(const int& combo = 0, const bool& tspin = 0){ //need to ap
         }
     }
     this -> clear_line += cnt;
-    point = ((cnt?(point<<cnt):0));
-    multiplier <<= (combo + tspin);
+    combo = (cnt?(combo+1):0);
+    point = (cnt?(point<<cnt):0);
+    multiplier <<= (combo + tspin - 1);
     this -> score += point * multiplier;
     level = clear_line/10;
     if(level > 29) level = 29;
@@ -223,7 +226,7 @@ bool Table::chk_clear(const int& combo = 0, const bool& tspin = 0){ //need to ap
 }
 
 //printing
-void Table::print_table(HANDLE &hConsole) const{
+void Table::print_table() const{
     //hold
     for(int i = 0; i < 4; ++i) {
         goto_xy(x, y + i + 1, hConsole);
@@ -284,10 +287,12 @@ void Table::print_table(HANDLE &hConsole) const{
     std::cout << "Score:" << score;
     goto_xy(x + width + 7, y + 8, hConsole);
     std::cout << "Clear Line:" << clear_line;
+    goto_xy(x + width + 7, y + 9, hConsole);
+    std::cout << "Combo:" << combo;
     return;
 };
 
-void Table::print_block(HANDLE &hConsole) {
+void Table::print_block() {
     if(current -> is_same_position(before)) return;
     short c = current -> get_ID(); // Change here
     for (auto i: before -> block_position())
@@ -307,12 +312,42 @@ void Table::print_block(HANDLE &hConsole) {
 }
 
 bool Table::isT_Spin() const {
-    // Implement the logic for T-Spin check
-    return false;
+    Point tmp = current -> get_location();
+    short x, y; //tmp.x + 1 * ((i & 1)?1:-1), tmp.y + 1 * ((i&2)?1:-1)
+    for(int i = 0;i < 4;i++){
+        x = (tmp.x + 1 * ((i & 1)?1:-1)), y = (tmp.y + 1 * ((i&2)?1:-1));
+        if(x >= 20 || y >= 20 || x < 0 || y < 0)
+            continue;
+        else if(!board[y][x])
+            return 0;
+    }
+    return true;
 }
 
 //multi playing
-void Table::SendTable(char str[]) {}
-void Table::RecvTable(HANDLE &hConsole, const char str[]) {}
+void Table::SendTable(char str[]) {
+    short tx, ty;
+    char tmp, snd[105] = "";
+    for(int i = 0;i < 100;i++){
+        tmp = 0;
+        tx = (i * 2) % 10, ty = (i * 2) / 10;
+        for(int j = 0;j < 2;j++)
+            tmp |= (board[ty][tx + j] << (j * 3));
+        snd[i] = tmp;
+    }
+    strcpy(str, snd);
+}
+void Table::RecvTable(const char str[]) {
+    short tx, ty;
+    char tmp;
+    for(int i = 0;i < 100;i++){
+        tmp = str[i];
+        tx = (i * 2) % 10, ty = (i * 2) / 10;
+        for(int j = 0;j < 2;j++){
+            board[ty][tx + j] = (tmp & 8);
+            tmp >>= 3;
+        }
+    }
+}
 void Table::send_garbage() {}
 void Table::get_garbage() {}
