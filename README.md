@@ -28,7 +28,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 ## Version History
-> ### 2023/12/16.a (v2.0beta)
+> ### 2023/12/16.b (v2.0.1)
+> fix hold can be used twice in a cycle
+
+> ### 2023/12/16.a (v2.0)
 > Rebuild game architecture by encapsulate game playing section <br>
 > Added singlePlayer and multiPlayer func. <br>
 > Added game_init/exit, record_update/reset, conf setting func. <br>

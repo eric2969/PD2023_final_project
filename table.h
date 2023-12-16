@@ -249,7 +249,7 @@ void Table::print_table(HANDLE &hConsole) const{
         goto_xy(x + 5, y + i + 1, hConsole); //column 0
         std::cout << '|';
         for (int j = 0; j < width; ++j) { //column 1-10
-            set_color(color_table[ board[19-i][j] ] + (j%2?128:0) + ((bright_mode && board[19-i][j] != 7)?8:0), hConsole); //inverse y-axis(19-i)
+            set_color(color_table[ board[19-i][j] ] + (j%2?128:0) + (bright_mode?8:0), hConsole); //inverse y-axis(19-i)
             std::cout << symbol_table[ board[19-i][j] ];
         }
         set_color(color_table[0], hConsole);
@@ -298,7 +298,7 @@ void Table::print_block(HANDLE &hConsole) {
     for (auto i: current -> block_position())
         if(i.y < 20){
             goto_xy(this->x + i.x + 6, this->y + 20 - i.y, hConsole);
-            set_color(color_table[c] + (i.x%2?128:0) + ((bright_mode && c != 7)?8:0), hConsole);
+            set_color(color_table[c] + (i.x%2?128:0) + (bright_mode?8:0), hConsole);
             std::cout << symbol_table[c];
         }
     delete before;

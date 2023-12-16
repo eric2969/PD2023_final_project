@@ -1,6 +1,7 @@
 //Up, Down, Left, Right, Space, Z, X, C, Shift
 const int KeyCode[9] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT};
-bool KeyPressed[9] = {}, KeyState[9] = {};
+//keyState C,shift(7)
+bool KeyPressed[9] = {}, KeyState[8] = {};
 const short fTick = 1000, sLimit = 10;
 
 void getKeyState() {for(int i = 0;i < 9;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
@@ -34,7 +35,6 @@ void singlePlayer(HANDLE &hConsole, const int& flush, const int& das, const int&
                     combo = (clr?(combo+1):0);
                     stuck = 0;
                     KeyState[7] = 0;
-                    KeyState[8] = 0;
                 }
                 else
                     stuck = !player.move_block(0,-1);
@@ -85,9 +85,9 @@ void singlePlayer(HANDLE &hConsole, const int& flush, const int& das, const int&
         //C(7), Shift(8)
         for(int i = 0;i < 2;i++){
             if (KeyPressed[i + 7]) {
-                if(!KeyState[i + 7]){
+                if(!KeyState[7]){
                     player.hold_block(); //keep
-                    KeyState[i + 7] = 1;
+                    KeyState[7] = 1;
                     player.print_table(hConsole);
                 }
             }
@@ -122,7 +122,7 @@ void multiPlayer(HANDLE &hConsole, const int& flush, const int& das, const int& 
     double speed = 1.0;
     short fall_tick, stuck_wait, sCnt, combo = 0;
     //arrow:Left, Right
-    clock_t before, tStuck, tArrow[2]; 
+    clock_t before, tStuck, tArrow[2];
     system("mode con cols=100 lines=50");
     set_color(0, hConsole);
     system("cls");
