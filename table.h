@@ -3,6 +3,7 @@
 #define d_x 5
 #define d_y 20
 
+//string text_table[5][2]{{"T-Spin","Single","Double","Triple","Tetris"},{}};
 void goto_xy(int x, int y, HANDLE &hout) {COORD pos = {x, y}; SetConsoleCursorPosition(hout, pos);}
 void set_color(const unsigned short textColor, HANDLE &hout) {SetConsoleTextAttribute(hout, textColor);}
 void qClear(std::queue<Block*>& q) {std::queue<Block*> empty; std::swap(empty, q);}
