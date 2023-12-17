@@ -7,14 +7,17 @@ bool bright;
 int das, gravity;
 const short flush_tick = 2;
 
+#include "console.h"
 #include "block.h"
 #include "table.h"
 #include "VK.h"
 #include "game.h"
+#include "Menu.h"
+ 
 //#include "server.h"
 //#include "client.h"
 
-#define nFONT
+#define FONT
 using namespace std;
 
 #define SET_PATH "src/settings.txt"
@@ -32,17 +35,64 @@ void record_update(int& clr, int& score);
 void SetFont(int);
 #endif
 
+struct option1{
+    int &line,&score;
+    option1(int &line,int &score):line(line), score(score){}
+    void operator() (){
+         singlePlayer(line, score);
+    }
+};
+struct option2{
+    void operator() (){
+         Table player;
+         player.set_position(2,2);
+         player.new_block();
+         player.print_table();
+         player.print_block();
+         player.fix_block();
+         Sleep(2000);
+         goto_xy(0,0);
+         hidecursor();
+         set_color(0);
+         clrscr();
+    }
+};
+struct option3{
+    void operator() (){
+        //system("mode con cols=100 lines=50");
+        set_color(7);
+        setcursor(0,0);
+        cout << "hi";
+        setcursor(0,0);
+        hidecursor();
+        set_color(0);
+        Sleep(2000);
+        clrscr();
+        //system("cls");
+    }
+};
+
 signed main(){
     int tmpClear = 0, tmpScore = 0;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetFont(25);
     game_init();
-    try{singlePlayer(tmpClear, tmpScore);}
+    Menu loop;
+    string s = "Tetris";
+    option1 opt1(tmpClear, tmpScore);
+    option2 opt2;
+    option3 opt3;
+    
+    loop.settitle(s);
+    loop.add(opt1, "Single Player").add(opt2, "Multiplayer").add(opt3, "Settings");
+    loop.start();
+    /*try{singlePlayer(tmpClear, tmpScore);}
     catch(runtime_error e){
         set_color(0);
         system("cls");
         set_color(7);
         cout << e.what() << endl;
-    }
+    }*/
     record_update(tmpClear, tmpScore);
     //multiPlayer(hConsole, flush_tick, das, gravity, bright, tmpClear, tmpScore);
     //record_update(tmpClear, tmpScore);

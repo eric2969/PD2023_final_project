@@ -138,6 +138,7 @@ void Table::new_block(){
     }
     delete before;
     delete current;
+    std::cout << "hello";
     current = next.front();
     before = current->clone();
     next.pop();

@@ -16,9 +16,9 @@ void game_cycle(Table& player, int& line, int& score, bool single);
 void singlePlayer(int& line, int& score){
     Table player;
     speed = 1.0;
-    system("mode con cols=100 lines=50");
+    
     set_color(0);
-    system("cls");
+    clrscr();
     before = clock();
     player.set_position(2,2);
     player.init();
@@ -36,12 +36,16 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     if (clock() - before > fall_tick){
         if(stuck){
             if(clock() - tStuck > stuck_wait){
+                
                 player.fix_block();
+                
                 if(player.chk_clear(line, score)){
                     clr = 1;
                     tClear = clock();
                 }
+                
                 player.new_block();
+                std::cout << "hi";
                 player.print_table();
                 stuck = 0;
                 KeyState[7] = 0;
@@ -125,7 +129,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if (KeyPressed[9]){
             if (!KeyState[9]){
                 set_color(0);
-                system("cls");
+                clrscr();
                 set_color(7);
                 goto_xy(2, 5);
                 std::cout << "You have paused the game";
@@ -142,7 +146,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                     Sleep(flush_tick);
                 }
                 set_color(0);
-                system("cls");
+                clrscr();
                 player.print_table();
             }
             KeyState[9] = 1;
@@ -156,7 +160,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             if(!KeyState[10]){
                 quit();
                 set_color(0);
-                system("cls");
+                clrscr();
                 player.print_table();
             }
             KeyState[10] = 1;
@@ -179,7 +183,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
 void quit(){
     KeyState[10] = 1;
     set_color(0);
-    system("cls");
+    clrscr();
     set_color(7);
     goto_xy(2, 5);
     std::cout << "Are you sure you want to quit the game?";
