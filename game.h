@@ -1,65 +1,46 @@
-//Up, Down, Left, Right, Space, Z, X, C, Shift
-const int KeyCode[9] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT};
-//hold keystate[7]
-bool KeyPressed[9] = {}, KeyState[8] = {}, stuck;
-const short fTick = 1000, sLimit = 10;
+#define KeyCnt 12
+//Up, Down, Left, Right, Space, Z, X, C, Shift, P(pause), Q(quit), R(resume)
+const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q, VK_R};
+//keyState C,shift(7)
 double speed;
+bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
+const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt;
 //arrow:Left, Right
-clock_t before, tStuck, tArrow[2];
+clock_t before, tStuck, tClear, tArrow[2];
 
-void getKeyState() {for(int i = 0;i < 9;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
-void game_cycle(Table& player, const int& das, const int& gravity, int& line, int& score);
+void quit();
+void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
+void game_cycle(Table& player, int& line, int& score, bool single);
 
-void singlePlayer(HANDLE &hConsole, const int& flush, const int& das, const int& gravity, const bool& bri, int& line, int& score){
+void singlePlayer(int& line, int& score){
     Table player;
     speed = 1.0;
     system("mode con cols=100 lines=50");
-    set_color(0, hConsole);
+    set_color(0);
     system("cls");
     before = clock();
     player.set_position(2,2);
-    player.init(hConsole, bri);
+    player.init();
     player.new_block();
     player.print_table();
     while (1) {
-        game_cycle(player, das, gravity, line, score);
-        player.print_block();
-        Sleep(flush);
+        game_cycle(player, line, score, 1);
+        Sleep(flush_tick);
     }
 }
 
-void multiPlayer(HANDLE &hConsole, const int& flush, const int& das, const int& gravity, const bool& bri, int& line, int& score){
-    Table player, opponent;
-    speed = 1.0;
-    system("mode con cols=100 lines=50");
-    set_color(0, hConsole);
-    system("cls");
-    before = clock();
-    player.set_position(2,2);
-    opponent.set_position(50,2);
-    player.init(hConsole, bri);
-    opponent.init(hConsole, bri);
-    player.new_block();
-    player.print_table();
-    opponent.print_table();
-    while (1) {
-        game_cycle(player, das, gravity, line, score);
-        player.print_block();
-        opponent.RecvTable("");
-        Sleep(flush);
-    }
-}
-
-void game_cycle(Table& player, const int& flush, const int& das, const int& gravity, int& line, int& score){
+void game_cycle(Table& player, int& line, int& score, bool single){
     getKeyState();
     //fall
     if (clock() - before > fall_tick){
         if(stuck){
             if(clock() - tStuck > stuck_wait){
                 player.fix_block();
-                try{player.chk_clear();}
-                catch(std::runtime_error e){line = player.get_line(); score = player.get_score();return;}
+                if(player.chk_clear(line, score)){
+                    clr = 1;
+                    tClear = clock();
+                }
                 player.new_block();
                 player.print_table();
                 stuck = 0;
@@ -126,8 +107,10 @@ void game_cycle(Table& player, const int& flush, const int& das, const int& grav
         if(!KeyState[4]){
             player.hard_drop();
             player.fix_block();
-            try{player.chk_clear();}
-            catch(std::runtime_error e){line = player.get_line(); score = player.get_score();return;}
+            if(player.chk_clear(line, score)){
+                    clr = 1;
+                    tClear = clock();
+            }
             player.new_block();
             player.print_table();
             stuck = 0;
@@ -137,5 +120,84 @@ void game_cycle(Table& player, const int& flush, const int& das, const int& grav
     }
     else
         KeyState[4] = 0;
+    //p:pause (9)
+    if(single){
+        if (KeyPressed[9]){
+            if (!KeyState[9]){
+                set_color(0);
+                system("cls");
+                set_color(7);
+                goto_xy(2, 5);
+                std::cout << "You have paused the game";
+                goto_xy(2, 6);
+                std::cout << "Press R to resume the game";
+                goto_xy(2, 7);
+                std::cout << "Press Q to quit the game";
+                while(1){
+                    getKeyState();
+                    if(KeyPressed[11])
+                        break;
+                    if(KeyPressed[10])
+                        quit();
+                    Sleep(flush_tick);
+                }
+                set_color(0);
+                system("cls");
+                player.print_table();
+            }
+            KeyState[9] = 1;
+        }
+        else
+            KeyState[9] = 0;
+    }
+    //q:quit(10)
+    if(single){
+        if (KeyPressed[10]){
+            if(!KeyState[10]){
+                quit();
+                set_color(0);
+                system("cls");
+                player.print_table();
+            }
+            KeyState[10] = 1;
+        }
+        else
+            KeyState[10] = 0;
+    }
+    player.print_block();
+    if(clr && clock() - tClear >= 2 * fTick * speed){
+        set_color(0);
+        goto_xy(player.get_x() + 18, player.get_y() + 19);
+        std::cout << "      ";
+        goto_xy(player.get_x() + 18, player.get_y() + 20);
+        std::cout << "      ";
+        clr = 0;
+    }
     speed = (1.0 - 0.032 * player.get_level());
+}
+
+void quit(){
+    KeyState[10] = 1;
+    set_color(0);
+    system("cls");
+    set_color(7);
+    goto_xy(2, 5);
+    std::cout << "Are you sure you want to quit the game?";
+    goto_xy(2, 6);
+    std::cout << "If yes please press Q";
+    goto_xy(2, 7);
+    std::cout << "If no please press R to resume the game";
+    while(1){
+        getKeyState();
+        if(KeyPressed[10]){
+            if(!KeyState[10])
+                throw std::runtime_error("Quit");
+            KeyState[10] = 1;
+        }
+        else
+            KeyState[10] = 0;
+        if(KeyPressed[11])
+            return;
+        Sleep(flush_tick);
+    }
 }

@@ -3,9 +3,9 @@
 #define d_x 5
 #define d_y 20
 
-//string text_table[5][2]{{"T-Spin","Single","Double","Triple","Tetris"},{}};
-void goto_xy(int x, int y, HANDLE &hout) {COORD pos = {x, y}; SetConsoleCursorPosition(hout, pos);}
-void set_color(const unsigned short textColor, HANDLE &hout) {SetConsoleTextAttribute(hout, textColor);}
+std::string text_table[5] {"T-Spin","Single","Double","Triple","Tetris"};
+void goto_xy(int x, int y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsole, pos);}
+void set_color(const unsigned short textColor) {SetConsoleTextAttribute(hConsole, textColor);}
 void qClear(std::queue<Block*>& q) {std::queue<Block*> empty; std::swap(empty, q);}
 
 const short color_table[8] = {DEFAULT_COLOR+BG, 0+BG, 1+BG, 2+BG, 3+BG, 4+BG, 5+BG, 6+BG}; //[0] for none
@@ -44,18 +44,16 @@ private:
     Block *current = nullptr, *before = nullptr, *hold = nullptr;
     std::queue<Block*> next;
     const static short height = 20, width = 10;
-    HANDLE hConsole;
     short board[height+2][width]; //game id table
     short x, y;
-    bool bright_mode;
+    bool tSpin = 0;
     int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
 public:
     Table() : current(nullptr) { memset(board, 0, sizeof(board));}
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
-    void init(HANDLE &hConsole, const bool& bri) {
-        this -> hConsole = hConsole;
-        bright_mode = bri, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
+    void init() {
+        combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
         qClear(next);
     }
@@ -72,10 +70,11 @@ public:
     void print_block();
     //checking
     bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= 10 || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
-    bool isT_Spin() const;
     //filled check
-    bool chk_clear(const bool& tspin);
+    bool chk_clear(int& line, int& score);
     //return table data
+    inline short get_x() const {return this -> x;}
+    inline short get_y() const {return this -> y;}
     inline int get_score() const {return this -> score;}
     inline int get_line() const {return this -> clear_line;}
     inline int get_level() const {return this -> level;}
@@ -166,6 +165,7 @@ void Table::hard_drop(){
     if(isValid(*bTmp)){
         *current = bTmp->get_location();
     }
+    tSpin = 0;
     delete bTmp;
 }
 
@@ -175,6 +175,7 @@ bool Table::move_block(const short x, const short y){
     if(valid)// Change here
         (*current) += Point(x, y); // Change here
     delete bTmp;
+    tSpin = 0;
     return valid;
 }
 
@@ -189,11 +190,25 @@ void Table::rotate(const short direction){
             break;
         }
     }
+    tSpin = 0;
+    if(current -> get_ID() == 1){
+        Point tmp = current -> get_location();
+        short tx, ty, tCnt = 0;//tmp.x + 1 * ((i & 1)?1:-1), tmp.y + 1 * ((i&2)?1:-1)
+        for(int i = 0;i < 4;i++){
+            tx = (tmp.x + 1 * ((i & 1)?1:-1)), ty = (tmp.y + 1 * ((i&2)?1:-1));
+            if(x >= 20 || y >= 20 || x < 0 || y < 0)
+                tCnt++;
+            else if(board[y][x])
+                tCnt++;
+        }
+        if(tCnt >= 3)
+            tSpin = 1;
+    }
     delete bTmp;
 }
 
 //line clear
-bool Table::chk_clear(const bool& tspin = 0){ //need to append t-spin, etc...
+bool Table::chk_clear(int& line, int& tscore){
     bool allExist;// see if the whole row is filled
     int cnt = 0, point = 5, multiplier = 1;// the total line num cleared
     for(int i=0; i<20; i++){
@@ -214,14 +229,22 @@ bool Table::chk_clear(const bool& tspin = 0){ //need to append t-spin, etc...
     }
     this -> clear_line += cnt;
     combo = (cnt?(combo+1):0);
-    point = (cnt?(point<<cnt):0);
-    multiplier <<= (combo + tspin - 1);
+    point = ((cnt?(point<<cnt):0));
+    multiplier <<= (combo + tSpin - 1);
     this -> score += point * multiplier;
+    set_color(14);
+    goto_xy(x+18, y+19);
+    std::cout << (tSpin?text_table[0]:"");
+    goto_xy(x+18, y+20);
+    std::cout << (cnt?text_table[cnt]:"");
+    tSpin = 0;
     level = clear_line/10;
     if(level > 29) level = 29;
+    line = this -> clear_line;
+    tscore = this -> score;
     for(int i = 0;i < 10;i++)
         if(board[20][i])
-            throw std::runtime_error("game over");
+            throw std::runtime_error("Game over");
     return cnt;
 }
 
@@ -229,65 +252,65 @@ bool Table::chk_clear(const bool& tspin = 0){ //need to append t-spin, etc...
 void Table::print_table() const{
     //hold
     for(int i = 0; i < 4; ++i) {
-        goto_xy(x, y + i + 1, hConsole);
-        set_color(color_table[0], hConsole);
+        goto_xy(x, y + i + 1);
+        set_color(color_table[0]);
         std::cout << '|';
         for(int j = 0;j < 4;j++) std::cout << ' ';
     }
-    goto_xy(x, y + 5, hConsole);
+    goto_xy(x, y + 5);
     for(int i = 0;i < 5;i++) std::cout << '-';
     if(hold){
         (*hold) = Point(0, 0);
         for(auto i:hold -> block_position()){
-            goto_xy(x + 3 + i.x, y + 2 - i.y, hConsole);
-            set_color(color_table[(hold -> get_ID())] + (bright_mode?8:0), hConsole);
+            goto_xy(x + 3 + i.x, y + 2 - i.y);
+            set_color(color_table[(hold -> get_ID())] + (bright?8:0));
             std::cout << symbol_table[(hold -> get_ID())];
         }
         (*hold) = Point(d_x, d_y);
     }
     //board
-    goto_xy(x, y, hConsole);
-    set_color(color_table[0], hConsole);
+    goto_xy(x, y);
+    set_color(color_table[0]);
     for(int i = 0;i < width + 12; i++) std::cout << '-'; //row 0
     for(int i = 0; i < height; ++i) { //row 1-20
-        goto_xy(x + 5, y + i + 1, hConsole); //column 0
+        goto_xy(x + 5, y + i + 1); //column 0
         std::cout << '|';
         for (int j = 0; j < width; ++j) { //column 1-10
-            set_color(color_table[ board[19-i][j] ] + (j%2?128:0) + (bright_mode?8:0), hConsole); //inverse y-axis(19-i)
+            set_color(color_table[ board[19-i][j] ] + (j%2?128:0) + (bright?8:0)); //inverse y-axis(19-i)
             std::cout << symbol_table[ board[19-i][j] ];
         }
-        set_color(color_table[0], hConsole);
+        set_color(color_table[0]);
         std::cout << '|'; //column 11
     }
-    goto_xy(x + 5, y + 21, hConsole);
+    goto_xy(x + 5, y + 21);
     for(int i = 0;i < width + 2; i++) std::cout << '-';//row 21
     //next
     for(int i = 0; i < 4; ++i) {
-        goto_xy(x + width + 7, y + i + 1, hConsole);
-        set_color(color_table[0], hConsole);
+        goto_xy(x + width + 7, y + i + 1);
+        set_color(color_table[0]);
         for(int j = 0;j < 4;j++) std::cout << ' ';
         std::cout << '|';
     }
-    goto_xy(x + width + 7, y + 5, hConsole);
+    goto_xy(x + width + 7, y + 5);
     for(int i = 0;i < 5;i++) std::cout << '-';
     if(next.front()){
         (*(next.front())) = Point(0, 0);
         for(auto i:next.front() -> block_position()){
-            goto_xy(x + 9 + width + i.x, y + 2 - i.y, hConsole);
-            set_color(color_table[(next.front() -> get_ID())] + (bright_mode?8:0), hConsole);
+            goto_xy(x + 9 + width + i.x, y + 2 - i.y);
+            set_color(color_table[(next.front() -> get_ID())] + (bright?8:0));
             std::cout << symbol_table[(next.front() -> get_ID())];
         }
         (*(next.front())) = Point(d_x, d_y);
     }
     //status
-    set_color(color_table[0], hConsole);
-    goto_xy(x + width + 7, y + 6, hConsole);
+    set_color(color_table[0]);
+    goto_xy(x + width + 7, y + 6);
     std::cout << "Level:" << level;
-    goto_xy(x + width + 7, y + 7, hConsole);
+    goto_xy(x + width + 7, y + 7);
     std::cout << "Score:" << score;
-    goto_xy(x + width + 7, y + 8, hConsole);
+    goto_xy(x + width + 7, y + 8);
     std::cout << "Clear Line:" << clear_line;
-    goto_xy(x + width + 7, y + 9, hConsole);
+    goto_xy(x + width + 7, y + 9);
     std::cout << "Combo:" << combo;
     return;
 };
@@ -297,31 +320,18 @@ void Table::print_block() {
     short c = current -> get_ID(); // Change here
     for (auto i: before -> block_position())
         if(i.y < 20){
-            goto_xy(this->x + i.x + 6, this->y + 20 - i.y, hConsole);
-            set_color(color_table[0] + (i.x%2?128:0), hConsole);
+            goto_xy(this->x + i.x + 6, this->y + 20 - i.y);
+            set_color(color_table[0] + (i.x%2?128:0));
             std::cout << ' ';
         }
     for (auto i: current -> block_position())
         if(i.y < 20){
-            goto_xy(this->x + i.x + 6, this->y + 20 - i.y, hConsole);
-            set_color(color_table[c] + (i.x%2?128:0) + (bright_mode?8:0), hConsole);
+            goto_xy(this->x + i.x + 6, this->y + 20 - i.y);
+            set_color(color_table[c] + (i.x%2?128:0) + (bright?8:0));
             std::cout << symbol_table[c];
         }
     delete before;
     before = current->clone();
-}
-
-bool Table::isT_Spin() const {
-    Point tmp = current -> get_location();
-    short x, y; //tmp.x + 1 * ((i & 1)?1:-1), tmp.y + 1 * ((i&2)?1:-1)
-    for(int i = 0;i < 4;i++){
-        x = (tmp.x + 1 * ((i & 1)?1:-1)), y = (tmp.y + 1 * ((i&2)?1:-1));
-        if(x >= 20 || y >= 20 || x < 0 || y < 0)
-            continue;
-        else if(!board[y][x])
-            return 0;
-    }
-    return true;
 }
 
 //multi playing
