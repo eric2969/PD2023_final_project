@@ -27,7 +27,12 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 
-## Version History
+> ## Version History
+> ### 2023/12/18.a (v2.3beta)
+> Changed from Menu.cpp to Menu.h <br>
+> Added cinsole.h from console operations
+> Game's bug is yet to be fix (happens when new_block(), possibly because of delete current)
+
 > ### 2023/12/17.b (v2.2)
 > Refine game.h and table.h
 > Add pause and quit function
