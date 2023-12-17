@@ -7,25 +7,47 @@ bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
 const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt;
 //arrow:Left, Right
-clock_t before, tStuck, tClear, tArrow[2];
+clock_t before, tStuck, tClear, tStart, tArrow[2];
 
 void quit();
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
 void game_cycle(Table& player, int& line, int& score, bool single);
 
-void singlePlayer(int& line, int& score){
+void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Table player;
-    speed = 1.0;
-    
+    speed = 1.0, line = 0, score = 0;
     set_color(0);
     clrscr();
-    before = clock();
+    before = clock(), tStart = clock();
     player.set_position(2,2);
-    player.init();
+    player.init(tStart);
     player.new_block();
     player.print_table();
     while (1) {
+        if(mode == 1 && line >= goal)
+            throw std::runtime_error("Goal Achieved");
+        else if(mode == 2 && clock() - tStart >= goal * 1000)
+            throw std::runtime_error("Goal Achieved");
         game_cycle(player, line, score, 1);
+        Sleep(flush_tick);
+    }
+}
+
+void multiPlayer(int& line, int& score){
+    Table player, opponent;
+    speed = 1.0, line = 0, score = 0;
+    set_color(0);
+    clrscr();
+    before = clock(), tStart = clock();
+    player.set_position(2, 2);
+    opponent.set_position(60, 2);
+    player.init(tStart);
+    opponent.init();
+    player.new_block();
+    player.print_table();
+    opponent.print_table();
+    while (1) {
+        game_cycle(player, line, score, 0);
         Sleep(flush_tick);
     }
 }
@@ -36,16 +58,12 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     if (clock() - before > fall_tick){
         if(stuck){
             if(clock() - tStuck > stuck_wait){
-                
                 player.fix_block();
-                
                 if(player.chk_clear(line, score)){
                     clr = 1;
                     tClear = clock();
                 }
-                
                 player.new_block();
-                std::cout << "hi";
                 player.print_table();
                 stuck = 0;
                 KeyState[7] = 0;

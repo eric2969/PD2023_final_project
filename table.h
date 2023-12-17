@@ -46,14 +46,21 @@ private:
     const static short height = 20, width = 10;
     short board[height+2][width]; //game id table
     short x, y;
-    bool tSpin = 0;
+    bool tSpin = 0, bTime;
     int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
+    clock_t tStart;
 public:
     Table() : current(nullptr) { memset(board, 0, sizeof(board));}
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
-    void init() {
-        combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
+    void init(){
+        bTime = 0, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
+        current = nullptr, before = nullptr, hold = nullptr;
+        qClear(next);
+    }
+    void init(clock_t time){
+        tStart = time;
+        bTime = 1, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
         qClear(next);
     }
@@ -137,8 +144,9 @@ void Table::new_block(){
         }
     }
     delete before;
+    before = nullptr;
     delete current;
-    std::cout << "hello";
+    current = nullptr;
     current = next.front();
     before = current->clone();
     next.pop();
@@ -305,13 +313,13 @@ void Table::print_table() const{
     }
     //status
     set_color(color_table[0]);
-    goto_xy(x + width + 7, y + 6);
-    std::cout << "Level:" << level;
     goto_xy(x + width + 7, y + 7);
-    std::cout << "Score:" << score;
+    std::cout << "Level:" << level;
     goto_xy(x + width + 7, y + 8);
-    std::cout << "Clear Line:" << clear_line;
+    std::cout << "Score:" << score;
     goto_xy(x + width + 7, y + 9);
+    std::cout << "Clear Line:" << clear_line;
+    goto_xy(x + width + 7, y + 10);
     std::cout << "Combo:" << combo;
     return;
 };
@@ -331,7 +339,13 @@ void Table::print_block() {
             set_color(color_table[c] + (i.x%2?128:0) + (bright?8:0));
             std::cout << symbol_table[c];
         }
+    if(bTime){
+        set_color(color_table[0]);
+        goto_xy(x + width + 7, y + 6);
+        std::cout << "Time:" << (clock() - tStart) / 1000;
+    }
     delete before;
+    before = nullptr;
     before = current->clone();
 }
 

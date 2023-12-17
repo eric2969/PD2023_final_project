@@ -28,6 +28,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/18.b (v2.4)
+> Create timer in the game table <br>
+> Create new option : Quit <br>
+> allow give in challenge mode 0:infinite, 1:line, 2:time
+
 > ### 2023/12/18.a (v2.3beta)
 > Changed from Menu.cpp to Menu.h <br>
 > Added cinsole.h from console operations

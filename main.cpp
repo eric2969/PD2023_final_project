@@ -13,11 +13,11 @@ const short flush_tick = 2;
 #include "VK.h"
 #include "game.h"
 #include "Menu.h"
- 
+
 //#include "server.h"
 //#include "client.h"
 
-#define FONT
+#define nFONT
 using namespace std;
 
 #define SET_PATH "src/settings.txt"
@@ -27,7 +27,6 @@ int playTimes, clearCnt, scoreCnt, highClear, highScore;
 
 void game_init();
 void game_exit();
-void conf_set(int& tDas, int& tGrav, bool& bri) {das = tDas, gravity = tGrav;bright = bri;}
 void record_reset() {playTimes = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score);
 
@@ -36,30 +35,21 @@ void SetFont(int);
 #endif
 
 struct option1{
-    int &line,&score;
-    option1(int &line,int &score):line(line), score(score){}
+    int line, score;
     void operator() (){
          singlePlayer(line, score);
+         record_update(line, score);
     }
 };
 struct option2{
+    int line, score;
     void operator() (){
-         Table player;
-         player.set_position(2,2);
-         player.new_block();
-         player.print_table();
-         player.print_block();
-         player.fix_block();
-         Sleep(2000);
-         goto_xy(0,0);
-         hidecursor();
-         set_color(0);
-         clrscr();
+         multiPlayer(line, score);
+         record_update(line, score);
     }
 };
 struct option3{
     void operator() (){
-        //system("mode con cols=100 lines=50");
         set_color(7);
         setcursor(0,0);
         cout << "hi";
@@ -68,36 +58,31 @@ struct option3{
         set_color(0);
         Sleep(2000);
         clrscr();
-        //system("cls");
+    }
+};
+struct option4{
+    void operator() (){
+        game_exit();
     }
 };
 
+
 signed main(){
-    int tmpClear = 0, tmpScore = 0;
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+#ifdef FONT
     SetFont(25);
+#endif
     game_init();
     Menu loop;
     string s = "Tetris";
-    option1 opt1(tmpClear, tmpScore);
+    option1 opt1;
     option2 opt2;
     option3 opt3;
-    
+    option4 opt4;
     loop.settitle(s);
-    loop.add(opt1, "Single Player").add(opt2, "Multiplayer").add(opt3, "Settings");
+    loop.add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
     loop.start();
-    /*try{singlePlayer(tmpClear, tmpScore);}
-    catch(runtime_error e){
-        set_color(0);
-        system("cls");
-        set_color(7);
-        cout << e.what() << endl;
-    }*/
-    record_update(tmpClear, tmpScore);
-    //multiPlayer(hConsole, flush_tick, das, gravity, bright, tmpClear, tmpScore);
-    //record_update(tmpClear, tmpScore);
-    system("pause");
-    game_exit();
+    return 0;
 }
 
 void game_init(){
