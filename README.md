@@ -28,6 +28,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/18.f (v2.6.1beta)
+> Improve menu <br>
+> Input still need to be fix (if input char...)
+
 > ### 2023/12/18.e (v2.6beta)
 > Added sub menu <br>
 > Fixed the bug that record and setting aren't saving
