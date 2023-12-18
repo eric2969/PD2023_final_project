@@ -4,8 +4,10 @@
 
 HANDLE hConsole;
 bool bright;
-int das, gravity;
+int das, arr, gravity;
 const short flush_tick = 2;
+
+#define DEBUG
 
 #include "console.h"
 #include "block.h"
@@ -74,13 +76,11 @@ signed main(){
 #endif
     game_init();
     Menu loop;
-    string s = "Tetris";
     option1 opt1;
     option2 opt2;
     option3 opt3;
     option4 opt4;
-    loop.settitle(s);
-    loop.add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
+    loop.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
     loop.start();
     return 0;
 }
@@ -89,7 +89,7 @@ void game_init(){
     streambuf *cinbuf = cin.rdbuf();
     ifstream setting(SET_PATH), record(RECORD_PATH);
     cin.rdbuf(setting.rdbuf());
-    cin >> das >> gravity >> bright;
+    cin >> das >> arr >> gravity >> bright;
     cin.rdbuf(record.rdbuf());
     cin >> playTimes >> clearCnt >> scoreCnt >> highClear >> highScore;
     cin.rdbuf(cinbuf);
@@ -101,7 +101,7 @@ void game_exit(){
     streambuf *coutbuf = cout.rdbuf();
     ofstream setting(SET_PATH), record(RECORD_PATH);
     cout.rdbuf(setting.rdbuf());
-    cout << das << ' ' << gravity << ' ' << bright;
+    cout << das << ' ' << arr << ' ' << gravity << ' ' << bright;
     cout.rdbuf(record.rdbuf());
     cout << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
     cout.rdbuf(coutbuf);

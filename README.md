@@ -28,6 +28,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/18.c (v2.5beta)
+> Add arr function <br>
+> add debug function (by #define DEBUG) <br>
+> there is some problem in block clone() or memory allocation
+
 > ### 2023/12/18.b (v2.4)
 > Create timer in the game table <br>
 > Create new option : Quit <br>
