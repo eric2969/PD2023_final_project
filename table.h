@@ -1,5 +1,4 @@
-#define DEFAULT_COLOR 0
-#define BG 112
+#define DEFAULT_COLOR 112
 #define d_x 5
 #define d_y 20
 
@@ -8,8 +7,7 @@ void goto_xy(int x, int y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsol
 void set_color(const unsigned short textColor) {SetConsoleTextAttribute(hConsole, textColor);}
 void qClear(std::queue<Block*>& q) {std::queue<Block*> empty; std::swap(empty, q);}
 
-const short color_table[8] = {DEFAULT_COLOR+BG, 0+BG, 1+BG, 2+BG, 3+BG, 4+BG, 5+BG, 6+BG}; //[0] for none
-const char symbol_table[8] = {' ', '#', '@', '?', '$', '&', '%', '+'}; //[0] for none
+const short color_table[8] = {DEFAULT_COLOR, 0, 1*16, 2*16, 3*16, 4*16, 5*16, 6*16}; //[0] for none
 
 //5-stage test for kick_table
 const Point Kick_Table(bool isI, const short& start, const short& drc, const short& test){
@@ -290,7 +288,7 @@ void Table::print_table() const{
     //hold
     for(int i = 0; i < 4; ++i) {
         goto_xy(x, y + i + 1);
-        set_color(color_table[0]);
+        set_color(color_table[0] + (bright?128:0));
         std::cout << '|';
         for(int j = 0;j < 4;j++) std::cout << ' ';
     }
@@ -300,23 +298,23 @@ void Table::print_table() const{
         (*hold) = Point(0, 0);
         for(auto i:hold -> block_position()){
             goto_xy(x + 3 + i.x, y + 2 - i.y);
-            set_color(color_table[(hold -> get_ID())] + (bright?8:0));
-            std::cout << symbol_table[(hold -> get_ID())];
+            set_color(color_table[(hold -> get_ID())] + (bright?128:0));
+            std::cout << ' ';
         }
         (*hold) = Point(d_x, d_y);
     }
     //board
     goto_xy(x, y);
-    set_color(color_table[0]);
+    set_color(color_table[0] + (bright?128:0));
     for(int i = 0;i < width + 12; i++) std::cout << '-'; //row 0
     for(int i = 0; i < height; ++i) { //row 1-20
         goto_xy(x + 5, y + i + 1); //column 0
         std::cout << '|';
         for (int j = 0; j < width; ++j) { //column 1-10
-            set_color(color_table[ board[19-i][j] ] + (j%2?128:0) + (bright?8:0)); //inverse y-axis(19-i)
-            std::cout << symbol_table[ board[19-i][j] ];
+            set_color(color_table[ board[19-i][j] ] + (board[19-i][j]?0:((j % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
+            std::cout << ' ';
         }
-        set_color(color_table[0]);
+        set_color(color_table[0] + (bright?128:0));
         std::cout << '|'; //column 11
     }
     goto_xy(x + 5, y + 21);
@@ -324,7 +322,7 @@ void Table::print_table() const{
     //next
     for(int i = 0; i < 4; ++i) {
         goto_xy(x + width + 7, y + i + 1);
-        set_color(color_table[0]);
+        set_color(color_table[0] + (bright?128:0));
         for(int j = 0;j < 4;j++) std::cout << ' ';
         std::cout << '|';
     }
@@ -334,13 +332,13 @@ void Table::print_table() const{
         (*(next.front())) = Point(0, 0);
         for(auto i:next.front() -> block_position()){
             goto_xy(x + 9 + width + i.x, y + 2 - i.y);
-            set_color(color_table[(next.front() -> get_ID())] + (bright?8:0));
-            std::cout << symbol_table[(next.front() -> get_ID())];
+            set_color(color_table[(next.front() -> get_ID())] + (bright?128:0));
+            std::cout << ' ';
         }
         (*(next.front())) = Point(d_x, d_y);
     }
     //status
-    set_color(color_table[0]);
+    set_color(color_table[0] + (bright?128:0));
     goto_xy(x + width + 7, y + 7);
     std::cout << "Level:" << level;
     goto_xy(x + width + 7, y + 8);
@@ -358,17 +356,17 @@ void Table::print_block() {
     for (auto i: before -> block_position())
         if(i.y < 20){
             goto_xy(this->x + i.x + 6, this->y + 20 - i.y);
-            set_color(color_table[0] + (i.x%2?128:0));
+            set_color(color_table[0] + ((i.x + bright)%2?128:0));
             std::cout << ' ';
         }
     for (auto i: current -> block_position())
         if(i.y < 20){
             goto_xy(this->x + i.x + 6, this->y + 20 - i.y);
-            set_color(color_table[c] + (i.x%2?128:0) + (bright?8:0));
-            std::cout << symbol_table[c];
+            set_color(color_table[c] + (bright?128:0));
+            std::cout << ' ';
         }
     if(bTime){
-        set_color(color_table[0]);
+        set_color(color_table[0] + (bright?128:0));
         goto_xy(x + width + 7, y + 6);
         std::cout << "Time:" << (clock() - tStart) / 1000;
     }

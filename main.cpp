@@ -167,7 +167,7 @@ struct option3{
         cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode (0:dark/1:light): ";
         while(1){
             cin >> bright;
-            if(!bright && bright == 1)
+            if(!bright || bright == 1)
                 break;
             else{
                 cin.clear();

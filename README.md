@@ -28,6 +28,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/18.g (v2.7beta)
+> Big Improve in game display <br>
+> reEnabling the #define FONT flag <br>
+> Fixed holding input condition
+
 > ### 2023/12/18.f (v2.6.1beta)
 > Improve menu <br>
 > Input still need to be fix (if input char...)
