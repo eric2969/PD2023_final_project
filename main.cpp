@@ -51,8 +51,8 @@ struct option1{
                 cout << e.what() << endl;
                 cout << "Used Time:" << (clock() - t)/1000 << endl;
                 cout << "Clear Line:" << line << endl;
-                cout << "Score:" << score << endl;
-                Sleep(1000);
+                cout << "Score:" << score << endl << endl;
+                Sleep(800);
                 pause();
          }
          record_update(line, score);
@@ -93,8 +93,7 @@ struct option1{
     }
     void operator() (){
          Menu sub_menu;
-         sub_menu.settitle("Choose a Game Mode, Right click for return to main menu");
-         sub_menu.add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
+         sub_menu.settitle("Choose a Game Mode, Right click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
          sub_menu.start();
     }
 };
@@ -123,12 +122,69 @@ struct option2{
     }
 };
 struct option3{
+    static int iTmp;
+    static void sub_option1(){
+        set_color(0);
+        clrscr();
+        set_color(7);
+        cout << "Records\n\n";
+        cout << "Game Played" << playTimes << endl;
+        cout << "Total Clear Line:" << clearCnt << endl;
+        cout << "Total Score:" << scoreCnt << endl;
+        cout << "Best Clear Line:" << highClear << endl;
+        cout << "Best Score:" << highScore << endl << endl;
+        Sleep(800);
+        pause();
+    }
+    static void sub_option2(){
+        cout << "Are you sure you want to reset your record? [1(No)/2(Yes)]: ";
+        while(1){
+            cin >> iTmp;
+            if(iTmp == 1){
+                break;
+            }
+            else if(iTmp == 2){
+                record_reset();
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Record Reset\n\n";
+                Sleep(800);
+                pause();
+                break;
+            }
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input 1 or 2: ";
+            }
+        }
+    }
+    void operator() (){
+        Menu sub_menu;
+        sub_menu.settitle("Record, Right click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
+        sub_menu.start();
+        ofstream record(RECORD_PATH);
+        record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+        record.close();
+    }
+};
+int option3::iTmp = 0;
+struct option4{
+    static int iTmp;
     static void sub_option1(){
         cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR [1(slow)-500(fast)]: ";
         while(1){
             cin >> arr;
-            if(arr > 0 && arr <= 500)
+            if(arr > 0 && arr <= 500){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Reset\n\n";
+                Sleep(800);
+                pause();
                 break;
+            }
             else{
                 cin.clear();
                 fflush(stdin);
@@ -140,8 +196,15 @@ struct option3{
         cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS [1(slow)-1000(fast)]: ";
         while(1){
             cin >> das;
-            if(das > 0 && das <= 1000)
+            if(das > 0 && das <= 1000){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Reset\n\n";
+                Sleep(800);
+                pause();
                 break;
+            }
             else{
                 cin.clear();
                 fflush(stdin);
@@ -153,9 +216,16 @@ struct option3{
     static void sub_option3(){
          cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level [1(slow)-50(fast)]: ";
          while(1){
-             cin >> gravity;
-            if(gravity > 0 && gravity <= 50)
+            cin >> gravity;
+            if(gravity > 0 && gravity <= 50){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Reset\n\n";
+                Sleep(800);
+                pause();
                 break;
+            }
             else{
                 cin.clear();
                 fflush(stdin);
@@ -164,30 +234,37 @@ struct option3{
          }
     }
     static void sub_option4(){
-        cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode [0(dark)/1(light)]: ";
+        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode [1(Dark)/2(Bright)]: ";
         while(1){
-            cin >> bright;
-            if(!bright || bright == 1)
+            cin >> iTmp;
+            if(iTmp == 1 || iTmp == 2){
+                bright = iTmp - 1;
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Reset\n\n";
+                Sleep(800);
+                pause();
                 break;
+            }
             else{
                 cin.clear();
                 fflush(stdin);
-                cout << "Please input 0 or 1: ";
+                cout << "Please input 1 or 2: ";
             }
         }
     }
     void operator() (){
         Menu sub_menu;
-        sub_menu.settitle("Game Setting, Right click for return to main menu");
-        sub_menu.add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
+        sub_menu.settitle("Game Setting, Right click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
         sub_menu.start();
         ofstream setting(SET_PATH);
         setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
         setting.close();
     }
 };
-
-struct option4{
+int option4::iTmp = 0;
+struct option5{
     void operator() (){
         game_exit();
     }
@@ -219,7 +296,8 @@ void SetFont(int size = 30) {
     option2 opt2;
     option3 opt3;
     option4 opt4;
-    loop.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
+    option5 opt5;
+    loop.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
     loop.start();
     return 0;
 }
