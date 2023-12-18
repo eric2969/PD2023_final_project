@@ -1,16 +1,16 @@
-#pragma comment(lib, "User32.lib") //User32.lib library for event listener
-#pragma comment (lib ,"imm32.lib")
 #include <bits/stdc++.h>
 #include <windows.h>
 
-BOOL WINAPI SetCurrentConsoleFontEx(HANDLE hConsoleOutput, BOOL bMaximumWindow, PCONSOLE_FONT_INFOEX
-lpConsoleCurrentFontEx);
+using namespace std;
+
 HANDLE hConsole;
 bool bright;
 int das, arr, gravity;
+string sbuff;
 const short flush_tick = 2;
 
 #define DEBUG
+#define nFONT
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
@@ -24,14 +24,17 @@ const short flush_tick = 2;
 #include "game.h"
 #include "Menu.h"
 
-using namespace std;
-
 int playTimes, clearCnt, scoreCnt, highClear, highScore;
 
+int stoi();
 void game_init();
 void game_exit();
 void record_reset() {playTimes = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score);
+
+#ifdef FONT
+void SetFont(int);
+#endif
 
 struct option1{
     static int line, score, gameMode, goal;
@@ -62,10 +65,13 @@ struct option1{
         cout << "Please input your goal (line)?" << endl;
         while(1){
             cin >> goal;
-            if(goal <= 0)
-                cout << "Please input a number bigger than 0" << endl;
-            else
+            if(goal > 0)
                 break;
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input a number bigger than 0" << endl;
+            }
         }
         gameMode = 1;
         run();
@@ -74,10 +80,13 @@ struct option1{
         cout << "Please input your time (second)?" << endl;
         while(1){
             cin >> goal;
-            if(goal <= 0)
-                cout << "Please input a number bigger than 0" << endl;
-            else
+            if(goal > 0)
                 break;
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input a number bigger than 0" << endl;
+            }
         }
         gameMode = 2;
         run();
@@ -97,17 +106,20 @@ clock_t option1::t = 0;
 struct option2{
     int line, score;
     void operator() (){
-         try{
-             multiPlayer(line, score);
-         }
-         catch(runtime_error e){
-                set_color(0);
-                clrscr();
-                set_color(7);
-                cout << e.what() << endl;
-                pause();
-         }
-         record_update(line, score);
+#ifdef FONT
+    SetFont(25);
+#endif
+        try{
+            multiPlayer(line, score);
+        }
+        catch(runtime_error e){
+            set_color(0);
+            clrscr();
+            set_color(7);
+            cout << e.what() << endl;
+            pause();
+        }
+        record_update(line, score);
     }
 };
 struct option3{
@@ -117,8 +129,11 @@ struct option3{
             cin >> arr;
             if(arr > 0 && arr <= 500)
                 break;
-            else
+            else{
+                cin.clear();
+                fflush(stdin);
                 cout << "Please input a number between than 1 and 500: ";
+            }
         }
      }
     static void sub_option2(){
@@ -127,8 +142,11 @@ struct option3{
             cin >> das;
             if(das > 0 && das <= 1000)
                 break;
-            else
+            else{
+                cin.clear();
+                fflush(stdin);
                 cout << "Please input a number between than 1 and 1000: ";
+            }
         }
 
      }
@@ -138,21 +156,26 @@ struct option3{
              cin >> gravity;
             if(gravity > 0 && gravity <= 50)
                 break;
-            else
+            else{
+                cin.clear();
+                fflush(stdin);
                 cout << "Please input a number between than 1 and 50: ";
+            }
          }
     }
     static void sub_option4(){
-         cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode (0:dark/1:light): ";
-         while(1){
+        cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode (0:dark/1:light): ";
+        while(1){
             cin >> bright;
             if(!bright && bright == 1)
                 break;
-            else
+            else{
+                cin.clear();
+                fflush(stdin);
                 cout << "Please input 0 or 1: ";
-         }
+            }
+        }
     }
-
     void operator() (){
         Menu sub_menu;
         sub_menu.settitle("Game Setting, Right click for return to main menu");
@@ -173,16 +196,29 @@ struct option4{
 
 signed main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+#ifdef FONT
+    FullScreen();
+    SetFont(25);
+    #ifdef FONT
+void SetFont(int size = 30) {
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof cfi;
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = size;
+    cfi.dwFontSize.Y = size;
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+}
+#endif // FONT
+
+#endif
     game_init();
     Menu loop;
     option1 opt1;
     option2 opt2;
     option3 opt3;
     option4 opt4;
-//    ifstream pic(PIC_PATH);
-//    stringstream strStream;
-//    strStream << pic.rdbuf(); //read the file
-//    string title = strStream.str(); //str holds the content of the file
     loop.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
     loop.start();
     return 0;
@@ -212,3 +248,16 @@ void record_update(int& clr, int& score){
     highClear = max(highClear, clr);
     highScore = max(highScore, score);
 }
+
+#ifdef FONT
+void SetFont(int size = 30) {
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof cfi;
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = size;
+    cfi.dwFontSize.Y = size;
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+}
+#endif // FONT
