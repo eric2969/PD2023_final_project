@@ -9,7 +9,7 @@ int das, arr, gravity;
 string sbuff;
 const short flush_tick = 2;
 
-#define DEBUG
+#define nDEBUG
 #define nFONT
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
@@ -17,11 +17,11 @@ const short flush_tick = 2;
 
 //#include "server.h"
 //#include "client.h"
-#include "console.h"
-#include "block.h"
-#include "table.h"
+#include "Console.h"
+#include "Block.h"
+#include "Table.h"
 #include "VK.h"
-#include "game.h"
+#include "Game.h"
 #include "Menu.h"
 
 int playTimes, clearCnt, scoreCnt, highClear, highScore;
@@ -124,7 +124,7 @@ struct option2{
 };
 struct option3{
     static void sub_option1(){
-        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR (1-500): ";
+        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR [1(slow)-500(fast)]: ";
         while(1){
             cin >> arr;
             if(arr > 0 && arr <= 500)
@@ -137,7 +137,7 @@ struct option3{
         }
      }
     static void sub_option2(){
-        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS (1-1000): ";
+        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS [1(slow)-1000(fast)]: ";
         while(1){
             cin >> das;
             if(das > 0 && das <= 1000)
@@ -151,7 +151,7 @@ struct option3{
 
      }
     static void sub_option3(){
-         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level (1-50): ";
+         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level [1(slow)-50(fast)]: ";
          while(1){
              cin >> gravity;
             if(gravity > 0 && gravity <= 50)
@@ -164,7 +164,7 @@ struct option3{
          }
     }
     static void sub_option4(){
-        cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode (0:dark/1:light): ";
+        cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode [0(dark)/1(light)]: ";
         while(1){
             cin >> bright;
             if(!bright || bright == 1)

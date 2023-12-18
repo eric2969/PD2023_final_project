@@ -87,7 +87,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     for(int i = 0;i < 2;i++){
         if (KeyPressed[2 + i]) {
             if (KeyState[2 + i]){
-                if(clock() - tDas > das * speed && clock() - tArrow > arr * speed){
+                if(clock() - tDas > (1001 - das) * speed && clock() - tArrow > (501 - arr) * speed){
                     tArrow = clock();
                     player.move_block((i%2?1:-1), 0);
                     stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
@@ -150,11 +150,11 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 set_color(0);
                 clrscr();
                 set_color(7);
-                goto_xy(2, 5);
+                goto_xy(1, 1);
                 std::cout << "You have paused the game";
-                goto_xy(2, 6);
+                goto_xy(1, 2);
                 std::cout << "Press R to resume the game";
-                goto_xy(2, 7);
+                goto_xy(1, 3);
                 std::cout << "Press Q to quit the game";
                 while(1){
                     getKeyState();
@@ -174,19 +174,17 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             KeyState[9] = 0;
     }
     //q:quit(10)
-    if(single){
-        if (KeyPressed[10]){
-            if(!KeyState[10]){
-                quit();
-                set_color(0);
-                clrscr();
-                player.print_table();
-            }
-            KeyState[10] = 1;
+    if (KeyPressed[10]){
+        if(!KeyState[10]){
+            quit();
+            set_color(0);
+            clrscr();
+            player.print_table();
         }
-        else
-            KeyState[10] = 0;
+        KeyState[10] = 1;
     }
+    else
+        KeyState[10] = 0;
     player.print_block();
     if(clr && clock() - tClear >= 2 * fTick * speed){
         set_color(0);
@@ -206,11 +204,11 @@ void quit(){
     set_color(0);
     clrscr();
     set_color(7);
-    goto_xy(2, 5);
+    goto_xy(1, 1);
     std::cout << "Are you sure you want to quit the game?";
-    goto_xy(2, 6);
+    goto_xy(1, 2);
     std::cout << "If yes please press Q";
-    goto_xy(2, 7);
+    goto_xy(1, 3);
     std::cout << "If no please press R to resume the game";
     while(1){
         getKeyState();
