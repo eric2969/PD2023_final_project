@@ -79,9 +79,9 @@ void setmode()
 {
     DWORD mode;
     GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &mode);
-    mode &= ~ENABLE_QUICK_EDIT_MODE; //移除快速??模式
-    mode &= ~ENABLE_INSERT_MODE;     //移除插入模式
-    // mode &= ~ENABLE_MOUSE_INPUT;     //移除鼠??入
+    mode &= ~ENABLE_QUICK_EDIT_MODE; //disable fast update mode
+    mode &= ~ENABLE_INSERT_MODE;     //disable insert mode
+    // mode &= ~ENABLE_MOUSE_INPUT;     //disable mouse input
     SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), mode);
 }
  
@@ -110,7 +110,7 @@ void Menu::recordposition(){
 bool Menu::implement(COORD clickpos){
     for (auto p = nodes_.begin(); p != nodes_.end(); p++)
     {
-        if (p->pos_ - clickpos) //??成
+        if (p->pos_ - clickpos) //if clicked at the right position
         {
             hidecursor(0);
             clean();
@@ -177,6 +177,10 @@ void Menu::start(){
         }
             
     } while (mouse.dwButtonState != R_BUTTON);
-    Sleep(100);
+    while(mouse.dwButtonState == R_BUTTON){
+        mouse = waitmouse();
+        Sleep(10);
+    }
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 }
 #endif

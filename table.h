@@ -146,6 +146,11 @@ void Table::new_block(){
     delete before;
     before = nullptr;
     delete current;
+#ifdef DEBUG
+    set_color(15);
+    goto_xy(27,2);
+    std::cout << current;
+#endif // DEBUG
     current = nullptr;
     current = next.front();
     before = current->clone();
@@ -179,11 +184,27 @@ void Table::hard_drop(){
 }
 
 bool Table::move_block(const short x, const short y){
+#ifdef DEBUG
+    set_color(15);
+    goto_xy(27, 3);
+    std::cout << "Curr" << current;
+#endif // DEBUG
     Block *bTmp = current -> clone();
+#ifdef DEBUG
+    set_color(15);
+    goto_xy(27, 3);
+    std::cout << "Current:" << current << " bTmp:" << bTmp;
+#endif // DEBUG
     bool valid = isValid((*bTmp) += Point(x, y));
     if(valid)// Change here
         (*current) += Point(x, y); // Change here
     delete bTmp;
+    bTmp = nullptr;
+#ifdef DEBUG
+    set_color(15);
+    goto_xy(27, 4);
+    std::cout << "Current:" << current << " bTmp:" << bTmp;
+#endif // DEBUG
     tSpin = 0;
     return valid;
 }
@@ -214,6 +235,7 @@ void Table::rotate(const short direction){
             tSpin = 1;
     }
     delete bTmp;
+    bTmp = nullptr;
 }
 
 //line clear
@@ -351,7 +373,7 @@ void Table::print_block() {
 
 //multi playing
 void Table::SendTable(char str[]) {
-    short tx, ty;
+    short tx, ty, sTmp;
     char tmp, snd[105] = "";
     for(int i = 0;i < 100;i++){
         tmp = 0;
@@ -360,6 +382,10 @@ void Table::SendTable(char str[]) {
             tmp |= (board[ty][tx + j] << (j * 3));
         snd[i] = tmp;
     }
+    //for(auto i:current -> block_position()){
+      //  sTmp = i.y * 5 + i.x / 5;
+    //    snd[sTmp] |= ((current -> get_ID()) <<  ((i.x % 2)?3:0));
+    //}
     strcpy(str, snd);
 }
 void Table::RecvTable(const char str[]) {

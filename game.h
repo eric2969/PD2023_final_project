@@ -7,7 +7,7 @@ bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
 const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt;
 //arrow:Left, Right
-clock_t before, tStuck, tClear, tStart, tArrow[2];
+clock_t before, tStuck, tClear, tStart, tArrow,tDas;
 
 void quit();
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
@@ -40,7 +40,7 @@ void multiPlayer(int& line, int& score){
     clrscr();
     before = clock(), tStart = clock();
     player.set_position(2, 2);
-    opponent.set_position(60, 2);
+    opponent.set_position(35, 2);
     player.init(tStart);
     opponent.init();
     player.new_block();
@@ -82,19 +82,20 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         }
     }
     //down arrow
-    fall_tick = (KeyPressed[1])?(fTick*speed*(21 - gravity)/20):(fTick*speed);
+    fall_tick = (KeyPressed[1])?(fTick*speed*(51 - gravity)/50):(fTick*speed);
     //left/right arrow
     for(int i = 0;i < 2;i++){
         if (KeyPressed[2 + i]) {
             if (KeyState[2 + i]){
-                if(clock() - tArrow[i] > das * speed){
+                if(clock() - tDas > das * speed && clock() - tArrow > arr * speed){
+                    tArrow = clock();
                     player.move_block((i%2?1:-1), 0);
                     stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
                 }
             }
             else{
                 player.move_block((i%2?1:-1), 0);
-                tArrow[i] = clock();
+                tDas = clock(), tArrow = clock();
                 stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
             }
             KeyState[2 + i] = 1;

@@ -29,8 +29,10 @@ lpConsoleCurrentFontEx);
 
 HANDLE hConsole;
 bool bright;
-int das, gravity;
+int das, arr, gravity;
 const short flush_tick = 2;
+
+#define DEBUG
 
 #include "console.h"
 #include "block.h"
@@ -46,6 +48,7 @@ const short flush_tick = 2;
 using namespace std;
 
 #define SET_PATH "src/settings.txt"
+#define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
 
 int playTimes, clearCnt, scoreCnt, highClear, highScore;
@@ -59,34 +62,93 @@ void record_update(int& clr, int& score);
 void SetFont(int);
 #endif
 
+
 struct option1{
-    int line, score;
-    void operator() (){
-         SetFont(25); 
-         singlePlayer(line, score);
+    static int line, score;
+    static int gameMode;
+    static void run(){
+        try{
+             singlePlayer(line, score);
+         }
+         catch(runtime_error e){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << e.what() << endl;
+                Sleep(2000);
+                pause();
+         }
          record_update(line, score);
     }
+    static void sub_option1(){
+         gameMode = 1;
+         run();
+     }
+    static void sub_option2(){
+         gameMode = 2;
+         run();
+     }
+    static void sub_option3(){
+         gameMode = 3;
+         run();
+    }
+    void operator() (){
+         Menu sub_menu;
+         sub_menu.settitle("Game Mode");
+         sub_menu.add(sub_option1, "Mode 1").add(sub_option2, "Mode 2").add(sub_option3, "Mode 3");
+         sub_menu.start();
+    }
 };
+int option1::gameMode = 0;
+int option1::line = 0;
+int option1::score = 0;
 struct option2{
     int line, score;
     void operator() (){
          SetFont(25); 
-         multiPlayer(line, score);
+         try{
+             multiPlayer(line, score);
+         }
+         catch(runtime_error e){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << e.what() << endl;
+                Sleep(2000);
+                pause();
+         }
          record_update(line, score);
     }
 };
 struct option3{
+    static void sub_option1(){
+         cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR: ";
+         cin >> arr;
+     }
+    static void sub_option2(){
+         cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS: ";
+         cin >> das;
+     }
+    static void sub_option3(){
+         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level: ";
+         cin >> gravity;
+    }
+    static void sub_option4(){
+         cout << "Current Bright Mode is: " << bright <<"\nPlease Type in the New Bright Mode: ";
+         cin >> bright;
+    }
+    
     void operator() (){
-        set_color(7);
-        setcursor(0,0);
-        cout << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
-        setcursor(0,0);
-        hidecursor();
-        set_color(0);
-        Sleep(2000);
-        clrscr();
+        Menu sub_menu;
+        sub_menu.settitle("Game Setting");
+        sub_menu.add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
+        sub_menu.start();
+        ofstream setting(SET_PATH);
+        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
+        setting.close();
     }
 };
+
 struct option4{
     void operator() (){
         game_exit();
@@ -102,20 +164,22 @@ signed main(){
 #endif
     game_init();
     Menu loop;
-    string s = "Tetris";
     option1 opt1;
     option2 opt2;
     option3 opt3;
     option4 opt4;
-    loop.settitle(s);
-    loop.add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
+//    ifstream pic(PIC_PATH);
+//    stringstream strStream;
+//    strStream << pic.rdbuf(); //read the file
+//    string title = strStream.str(); //str holds the content of the file
+    loop.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Settings").add(opt4, "Quit");
     loop.start();
     return 0;
 }
 
 void game_init(){
     ifstream setting(SET_PATH), record(RECORD_PATH);
-    setting >> das >> gravity >> bright;
+    setting >> arr >> das >> gravity >> bright;
     record >> playTimes >> clearCnt >> scoreCnt >> highClear >> highScore;
     setting.close();
     record.close();
@@ -123,7 +187,7 @@ void game_init(){
 
 void game_exit(){
     ofstream setting(SET_PATH), record(RECORD_PATH);
-    setting << das << ' ' << gravity << ' ' << bright;
+    setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
     record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
     setting.close();
     record.close();
