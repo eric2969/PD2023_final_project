@@ -46,7 +46,7 @@ private:
     const static short height = 20, width = 10;
     short board[height+2][width]; //game id table
     short x, y;
-    bool tSpin = 0, bTime;
+    bool tSpin = 0, pb2b = 0, b2b = 0, bTime;
     int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
     clock_t tStart;
 public:
@@ -54,12 +54,14 @@ public:
     ~Table() {}
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
     void init(){
+        pb2b = 0, b2b = 0;
         bTime = 0, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
         qClear(next);
     }
     void init(clock_t time){
         tStart = time;
+        pb2b = 0, b2b = 0;
         bTime = 1, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
         qClear(next);
@@ -258,16 +260,20 @@ bool Table::chk_clear(int& line, int& tscore){
             i--; //check the line that have cleared. because move down
         }
     }
-    this -> clear_line += cnt;
-    combo = (cnt?(combo+1):0);
-    point = ((cnt?(point<<cnt):0));
-    multiplier <<= (combo + tSpin - 1);
-    this -> score += point * multiplier;
+    b2b = (pb2b && (cnt == 4 || tSpin));
+    pb2b = (cnt == 4 || tSpin);
     set_color(14);
+    goto_xy(x+18, y+18);
+    std::cout << (b2b?"b2b":"");
     goto_xy(x+18, y+19);
     std::cout << (tSpin?text_table[0]:"");
     goto_xy(x+18, y+20);
     std::cout << (cnt?text_table[cnt]:"");
+    this -> clear_line += cnt;
+    combo = (cnt?(combo+1):0);
+    point = ((cnt?(point<<cnt):0));
+    multiplier <<= (combo + tSpin - 1 + b2b * 3);
+    this -> score += point * multiplier;
     tSpin = 0;
     level = clear_line/10;
     if(level > 29) level = 29;
