@@ -190,6 +190,8 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     player.print_block();
     if(clr && clock() - tClear >= 2 * fTick * speed){
         set_color(0);
+        goto_xy(player.get_x() + 18, player.get_y() + 18);
+        std::cout << "      ";
         goto_xy(player.get_x() + 18, player.get_y() + 19);
         std::cout << "      ";
         goto_xy(player.get_x() + 18, player.get_y() + 20);

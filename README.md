@@ -28,6 +28,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/18.d (v2.5.1beta)
+> Add b2b chk function
+
 > ### 2023/12/18.c (v2.5beta)
 > Add arr function <br>
 > add debug function (by #define DEBUG) <br>
