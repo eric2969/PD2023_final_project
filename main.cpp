@@ -1,6 +1,31 @@
 #pragma comment(lib, "User32.lib") //User32.lib library for event listener
 #include <bits/stdc++.h>
+
+#pragma comment (lib ,"imm32.lib") 
 #include <windows.h>
+#define _WIN32_WINNT 0x0601
+#ifndef DEV 
+#include <imm.h>
+#include <immdev.h>  
+typedef struct _CONSOLE_FONT_INFOEX
+{
+    ULONG cbSize;
+    DWORD nFont;
+    COORD dwFontSize;
+    UINT  FontFamily;
+    UINT  FontWeight;
+    WCHAR FaceName[LF_FACESIZE];
+}CONSOLE_FONT_INFOEX, *PCONSOLE_FONT_INFOEX;
+#endif
+//the function declaration begins
+#ifdef __cplusplus
+extern "C" {
+#endif
+BOOL WINAPI SetCurrentConsoleFontEx(HANDLE hConsoleOutput, BOOL bMaximumWindow, PCONSOLE_FONT_INFOEX
+lpConsoleCurrentFontEx);
+#ifdef __cplusplus
+}
+#endif
 
 HANDLE hConsole;
 bool bright;
@@ -17,7 +42,7 @@ const short flush_tick = 2;
 //#include "server.h"
 //#include "client.h"
 
-#define nFONT
+#define FONT
 using namespace std;
 
 #define SET_PATH "src/settings.txt"
@@ -37,6 +62,7 @@ void SetFont(int);
 struct option1{
     int line, score;
     void operator() (){
+         SetFont(25); 
          singlePlayer(line, score);
          record_update(line, score);
     }
@@ -44,6 +70,7 @@ struct option1{
 struct option2{
     int line, score;
     void operator() (){
+         SetFont(25); 
          multiPlayer(line, score);
          record_update(line, score);
     }
@@ -52,7 +79,7 @@ struct option3{
     void operator() (){
         set_color(7);
         setcursor(0,0);
-        cout << "hi";
+        cout << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
         setcursor(0,0);
         hidecursor();
         set_color(0);
@@ -69,6 +96,7 @@ struct option4{
 
 signed main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    FullScreen();
 #ifdef FONT
     SetFont(25);
 #endif
@@ -86,25 +114,17 @@ signed main(){
 }
 
 void game_init(){
-    streambuf *cinbuf = cin.rdbuf();
     ifstream setting(SET_PATH), record(RECORD_PATH);
-    cin.rdbuf(setting.rdbuf());
-    cin >> das >> gravity >> bright;
-    cin.rdbuf(record.rdbuf());
-    cin >> playTimes >> clearCnt >> scoreCnt >> highClear >> highScore;
-    cin.rdbuf(cinbuf);
+    setting >> das >> gravity >> bright;
+    record >> playTimes >> clearCnt >> scoreCnt >> highClear >> highScore;
     setting.close();
     record.close();
 }
 
 void game_exit(){
-    streambuf *coutbuf = cout.rdbuf();
     ofstream setting(SET_PATH), record(RECORD_PATH);
-    cout.rdbuf(setting.rdbuf());
-    cout << das << ' ' << gravity << ' ' << bright;
-    cout.rdbuf(record.rdbuf());
-    cout << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
-    cout.rdbuf(coutbuf);
+    setting << das << ' ' << gravity << ' ' << bright;
+    record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
     setting.close();
     record.close();
     exit(0);
@@ -123,7 +143,7 @@ void SetFont(int size = 30) {
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof cfi;
 	cfi.nFont = 0;
-	cfi.dwFontSize.X = 20;
+	cfi.dwFontSize.X = size;
 	cfi.dwFontSize.Y = size;
 	cfi.FontFamily = FF_DONTCARE;
 	cfi.FontWeight = FW_NORMAL;

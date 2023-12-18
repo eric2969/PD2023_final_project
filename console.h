@@ -1,14 +1,14 @@
+//set location of the cursor
+
 void setcursor(short x = 0, short y = 0){
     COORD temp = {x, y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), temp);
 }
-//void goto_xy(int x, int y, HANDLE &hout) {COORD pos = {x, y}; SetConsoleCursorPosition(hout, pos);}
-//void set_color(const unsigned short textColor, HANDLE &hout) {SetConsoleTextAttribute(hout, textColor);}
 void setcursor(const COORD &temp){
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), temp);
 }
  
-// ?得光?位置
+// get location of the cursor
 void getcursor(COORD &other)
 {
     CONSOLE_SCREEN_BUFFER_INFO temp;
@@ -21,7 +21,7 @@ COORD getcursor()
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &temp);
     return temp.dwCursorPosition;
 }
-//是否?藏光?
+// hide the cursor
 void hidecursor(bool hide = true)
 {
     CONSOLE_CURSOR_INFO CursorInfo;
@@ -29,30 +29,81 @@ void hidecursor(bool hide = true)
     CursorInfo.bVisible = !hide;
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
 }
- 
+// clear the screen above cursor's location(specialize for menu highlight function) 
  void clean()
 {
-    //HANDLE hout = GetStdHandle(STD_OUTPUT_HANDLE);
-    //set_color(0,hout);
     COORD temp = getcursor();
     setcursor(0, 0);
     for (int i = 0; i <= temp.Y; i++)
-        std::cout << "                                                                                                                                                                                                                                                                  \n";
+        std::cout << "                                                                                                                                                                                                                 \n";
     setcursor(0, 0);
-    //system("cls");
 }
-
+// clear the screen
 void clrscr(){
     setcursor(0, 0);
     hidecursor(0);
-    for (int i = 0; i <= 30; i++)
-        std::cout << "                                                                                                                                       \n";
+    for (int i = 0; i <= 100; i++)
+        std::cout << "                                                                                                                                                           \n";
     setcursor(0, 0);
     hidecursor(1);
 }
-//?停
+// pause the screen until any key is pressed
 void pause(){
-    std::cout << "?按任意???\n";
-    std::cin.sync();
-    std::cin.get();
+    DWORD        mode;          /* Preserved console mode */
+    INPUT_RECORD event;         /* Input event */
+    BOOL         done = false;  /* Program termination flag */
+    unsigned int counter = 0;   /* The number of times 'Esc' is pressed */
+
+    /* Don't use binary for text files, OK?  ;-) */
+
+    /* Get the console input handle */
+    HANDLE hstdin = GetStdHandle( STD_INPUT_HANDLE );
+
+    /* Preserve the original console mode */
+    GetConsoleMode( hstdin, &mode );
+
+    /* Set to no line-buffering, no echo, no special-key-processing */
+    SetConsoleMode( hstdin, 0 );
+
+    std::cout << "Press Any Key to Continue\n";
+    // Flush the buffer to make sure that it won't be affected by the loads of key presses we did while playing the game
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+    while (!done)
+    {
+        if (WaitForSingleObject( hstdin, 0 ) == WAIT_OBJECT_0)  /* if kbhit */
+        {
+            DWORD count;  /* ignored */
+
+            /* Get the input event */
+            ReadConsoleInput( hstdin, &event, 1, &count );
+
+            /* Only respond to key release events */
+            if ((event.EventType == KEY_EVENT)
+            &&  !event.Event.KeyEvent.bKeyDown)
+                done = true;
+        }
+    }
+    SetConsoleMode( hstdin, mode );
 }
+
+
+void FullScreen() {
+    DWORD last_style;
+    RECT last_rect;
+    HWND hwnd = GetConsoleWindow();
+    last_style = GetWindowLong(hwnd, GWL_STYLE); //存?上次的窗口?格
+    GetWindowRect(hwnd, &last_rect);             //存?上次的窗口位置和大小
+    int w = GetSystemMetrics(SM_CXSCREEN);
+    int h = GetSystemMetrics(SM_CYSCREEN);       // ?取最大化的窗口大小
+    SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP); // 去掉???
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED); // ?置位置和大小
+//    HIMC g_hIMC = NULL; 
+//    HIMC himc = ImmGetContext(hwnd);                       // g_hIMC 用于恢复?使用
+//    g_hIMC = ImmAssociateContext(hwnd, nullptr);
+//    SetConsoleCtrlHandler(NULL, TRUE);
+//    LoadKeyboardLayout("0x0409", KLF_ACTIVATE | KLF_SETFORPROCESS);
+    //ImmReleaseContext(hwnd, himc); 
+    //HKL hKL = GetKeyboardLayout(0);               //保存?有的?入法  
+	//ActivateKeyboardLayout(hKL, KLF_RESET);
+}
+
