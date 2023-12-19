@@ -9,8 +9,6 @@ int das, arr, gravity, addrlen;
 string sbuff;
 const short flush_tick = 2;
 
-#define nDEBUG
-#define FONT
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
@@ -30,10 +28,7 @@ void game_init();
 void game_exit();
 void record_reset() {playTimes = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score);
-
-#ifdef FONT
 void SetFont(int);
-#endif
 
 struct option1{
     static int line, score, gameMode, goal;
@@ -108,9 +103,7 @@ struct option2{
     static int line, score;
     static clock_t t;
     static void run(){
-#ifdef FONT
     	SetFont(20);
-#endif
         try{
             multiPlayer(line, score);
         }
@@ -119,7 +112,7 @@ struct option2{
                 clrscr();
                 set_color(7);
                 cout << e.what() << endl;
-                //cout << "Used Time:  " << (clock() - t)/1000 << endl;
+                cout << "Used Time:  " << (clock() - t)/1000 << endl;
                 cout << "Clear Line: " << line << endl;
                 cout << "Score:      " << score << endl << endl;
                 Sleep(800);
@@ -297,14 +290,10 @@ struct option5{
     }
 };
 
-
 signed main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-#ifdef FONT
     FullScreen();
     SetFont(25);
-
-#endif // FONT
     game_init();
     Menu Main;
     option1 opt1;

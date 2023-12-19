@@ -27,7 +27,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 
-> ## Version History
+> ## Version 
+> ### 2023/12/19.d (v2.7.3beta)
+> Add get score bar <br>
+
 > ### 2023/12/19.c (v2.7.2beta)
 > Improve UI <br>
 > Multiplaying exception catching stiil need to be fixed <br>
