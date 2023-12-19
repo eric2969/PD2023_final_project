@@ -1,6 +1,5 @@
 .*
 *.save-failed
 *.h.gch
-*.exe
 *.o
 tmp
