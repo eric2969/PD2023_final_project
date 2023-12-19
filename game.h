@@ -19,6 +19,7 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     set_color(0);
     clrscr();
     before = clock(), tStart = clock();
+    tStuck = clock();
     player.set_position(2,2);
     player.init(tStart);
     player.new_block();
@@ -39,6 +40,7 @@ void multiPlayer(int& line, int& score){
     set_color(0);
     clrscr();
     before = clock(), tStart = clock();
+    tStuck = clock();
     player.set_position(2, 2);
     opponent.set_position(35, 2);
     player.init(tStart);
@@ -57,12 +59,13 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     //fall
     if (clock() - before > fall_tick){
         if(stuck){
-            if(clock() - tStuck > stuck_wait){
+            if(clock() - tStuck > stuck_wait && !player.check_block(Point(0,-1))){
                 player.fix_block();
                 if(player.chk_clear(line, score)){
                     clr = 1;
                     tClear = clock();
                 }
+                tStuck = clock();
                 player.new_block();
                 player.print_table();
                 stuck = 0;
@@ -75,8 +78,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             stuck = !player.move_block(0,-1);
             before = clock();
             if(stuck){
-                stuck_wait = fTick * speed;
-                tStuck = clock();
+                stuck_wait = 3000;
                 sCnt = 0;
             }
         }

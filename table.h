@@ -90,6 +90,7 @@ public:
     void print_block();
     //checking
     bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
+    bool check_block(const Point &p) const;
     //filled check
     bool chk_clear(int& line, int& score);
     //return table data
@@ -104,6 +105,14 @@ public:
     void send_garbage(); //part of the code depending on socket can wait
     void get_garbage();  //part of the code depending on socket can wait
 };
+bool Table::check_block(const Point &p) const{
+    Block *bTmp = current -> clone();
+    bool result;
+    *bTmp += p;
+    result = isValid(*bTmp);
+    delete bTmp;
+    return result;
+}
 //block existence
 void Table::new_block(){
     if(next.size() <= 1){

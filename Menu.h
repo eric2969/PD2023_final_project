@@ -160,8 +160,8 @@ Menu& Menu::add(const std::function<void(void)> &p, string d = "Unkown."){
 void Menu::start(){
     setmode();
     MOUSE_EVENT_RECORD mouse;
+    clrscr();
     hidecursor(1);
-    clean();
     cout << title_ << endl //show title
          << "========================================" << endl;
     recordposition(); //record mouse's position

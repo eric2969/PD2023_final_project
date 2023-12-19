@@ -91,7 +91,7 @@ struct option1{
         gameMode = 2;
         run();
     }
-    void operator() (){
+    void operator() (){ 
          Menu sub_menu;
          sub_menu.settitle("Choose a Game Mode, Right click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
          sub_menu.start();
