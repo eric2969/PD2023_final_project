@@ -28,6 +28,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/19.d (v2.7.3beta)
+> Fixed the bug that block can sometimes never fixed in place <br>
+> Fixed the bug that menu never clears
+
 > ### 2023/12/19.c (v2.7.2beta)
 > Improve UI <br>
 > Multiplaying exception catching stiil need to be fixed <br>
