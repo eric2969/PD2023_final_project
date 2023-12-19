@@ -6,7 +6,6 @@
 
 #define L_BUTTON 0x1
 #define R_BUTTON 0x2
- 
 // dwEventFlags for the mouse
 #define MOUSE_CLICK 0x0
 #define MOUSE_MOVED 0x1

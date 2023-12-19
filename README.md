@@ -27,6 +27,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
+> ### 2023/12/19.e (v2.8)
+> Added 啪沒了<br>
+> Fixed the FullScreen function<br>
+> Fixed the bug that sometimes content isn't fully shown
+
 > ### 2023/12/19.d (v2.7.3beta)
 > Add get score bar <br>
 > Fixed the bug that block can sometimes never fixed in place <br>

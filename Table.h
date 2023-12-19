@@ -17,11 +17,6 @@ const Point Kick_Table(bool isI,short start, const short& drc, const short& test
     start = (start - drc + 4) %4;
     if(!isI){
         Point tmp; short factor;
-//        if(start % 2)
-//            factor = (start>>1)?1:-1;
-//            
-//        else
-//           factor = drc * ((start>>1)?-1:1);
         tmp = delta_notI[test];
         if(start == 2){
             tmp.x *= -drc;
@@ -201,7 +196,6 @@ void Table::hard_drop(){
     if(isValid(*bTmp)){
         *current = bTmp->get_location();
     }
-    tSpin = 0;
     delete bTmp;
 }
 
@@ -237,10 +231,7 @@ void Table::rotate(const short direction){
     Block *bTmp = current -> clone(); // Change here
     bTmp -> rotate_set(direction);
     //current.rotate;
-    
-    
     for(int i = 0; i < 5; i++){
-        
         Block *moveTmp = bTmp->clone();
         if(isValid((*moveTmp) += Kick_Table(bTmp -> isI(), bTmp -> get_direction(), direction, i))){
             current -> rotate_set(direction); // Change here
@@ -291,18 +282,22 @@ bool Table::chk_clear(int& line, int& tscore){
     
     b2b = (pb2b && (cnt == 4 || tSpin));
     pb2b = (cnt == 4 || tSpin);
+    this -> clear_line += cnt;
+    combo = (cnt?(combo+1):0);
+    point = ((cnt?(point<<cnt):0));
+    multiplier <<= (combo + tSpin - 1 + b2b * 3);
+    this -> score += point * multiplier;
     set_color(14);
+    if(cnt){
+        goto_xy(x+18, y+17);
+        std::cout << "+" << point * multiplier;
+    }
     goto_xy(x+18, y+18);
     std::cout << (b2b?"b2b":"");
     goto_xy(x+18, y+19);
     std::cout << (tSpin?text_table[0]:"");
     goto_xy(x+18, y+20);
     std::cout << (cnt?text_table[cnt]:"");
-    this -> clear_line += cnt;
-    combo = (cnt?(combo+1):0);
-    point = ((cnt?(point<<cnt):0));
-    multiplier <<= (combo + tSpin - 1 + b2b * 3);
-    this -> score += point * multiplier;
     tSpin = 0;
     level = clear_line/10;
     if(level > 29) level = 29;

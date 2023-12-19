@@ -20,7 +20,7 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     clrscr();
     before = clock(), tStart = clock();
     tStuck = clock();
-    stuck_wait = 1900;
+    stuck_wait = fTick * 0.8;
     player.set_position(2,2);
     player.init(tStart);
     player.new_block();
@@ -42,7 +42,7 @@ void multiPlayer(int& line, int& score){
     clrscr();
     before = clock(), tStart = clock();
     tStuck = clock();
-    stuck_wait = 1900;
+    stuck_wait = fTick * 0.8;
     player.set_position(2, 2);
     opponent.set_position(35, 2);
     player.init(tStart);
@@ -76,7 +76,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 clr = 1;
                 tClear = clock();
             }
-            stuck_wait = 1900;
+            stuck_wait = fTick * 0.8;
             player.new_block();
             player.print_table();
             stuck = 0;
@@ -124,7 +124,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if (KeyPressed[i + 7]) {
             if(!KeyState[7]){
                 player.hold_block(); //keep
-                stuck_wait = 1900;
+                stuck_wait = fTick * 0.8;
                 KeyState[7] = 1;
                 player.print_table();
             }
@@ -134,7 +134,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     if (KeyPressed[4]){
         if(!KeyState[4]){
             player.hard_drop();
-            stuck_wait = 1900;
+            stuck_wait = fTick * 0.8;
             player.fix_block();
             if(player.chk_clear(line, score)){
                     clr = 1;
@@ -194,7 +194,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     player.print_block();
     if(clr && clock() - tClear >= 2 * fTick * speed){
         set_color(0);
-        goto_xy(player.get_x() + 18, player.get_y() + 18);
+        goto_xy(player.get_x() + 18, player.get_y() + 17);
         std::cout << "      ";
         goto_xy(player.get_x() + 18, player.get_y() + 18);
         std::cout << "      ";

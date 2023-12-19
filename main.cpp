@@ -35,6 +35,25 @@ void record_update(int& clr, int& score);
 #ifdef FONT
 void SetFont(int);
 #endif
+void print_pic(){
+    clrscr();
+    SetFont(5);
+    goto_xy(0,0);
+    set_color(7);
+    COORD buffersize;
+    //GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), buffersize);
+
+    // 修改緩衝區大小
+    buffersize.X = 600;
+    buffersize.Y = 600;
+    HWND hwnd = GetConsoleWindow();
+    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffersize);
+    SetConsoleSize(600,600,600,600);
+    ifstream pic(PIC_PATH);
+    string str;
+    while(getline(pic,str)) cout << str << endl;
+    pic.close();
+}
 
 struct option1{
     static int line, score, gameMode, goal;
@@ -45,6 +64,9 @@ struct option1{
             singlePlayer(line, score, gameMode, goal);
         }
         catch(runtime_error e){
+                print_pic();
+                Sleep(800);
+                SetFont(25);
                 set_color(0);
                 clrscr();
                 set_color(7);
@@ -55,6 +77,8 @@ struct option1{
                 Sleep(800);
                 pause();
         }
+        
+        
         record_update(line, score);
     }
     static void sub_option1(){
@@ -313,7 +337,7 @@ signed main(){
     option3 opt3;
     option4 opt4;
     option5 opt5;
-    Main.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
+    Main.settitle("Tetris").add(opt1, "Single Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
     Main.start();
     return 0;
 }

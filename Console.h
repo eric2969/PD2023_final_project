@@ -98,14 +98,42 @@ void pause(){
 
 
 void FullScreen() {
-    DWORD last_style;
-    RECT last_rect;
-    HWND hwnd = GetConsoleWindow();
-    last_style = GetWindowLong(hwnd, GWL_STYLE); //存?上次的窗口?格
-    GetWindowRect(hwnd, &last_rect);             //存?上次的窗口位置和大小
-    int w = GetSystemMetrics(SM_CXSCREEN);
-    int h = GetSystemMetrics(SM_CYSCREEN);       // ?取最大化的窗口大小
-    SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP); // 去掉???
-    SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED); // ?置位置和大小
+//    DWORD last_style;
+//    RECT last_rect;
+//    HWND hwnd = GetConsoleWindow();
+//    last_style = GetWindowLong(hwnd, GWL_STYLE); //存?上次的窗口?格
+//    GetWindowRect(hwnd, &last_rect);             //存?上次的窗口位置和大小
+//    int w = GetSystemMetrics(SM_CXSCREEN);
+//    int h = GetSystemMetrics(SM_CYSCREEN);       // ?取最大化的窗口大小
+//    SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP); // 去掉???
+//    SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED); // ?置位置和大小
+  HWND hwnd = GetConsoleWindow();
+  //WINDOWPLACEMENT wp;
+  //wp.length = sizeof(WINDOWPLACEMENT);
+  //GetWindowPlacement(hwnd, &wp);
+  ShowWindow(hwnd, SW_SHOWMAXIMIZED);
+  // 將視窗最大化
+  //wp.flags = SWP_NOMOVE | SWP_NOSIZE | SW_MAXIMIZE;
+  //SetWindowPlacement(hwnd, &wp);
+}
+void SetConsoleSize(int x, int y, int cols, int lines)
+{
+    HANDLE hOut;
+    CONSOLE_FONT_INFO consoleCurrentFont;
+    COORD bufferSize,fontSize;
+    TCHAR title[256];
+    HWND hWnd;
+    //Set console buffer size
+    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetCurrentConsoleFont(hOut, false, &consoleCurrentFont);
+    fontSize = GetConsoleFontSize(hOut,consoleCurrentFont.nFont);
+    bufferSize.X = cols;
+    bufferSize.Y = lines;
+    SetConsoleScreenBufferSize(hOut, bufferSize);
+    //Set console window size
+    //GetConsoleTitle(title, 256);
+    //hWnd = FindWindow(0, title);
+    hWnd = GetConsoleWindow();
+    MoveWindow(hWnd,0,0,(cols+4)*fontSize.X,(lines+2)*fontSize.Y,true);
 }
 
