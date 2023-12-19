@@ -28,6 +28,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/19.b (v2.7.1)
+> Fixed the big that Kick Table is not always correct<br>
+> Fixed the bug that T-spin is not showing
+
 > ### 2023/12/19.a (v2.7)
 > Big Improve in game display <br>
 > reEnabling the #define FONT flag <br>
