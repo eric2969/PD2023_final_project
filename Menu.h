@@ -173,6 +173,7 @@ void Menu::start(){
             highlight(mouse.dwMousePosition);
         else if (mouse.dwButtonState == L_BUTTON){
             implement(mouse.dwMousePosition);
+            clrscr();
             highlight(mouse.dwMousePosition);
         }
             

@@ -11,6 +11,9 @@ struct Point{
     bool operator!=(const Point& tmp) const{ return !(*this == tmp);}
     const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
 };
+ostream &operator<< (ostream &out,Point right){
+    out << '(' << right.x << ',' << right.y << ')';
+}
 
 class Block{
 protected:

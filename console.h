@@ -1,4 +1,16 @@
 //set location of the cursor
+#ifdef FONT
+void SetFont(int size = 30) {
+    CONSOLE_FONT_INFOEX cfi;
+    cfi.cbSize = sizeof cfi;
+    cfi.nFont = 0;
+    cfi.dwFontSize.X = size;
+    cfi.dwFontSize.Y = size;
+    cfi.FontFamily = FF_DONTCARE;
+    cfi.FontWeight = FW_NORMAL;
+    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+}
+#endif // FONT
 
 void setcursor(short x = 0, short y = 0){
     COORD temp = {x, y};
@@ -35,15 +47,15 @@ void hidecursor(bool hide = true)
     COORD temp = getcursor();
     setcursor(0, 0);
     for (int i = 0; i <= temp.Y; i++)
-        std::cout << "                                                                                                                                                                                                                 \n";
+        std::cout << "                                                                                                                                                                                                                                                        \n";
     setcursor(0, 0);
 }
 // clear the screen
 void clrscr(){
     setcursor(0, 0);
     hidecursor(0);
-    for (int i = 0; i <= 100; i++)
-        std::cout << "                                                                                                                                                           \n";
+    for (int i = 0; i <= 110; i++)
+        std::cout << "                                                                                                                                                                                                                                        \n";
     setcursor(0, 0);
     hidecursor(1);
 }

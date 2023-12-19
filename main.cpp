@@ -10,7 +10,7 @@ string sbuff;
 const short flush_tick = 2;
 
 #define nDEBUG
-#define nFONT
+#define FONT
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
@@ -276,20 +276,8 @@ signed main(){
 #ifdef FONT
     FullScreen();
     SetFont(25);
-    #ifdef FONT
-void SetFont(int size = 30) {
-    CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize = sizeof cfi;
-    cfi.nFont = 0;
-    cfi.dwFontSize.X = size;
-    cfi.dwFontSize.Y = size;
-    cfi.FontFamily = FF_DONTCARE;
-    cfi.FontWeight = FW_NORMAL;
-    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
-}
-#endif // FONT
 
-#endif
+#endif // FONT
     game_init();
     Menu loop;
     option1 opt1;
@@ -327,15 +315,4 @@ void record_update(int& clr, int& score){
     highScore = max(highScore, score);
 }
 
-#ifdef FONT
-void SetFont(int size = 30) {
-    CONSOLE_FONT_INFOEX cfi;
-    cfi.cbSize = sizeof cfi;
-    cfi.nFont = 0;
-    cfi.dwFontSize.X = size;
-    cfi.dwFontSize.Y = size;
-    cfi.FontFamily = FF_DONTCARE;
-    cfi.FontWeight = FW_NORMAL;
-    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
-}
-#endif // FONT
+

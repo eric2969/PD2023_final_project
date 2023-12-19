@@ -7,20 +7,33 @@ void goto_xy(int x, int y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsol
 void set_color(const unsigned short textColor) {SetConsoleTextAttribute(hConsole, textColor);}
 void qClear(std::queue<Block*>& q) {std::queue<Block*> empty; std::swap(empty, q);}
 
-const short color_table[8] = {DEFAULT_COLOR, 0, 1*16, 2*16, 3*16, 4*16, 5*16, 6*16}; //[0] for none
+const short color_table[8] = {DEFAULT_COLOR, 5*16, 0, 1*16, 2*16, 4*16, 3*16, 6*16}; //[0] for none
 
 //5-stage test for kick_table
-const Point Kick_Table(bool isI, const short& start, const short& drc, const short& test){
+const Point Kick_Table(bool isI,short start, const short& drc, const short& test){
     const static Point delta_notI[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
     const static Point delta_I1[5] = { Point(0, 0), Point(-1, 0), Point(2, 0), Point(-1, 2), Point(2, -1) };
     const static Point delta_I2[5] = { Point(0, 0), Point(-2, 0), Point(1, 0), Point(-2, -1), Point(1, 2) };
+    start = (start - drc + 4) %4;
     if(!isI){
         Point tmp; short factor;
-        if(start % 2)
-            factor = (start>>1)?1:-1;
-        else
-            factor = drc * ((start>>1)?-1:1);
-        return delta_notI[test] * factor;
+//        if(start % 2)
+//            factor = (start>>1)?1:-1;
+//            
+//        else
+//           factor = drc * ((start>>1)?-1:1);
+        tmp = delta_notI[test];
+        if(start == 2){
+            tmp.x *= -drc;
+        }
+        else if(start == 0){
+            tmp.x *= drc;
+        }
+        else{
+            tmp.y *= -1;
+            if(start == 1) tmp.x *= -1;
+        }
+        return tmp;
     }
     else{
         Point tmp; short factor;
@@ -76,7 +89,7 @@ public:
     void print_table() const; //print table on windows.h (x,y) is the origin of the table
     void print_block();
     //checking
-    bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= 10 || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
+    bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
     //filled check
     bool chk_clear(int& line, int& score);
     //return table data
@@ -196,8 +209,10 @@ bool Table::move_block(const short x, const short y){
     std::cout << "Current:" << current << " bTmp:" << bTmp;
 #endif // DEBUG
     bool valid = isValid((*bTmp) += Point(x, y));
-    if(valid)// Change here
-        (*current) += Point(x, y); // Change here
+    if(valid){
+        (*current) += Point(x, y);
+        tSpin = 0;
+    }
     delete bTmp;
     bTmp = nullptr;
 #ifdef DEBUG
@@ -205,7 +220,7 @@ bool Table::move_block(const short x, const short y){
     goto_xy(27, 4);
     std::cout << "Current:" << current << " bTmp:" << bTmp;
 #endif // DEBUG
-    tSpin = 0;
+    
     return valid;
 }
 
@@ -213,24 +228,30 @@ void Table::rotate(const short direction){
     Block *bTmp = current -> clone(); // Change here
     bTmp -> rotate_set(direction);
     //current.rotate;
+    
+    
     for(int i = 0; i < 5; i++){
-        if(isValid((*bTmp) += Kick_Table(bTmp -> isI(), bTmp -> get_direction(), direction, i))){
+        
+        Block *moveTmp = bTmp->clone();
+        if(isValid((*moveTmp) += Kick_Table(bTmp -> isI(), bTmp -> get_direction(), direction, i))){
             current -> rotate_set(direction); // Change here
             (*current) += Kick_Table(current -> isI(), current -> get_direction(), direction, i);
             break;
         }
+        delete moveTmp;
     }
     tSpin = 0;
     if(current -> get_ID() == 1){
         Point tmp = current -> get_location();
-        short tx, ty, tCnt = 0;//tmp.x + 1 * ((i & 1)?1:-1), tmp.y + 1 * ((i&2)?1:-1)
+        short tx, ty, tCnt = 0;
         for(int i = 0;i < 4;i++){
-            tx = (tmp.x + 1 * ((i & 1)?1:-1)), ty = (tmp.y + 1 * ((i&2)?1:-1));
-            if(x >= 20 || y >= 20 || x < 0 || y < 0)
+            tx = (tmp.x + ((i & 1)?1:-1)), ty = (tmp.y + ((i & 2)?1:-1));
+            if(tx >= width || tx < 0 || ty < 0)
                 tCnt++;
-            else if(board[y][x])
+            else if(board[ty][tx])
                 tCnt++;
         }
+        
         if(tCnt >= 3)
             tSpin = 1;
     }
@@ -258,6 +279,7 @@ bool Table::chk_clear(int& line, int& tscore){
             i--; //check the line that have cleared. because move down
         }
     }
+    
     b2b = (pb2b && (cnt == 4 || tSpin));
     pb2b = (cnt == 4 || tSpin);
     set_color(14);
