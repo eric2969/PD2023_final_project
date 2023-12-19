@@ -26,8 +26,7 @@ And we divided our game architecture into several parts, listed at the below.
   - [Table](#table)
   - [Block](#block)
   - [Socket](#socket)
-
-> ## Version 
+## Version 
 > ### 2023/12/19.d (v2.7.3beta)
 > Add get score bar <br>
 
