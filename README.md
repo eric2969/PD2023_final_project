@@ -28,8 +28,13 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 
 > ## Version History
+> ### 2023/12/19.c (v2.7.2beta)
+> Improve UI <br>
+> Multiplaying exception catching stiil need to be fixed <br>
+> Server/Client header file has completed
+
 > ### 2023/12/19.b (v2.7.1)
-> Fixed the big that Kick Table is not always correct<br>
+> Fixed the big that Kick Table is not always correct <br>
 > Fixed the bug that T-spin is not showing
 
 > ### 2023/12/19.a (v2.7)

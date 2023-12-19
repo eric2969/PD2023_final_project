@@ -5,7 +5,7 @@ using namespace std;
 
 HANDLE hConsole;
 bool bright;
-int das, arr, gravity;
+int das, arr, gravity, addrlen;
 string sbuff;
 const short flush_tick = 2;
 
@@ -15,8 +15,8 @@ const short flush_tick = 2;
 #define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
 
-//#include "server.h"
-//#include "client.h"
+#include "Server.h"
+#include "Client.h"
 #include "Console.h"
 #include "Block.h"
 #include "Table.h"
@@ -26,7 +26,6 @@ const short flush_tick = 2;
 
 int playTimes, clearCnt, scoreCnt, highClear, highScore;
 
-int stoi();
 void game_init();
 void game_exit();
 void record_reset() {playTimes = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
@@ -42,25 +41,25 @@ struct option1{
     static void run(){
         t = clock();
         try{
-             singlePlayer(line, score, gameMode, goal);
-         }
-         catch(runtime_error e){
+            singlePlayer(line, score, gameMode, goal);
+        }
+        catch(runtime_error e){
                 set_color(0);
                 clrscr();
                 set_color(7);
-                cout << e.what() << endl;
-                cout << "Used Time:" << (clock() - t)/1000 << endl;
-                cout << "Clear Line:" << line << endl;
-                cout << "Score:" << score << endl << endl;
+                cout << e.what() << endl << endl;
+                cout << "Used Time:  " << (clock() - t)/1000 << endl;
+                cout << "Clear Line: " << line << endl;
+                cout << "Score:      " << score << endl << endl;
                 Sleep(800);
                 pause();
-         }
-         record_update(line, score);
+        }
+        record_update(line, score);
     }
     static void sub_option1(){
         gameMode = 0;
         run();
-     }
+    }
     static void sub_option2(){
         cout << "Please input your goal (line)?" << endl;
         while(1){
@@ -75,7 +74,7 @@ struct option1{
         }
         gameMode = 1;
         run();
-     }
+    }
     static void sub_option3(){
         cout << "Please input your time (second)?" << endl;
         while(1){
@@ -91,10 +90,12 @@ struct option1{
         gameMode = 2;
         run();
     }
-    void operator() (){ 
-         Menu sub_menu;
-         sub_menu.settitle("Choose a Game Mode, Right click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
-         sub_menu.start();
+    void operator() (){
+        Menu sub_menu;
+        set_color(0);
+        clrscr();
+        sub_menu.settitle("Single Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
+        sub_menu.start();
     }
 };
 int option1::gameMode = 0;
@@ -102,25 +103,45 @@ int option1::line = 0;
 int option1::score = 0;
 int option1::goal = 0;
 clock_t option1::t = 0;
+
 struct option2{
-    int line, score;
-    void operator() (){
+    static int line, score;
+    static clock_t t;
+    static void run(){
 #ifdef FONT
-    SetFont(25);
+    	SetFont(20);
 #endif
         try{
             multiPlayer(line, score);
         }
         catch(runtime_error e){
-            set_color(0);
-            clrscr();
-            set_color(7);
-            cout << e.what() << endl;
-            pause();
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << e.what() << endl;
+                //cout << "Used Time:  " << (clock() - t)/1000 << endl;
+                cout << "Clear Line: " << line << endl;
+                cout << "Score:      " << score << endl << endl;
+                Sleep(800);
+                pause();
         }
         record_update(line, score);
+	}
+	static void sub_option1(){
+        run();
+    }
+    void operator() (){
+		Menu sub_menu;
+		set_color(0);
+        clrscr();
+        sub_menu.settitle("Multi Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Game Start");
+        sub_menu.start();
     }
 };
+int option2::line = 0;
+int option2::score = 0;
+clock_t option2::t = 0;
+
 struct option3{
     static int iTmp;
     static void sub_option1(){
@@ -128,11 +149,11 @@ struct option3{
         clrscr();
         set_color(7);
         cout << "Records\n\n";
-        cout << "Game Played" << playTimes << endl;
-        cout << "Total Clear Line:" << clearCnt << endl;
-        cout << "Total Score:" << scoreCnt << endl;
-        cout << "Best Clear Line:" << highClear << endl;
-        cout << "Best Score:" << highScore << endl << endl;
+        cout << "Game Played:      " << playTimes << endl;
+        cout << "Total Clear Line: " << clearCnt << endl;
+        cout << "Total Score:      " << scoreCnt << endl;
+        cout << "Best Clear Line:  " << highClear << endl;
+        cout << "Best Score:       " << highScore << endl << endl;
         Sleep(800);
         pause();
     }
@@ -162,7 +183,9 @@ struct option3{
     }
     void operator() (){
         Menu sub_menu;
-        sub_menu.settitle("Record, Right click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
+        set_color(0);
+        clrscr();
+        sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
         sub_menu.start();
         ofstream record(RECORD_PATH);
         record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
@@ -170,6 +193,7 @@ struct option3{
     }
 };
 int option3::iTmp = 0;
+
 struct option4{
     static int iTmp;
     static void sub_option1(){
@@ -180,7 +204,7 @@ struct option4{
                 set_color(0);
                 clrscr();
                 set_color(7);
-                cout << "Configuration Reset\n\n";
+                cout << "Configuration Set\n\n";
                 Sleep(800);
                 pause();
                 break;
@@ -191,7 +215,7 @@ struct option4{
                 cout << "Please input a number between than 1 and 500: ";
             }
         }
-     }
+    }
     static void sub_option2(){
         cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS [1(slow)-1000(fast)]: ";
         while(1){
@@ -200,7 +224,7 @@ struct option4{
                 set_color(0);
                 clrscr();
                 set_color(7);
-                cout << "Configuration Reset\n\n";
+                cout << "Configuration Set\n\n";
                 Sleep(800);
                 pause();
                 break;
@@ -212,7 +236,7 @@ struct option4{
             }
         }
 
-     }
+    }
     static void sub_option3(){
          cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level [1(slow)-50(fast)]: ";
          while(1){
@@ -221,7 +245,7 @@ struct option4{
                 set_color(0);
                 clrscr();
                 set_color(7);
-                cout << "Configuration Reset\n\n";
+                cout << "Configuration Set\n\n";
                 Sleep(800);
                 pause();
                 break;
@@ -242,7 +266,7 @@ struct option4{
                 set_color(0);
                 clrscr();
                 set_color(7);
-                cout << "Configuration Reset\n\n";
+                cout << "Configuration Set\n\n";
                 Sleep(800);
                 pause();
                 break;
@@ -256,7 +280,9 @@ struct option4{
     }
     void operator() (){
         Menu sub_menu;
-        sub_menu.settitle("Game Setting, Right click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
+        set_color(0);
+        clrscr();
+        sub_menu.settitle("Game Setting\nRight click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
         sub_menu.start();
         ofstream setting(SET_PATH);
         setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
@@ -264,6 +290,7 @@ struct option4{
     }
 };
 int option4::iTmp = 0;
+
 struct option5{
     void operator() (){
         game_exit();
@@ -279,14 +306,14 @@ signed main(){
 
 #endif // FONT
     game_init();
-    Menu loop;
+    Menu Main;
     option1 opt1;
     option2 opt2;
     option3 opt3;
     option4 opt4;
     option5 opt5;
-    loop.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
-    loop.start();
+    Main.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
+    Main.start();
     return 0;
 }
 
@@ -314,5 +341,3 @@ void record_update(int& clr, int& score){
     highClear = max(highClear, clr);
     highScore = max(highScore, score);
 }
-
-
