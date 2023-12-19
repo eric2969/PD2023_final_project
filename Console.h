@@ -1,5 +1,4 @@
 //set location of the cursor
-#ifdef FONT
 void SetFont(int size = 30) {
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof cfi;
@@ -10,7 +9,6 @@ void SetFont(int size = 30) {
     cfi.FontWeight = FW_NORMAL;
     SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 }
-#endif // FONT
 
 void setcursor(short x = 0, short y = 0){
     COORD temp = {x, y};
@@ -109,13 +107,5 @@ void FullScreen() {
     int h = GetSystemMetrics(SM_CYSCREEN);       // ?取最大化的窗口大小
     SetWindowLongPtr(hwnd, GWL_STYLE, WS_VISIBLE | WS_POPUP); // 去掉???
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED); // ?置位置和大小
-//    HIMC g_hIMC = NULL; 
-//    HIMC himc = ImmGetContext(hwnd);                       // g_hIMC 用于恢复?使用
-//    g_hIMC = ImmAssociateContext(hwnd, nullptr);
-//    SetConsoleCtrlHandler(NULL, TRUE);
-//    LoadKeyboardLayout("0x0409", KLF_ACTIVATE | KLF_SETFORPROCESS);
-    //ImmReleaseContext(hwnd, himc); 
-    //HKL hKL = GetKeyboardLayout(0);               //保存?有的?入法  
-	//ActivateKeyboardLayout(hKL, KLF_RESET);
 }
 

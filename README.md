@@ -26,9 +26,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Table](#table)
   - [Block](#block)
   - [Socket](#socket)
-
-> ## Version History
+## Version Histrory
 > ### 2023/12/19.d (v2.7.3beta)
+> Add get score bar <br>
 > Fixed the bug that block can sometimes never fixed in place <br>
 > Fixed the bug that menu never clears
 

@@ -437,3 +437,4 @@ void Table::RecvTable(const char str[]) {
 }
 void Table::send_garbage() {}
 void Table::get_garbage() {}
+

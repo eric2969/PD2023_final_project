@@ -342,3 +342,4 @@ void record_update(int& clr, int& score){
     highClear = max(highClear, clr);
     highScore = max(highScore, score);
 }
+
