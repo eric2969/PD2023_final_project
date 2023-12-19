@@ -20,6 +20,7 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     clrscr();
     before = clock(), tStart = clock();
     tStuck = clock();
+    stuck_wait = 1900;
     player.set_position(2,2);
     player.init(tStart);
     player.new_block();
@@ -41,6 +42,7 @@ void multiPlayer(int& line, int& score){
     clrscr();
     before = clock(), tStart = clock();
     tStuck = clock();
+    stuck_wait = 1900;
     player.set_position(2, 2);
     opponent.set_position(35, 2);
     player.init(tStart);
@@ -58,30 +60,30 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     getKeyState();
     //fall
     if (clock() - before > fall_tick){
-        if(stuck){
-            if(clock() - tStuck > stuck_wait && !player.check_block(Point(0,-1))){
-                player.fix_block();
-                if(player.chk_clear(line, score)){
-                    clr = 1;
-                    tClear = clock();
-                }
-                tStuck = clock();
-                player.new_block();
-                player.print_table();
-                stuck = 0;
-                KeyState[7] = 0;
+       stuck = !player.move_block(0,-1);
+       before = clock();
+       if(stuck){
+          sCnt = 0;
+          tStuck = clock();
+       }
+    }
+    if(stuck){
+        stuck_wait -= clock()-tStuck;
+        tStuck = clock();
+        if(stuck_wait < 0 && !player.check_block(Point(0,-1))){
+            player.fix_block();
+            if(player.chk_clear(line, score)){
+                clr = 1;
+                tClear = clock();
             }
-            else
-                stuck = !player.move_block(0,-1);
+            stuck_wait = 1900;
+            player.new_block();
+            player.print_table();
+            stuck = 0;
+            KeyState[7] = 0;
         }
-        else{
-            stuck = !player.move_block(0,-1);
-            before = clock();
-            if(stuck){
-                stuck_wait = 3000;
-                sCnt = 0;
-            }
-        }
+        else
+            stuck = !player.check_block(Point(0,-1));
     }
     //down arrow
     fall_tick = (KeyPressed[1])?(fTick*speed*(51 - gravity)/50):(fTick*speed);
@@ -92,13 +94,13 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 if(clock() - tDas > (1001 - das) * speed && clock() - tArrow > (501 - arr) * speed){
                     tArrow = clock();
                     player.move_block((i%2?1:-1), 0);
-                    stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
+                    //stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
                 }
             }
             else{
                 player.move_block((i%2?1:-1), 0);
                 tDas = clock(), tArrow = clock();
-                stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
+                //stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
             }
             KeyState[2 + i] = 1;
         }
@@ -110,7 +112,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if(KeyPressed[i + (i?4:0)]){
             if(!KeyState[i + (i?4:0)]){
                 player.rotate((i%2?-1:1));
-                stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
+                //stuck_wait += (sCnt++ >= sLimit)?0:(fTick*speed/10);
             }
             KeyState[i + (i?4:0)] = 1;
         }
@@ -122,6 +124,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if (KeyPressed[i + 7]) {
             if(!KeyState[7]){
                 player.hold_block(); //keep
+                stuck_wait = 1900;
                 KeyState[7] = 1;
                 player.print_table();
             }
@@ -131,6 +134,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     if (KeyPressed[4]){
         if(!KeyState[4]){
             player.hard_drop();
+            stuck_wait = 1900;
             player.fix_block();
             if(player.chk_clear(line, score)){
                     clr = 1;
