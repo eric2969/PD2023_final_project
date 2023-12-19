@@ -200,30 +200,14 @@ void Table::hard_drop(){
 }
 
 bool Table::move_block(const short x, const short y){
-#ifdef DEBUG
-    set_color(15);
-    goto_xy(27, 3);
-    std::cout << "Curr" << current;
-#endif // DEBUG
     Block *bTmp = current -> clone();
-#ifdef DEBUG
-    set_color(15);
-    goto_xy(27, 3);
-    std::cout << "Current:" << current << " bTmp:" << bTmp;
-#endif // DEBUG
     bool valid = isValid((*bTmp) += Point(x, y));
     if(valid){
         (*current) += Point(x, y);
         tSpin = 0;
     }
     delete bTmp;
-    bTmp = nullptr;
-#ifdef DEBUG
-    set_color(15);
-    goto_xy(27, 4);
-    std::cout << "Current:" << current << " bTmp:" << bTmp;
-#endif // DEBUG
-    
+    bTmp = nullptr;   
     return valid;
 }
 
@@ -251,7 +235,6 @@ void Table::rotate(const short direction){
             else if(board[ty][tx])
                 tCnt++;
         }
-        
         if(tCnt >= 3)
             tSpin = 1;
     }
@@ -279,9 +262,9 @@ bool Table::chk_clear(int& line, int& tscore){
             i--; //check the line that have cleared. because move down
         }
     }
-    
+    tSpin = (tSpin && cnt);
     b2b = (pb2b && (cnt == 4 || tSpin));
-    pb2b = (cnt == 4 || tSpin);
+    pb2b = (cnt?(cnt == 4 || tSpin):pb2b);
     this -> clear_line += cnt;
     combo = (cnt?(combo+1):0);
     point = ((cnt?(point<<cnt):0));

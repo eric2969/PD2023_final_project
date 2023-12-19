@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
-#include <windows.h>
-#include <imm.h> 
+#include <windows.h> 
 
 using namespace std;
 
@@ -31,29 +30,7 @@ void game_init();
 void game_exit();
 void record_reset() {playTimes = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score);
-
-#ifdef FONT
-void SetFont(int);
-#endif
-void print_pic(){
-    clrscr();
-    SetFont(5);
-    goto_xy(0,0);
-    set_color(7);
-    COORD buffersize;
-    //GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), buffersize);
-
-    // 修改緩衝區大小
-    buffersize.X = 600;
-    buffersize.Y = 600;
-    HWND hwnd = GetConsoleWindow();
-    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffersize);
-    SetConsoleSize(600,600,600,600);
-    ifstream pic(PIC_PATH);
-    string str;
-    while(getline(pic,str)) cout << str << endl;
-    pic.close();
-}
+void print_pic();
 
 struct option1{
     static int line, score, gameMode, goal;
@@ -133,9 +110,7 @@ struct option2{
     static int line, score;
     static clock_t t;
     static void run(){
-#ifdef FONT
     	SetFont(20);
-#endif
         try{
             multiPlayer(line, score);
         }
@@ -144,7 +119,7 @@ struct option2{
                 clrscr();
                 set_color(7);
                 cout << e.what() << endl;
-                //cout << "Used Time:  " << (clock() - t)/1000 << endl;
+                cout << "Used Time:  " << (clock() - t)/1000 << endl;
                 cout << "Clear Line: " << line << endl;
                 cout << "Score:      " << score << endl << endl;
                 Sleep(800);
@@ -183,7 +158,7 @@ struct option3{
         pause();
     }
     static void sub_option2(){
-        cout << "Are you sure you want to reset your record? [1(No)/2(Yes)]: ";
+        cout << "Are you sure you want to reset your record?\n[1(No)/2(Yes)]: ";
         while(1){
             cin >> iTmp;
             if(iTmp == 1){
@@ -222,7 +197,7 @@ int option3::iTmp = 0;
 struct option4{
     static int iTmp;
     static void sub_option1(){
-        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR [1(slow)-500(fast)]: ";
+        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n[1(slow)-500(fast)]: ";
         while(1){
             cin >> arr;
             if(arr > 0 && arr <= 500){
@@ -242,7 +217,7 @@ struct option4{
         }
     }
     static void sub_option2(){
-        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS [1(slow)-1000(fast)]: ";
+        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n[1(slow)-1000(fast)]: ";
         while(1){
             cin >> das;
             if(das > 0 && das <= 1000){
@@ -263,7 +238,7 @@ struct option4{
 
     }
     static void sub_option3(){
-         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level [1(slow)-50(fast)]: ";
+         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n[1(slow)-50(fast)]: ";
          while(1){
             cin >> gravity;
             if(gravity > 0 && gravity <= 50){
@@ -283,7 +258,7 @@ struct option4{
          }
     }
     static void sub_option4(){
-        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode [1(Dark)/2(Bright)]: ";
+        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n[1(Dark)/2(Bright)]: ";
         while(1){
             cin >> iTmp;
             if(iTmp == 1 || iTmp == 2){
@@ -325,11 +300,8 @@ struct option5{
 
 signed main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-#ifdef FONT
     FullScreen();
     SetFont(25);
-
-#endif // FONT
     game_init();
     Menu Main;
     option1 opt1;
@@ -365,5 +337,23 @@ void record_update(int& clr, int& score){
     scoreCnt += score;
     highClear = max(highClear, clr);
     highScore = max(highScore, score);
+}
+
+void print_pic(){
+    clrscr();
+    SetFont(5);
+    goto_xy(0,0);
+    set_color(7);
+    COORD buffersize;
+    // 修改緩衝區大小
+    buffersize.X = 600;
+    buffersize.Y = 600;
+    HWND hwnd = GetConsoleWindow();
+    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffersize);
+    SetConsoleSize(600,600,600,600);
+    ifstream pic(PIC_PATH);
+    string str;
+    while(getline(pic,str)) cout << str << endl;
+    pic.close();
 }
 

@@ -27,6 +27,11 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
+
+> ### 2023/12/20.a (v2.8.1)
+> Fixed b2b and tspin <br>
+> Improve stuck_wait verdiction
+
 > ### 2023/12/19.e (v2.8)
 > Added 啪沒了<br>
 > Fixed the FullScreen function<br>
