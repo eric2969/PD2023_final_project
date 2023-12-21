@@ -1,24 +1,34 @@
-class Table;
-
+//struct for saving coordinate data
 struct Point{
+    //for saving data for x and y coordinate
     short x,y;
-    Point() {}
+    //constructors for different use
+    Point():x(0), y(0) {}
     Point(const short& X, const short& Y):x(X), y(Y) {}
     Point(const Point& tmp):x(tmp.x), y(tmp.y) {}
+    //operator for add two Point together by add x and y coordinate independently
     Point operator+(const Point& tmp) const{ return Point((this -> x) + tmp.x, (this -> y) + tmp.y);}
+    //opertaor for multiply a number to a Point by multiply x and y with the number independently
     Point operator*(const short& tmp) const{ return Point((this -> x) * tmp, (this -> y) * tmp);}
+    //check whether two Point is the same
     bool operator==(const Point& tmp) const{ return (this->x == tmp.x) && (this->y == tmp.y);}
+    //check whether two Point is different
     bool operator!=(const Point& tmp) const{ return !(*this == tmp);}
+    //assign Point data to this by copy x and y data independently
     const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
 };
+//for output a Point in format
 ostream &operator<< (ostream &out,Point right){
     out << '(' << right.x << ',' << right.y << ')';
 }
 
+//Use for create a container for save block data on x-y plane
 class Block{
 protected:
+    //for saving block general data
     short ID, direction;
     Point location, delta[4];
+    //pure virtual function for create relative position of other 3 point from the origin point
     virtual void createDeltaTable() = 0;
 public:
     //constructor and destructor (should be invoked by their derived classes)
@@ -33,25 +43,31 @@ public:
     inline short get_ID() const {return ID;}
     inline short get_direction() const {return direction;}
     inline Point get_location() const {return location;}
+    //return a vector that contain four points of the block
     std::vector<Point> block_position() const{
         std::vector<Point> tmp;
         for(int i = 0;i < 4;i++)
             tmp.push_back(location + delta[i]);
         return tmp;
     }
-    //data setting
+    //data setting (+= :  move the block by Point(x,y) on x-y plane, = : move the block position to Point(x, y))
     const Block& operator+=(const Point& tmp){ (this -> location.x) += tmp.x, (this -> location.y) += tmp.y; return *this;}
     const Block& operator=(const Point& tmp){ (this -> location.x) = tmp.x, (this -> location.y) = tmp.y; return *this;}
+    //create a pure virtual function for cloning a Block that is identical to itself and return the Block's reference
     virtual Block *clone() const = 0;
+    //rotate the block on x-y plane
     virtual void rotate_set(const short& drc){ //positive is clockwise
+        //record the direction data
         this -> direction = ( (this -> direction) + drc + 4) % 4;
         short x_tmp, y_tmp;
+        //rotate each point of the block by pi/2 or -pi/2 (the formula can be calculated by rotation matrix)
         for(int i = 0; i < 4; i++){
             x_tmp = delta[i].x, y_tmp = delta[i].y;
             delta[i].x = drc * y_tmp, delta[i].y = drc * (-1) * x_tmp;
         }
         return;
     }
+    //an operator can copy all the data from source
     const Block& operator=(const Block& tmp){
         this -> direction = tmp.direction;
         this -> location = tmp.location;
@@ -60,7 +76,9 @@ public:
             (this -> delta[i]) = tmp.delta[i];
         return *this;
     }
+    //a virtual function that return whether this block is I (will be override by Block_I)
     virtual bool isI() {return 0;}
+    //check the block whether is at the same place as itself
     bool is_same_position(Block *right){return (ID == right -> ID && location == right -> location && direction == right -> direction);}
 };
 

@@ -1,6 +1,9 @@
+//declare server address and client address
 SOCKADDR_IN Server_addr, cliAddr;
+//declare socket for listen and connection
 SOCKET sListen, sConnection;
 
+//for initializing win-socket api
 void socket_init(){
     WSADATA wsaData;
     WORD    DLLVersion;
@@ -9,53 +12,72 @@ void socket_init(){
     addrlen = sizeof(Server_addr);
 }
 
+//let this server connect to input ip and input port
 int server_connect(const char ip[], const int& port){
-    Server_addr.sin_addr.s_addr    = inet_addr(ip);
+    //set server address (localhost:port)
+    Server_addr.sin_addr.s_addr    = inet_addr("127.0.0.1");
     Server_addr.sin_family         = AF_INET;
     Server_addr.sin_port           = htons(port);
+    //set client address (ip:port)
+    cliAddr.sin_addr.s_addr    = inet_addr(ip);
+    cliAddr.sin_family         = AF_INET;
+    cliAddr.sin_port           = htons(port);
+    //create listening socket and check return value
     sListen = socket(AF_INET,SOCK_STREAM,0);
-    printf("ser %s\n", inet_ntoa(Server_addr.sin_addr));
+    //if fail, return -1 and clean up connection data
     if (sListen == INVALID_SOCKET){
         WSACleanup();
         return -1;
     }
-    // Bind the socket
+    // Bind the socket and check return value
     int iResult = bind(sListen, (SOCKADDR*)&Server_addr, sizeof(Server_addr));
+    //if fail, return -2, terminate socket and clean up connection data
     if (iResult == SOCKET_ERROR){
         closesocket(sListen);
         WSACleanup();
         return -2;
     }
-    //SOMAXCONN: listening without any limit
+    //if error occur when listening, return -3, terminate socket and clean up connection data
     if(listen(sListen, 5) == SOCKET_ERROR){
         closesocket(sListen);
         WSACleanup();
         return -3;
     }
-    if(sConnection = accept(sListen,(SOCKADDR*)&cliAddr,&addrlen)){
-        return 0;
-    }
-    else
+    //try to connect to destination ip
+    if(sConnection = accept(sListen,(SOCKADDR*)&cliAddr,&addrlen))
+        return 0; //if success, return 0
+    else{
+        //if fail, return 1, terminate socket and clean up connection data
+        closesocket(sListen);
+        WSACleanup();
         return 1;
+    }
 }
 
+//sending cstring via socket
 int server_send(const char mes[]){
+    //trying to send data
     if(send(sConnection, mes, sizeof(mes), 0) == SOCKET_ERROR){
+        //if fail, return -1, terminate socket and clean up connection data
         closesocket(sConnection);
         WSACleanup();
         return -1;
     }
     else
-        return 0;
+        return 0; //if success, return 0
 }
 
+//receive cstring from socket
 int server_recv(char mes[]){
+    //reset container
     strcpy(mes, "");
+    //try to receiving data
     if(recv(sConnection, mes, sizeof(mes), 0) == SOCKET_ERROR){
+        //if fail, return -1, terminate socket and clean up connection data
         closesocket(sConnection);
         WSACleanup();
         return -1;
     }
     else
-        return 0;
+        return 0; //if success, return 0
 }

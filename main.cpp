@@ -9,20 +9,18 @@ int das, arr, gravity, addrlen;
 string sbuff;
 const short flush_tick = 2;
 
-#define nDEBUG
-#define FONT
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
 
+#include "VK.h"
 #include "Server.h"
 #include "Client.h"
 #include "Console.h"
 #include "Block.h"
 #include "Table.h"
-#include "VK.h"
-#include "Game.h"
 #include "Menu.h"
+#include "Game.h"
 
 int playTimes, clearCnt, scoreCnt, highClear, highScore;
 
@@ -191,6 +189,17 @@ struct option3{
         record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
         record.close();
     }
+    void start(){
+    	Menu sub_menu;
+        set_color(0);
+        clrscr();
+        sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
+        sub_menu.start();
+        ofstream record(RECORD_PATH);
+        record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+        record.close();
+        clrscr();
+	}
 };
 int option3::iTmp = 0;
 
@@ -296,7 +305,6 @@ struct option5{
         game_exit();
     }
 };
-
 
 signed main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);

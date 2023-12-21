@@ -1,33 +1,29 @@
-#ifndef MENU_H
-#define MENU_H
-
-
 //dwButtonState for the mouse
-
 #define L_BUTTON 0x1
 #define R_BUTTON 0x2
+
 // dwEventFlags for the mouse
 #define MOUSE_CLICK 0x0
 #define MOUSE_MOVED 0x1
 #define DOUBLE_CLICK 0x2
- 
+
 //define colors
 #define COLOR_default SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
 #define COLOR_Black_Cyan SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0b);
 #define COLOR_Yellow_Blue SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xe9);
- 
+
 using std::ios_base;
 using std::ostream;
 using std::string;
 using std::vector;
+using std::cin;
 using std::cout;
 using std::endl;
 
 class Menu
 {
 private:
-    struct node //menu's options
-    {
+    struct node { //menu's options
         COORD pos_;
         std::string display_;
         const std::function<void(void)> &pf_;
@@ -35,15 +31,13 @@ private:
     };
     std::vector<node> nodes_;
     std::string title_; //title of the menu
- 
 protected:
     void recordposition(); //record the position of the mouse
     bool implement(COORD clickpos); //execute the selected option
     void highlight(COORD hang); //make the hovered option blue
- 
 public:
     //constructor
-    Menu(){} 
+    Menu(){}
     ~Menu(){}
     //methods
     Menu &settitle(std::string s);
@@ -55,13 +49,12 @@ public:
 
 
 //print cursor's location
-ostream &operator<<(ostream &pout, const COORD &temp)
-{
+ostream &operator<<(ostream &pout, const COORD &temp){
     pout.setf(ios_base::fixed);
     pout << "[Cursor Position] X: " << std::setw(2) << temp.X << "  Y: " << std::setw(2) << temp.Y;
     return pout;
 }
- 
+
 
 //button - click
 //check if cursor's location is in the affecting region (Same row and same column + 5 tiles)
@@ -72,7 +65,7 @@ bool operator-(const COORD &button, const COORD &click)
     else
         return false;
 };
- 
+
 // reset the console mode
 void setmode()
 {
@@ -83,17 +76,17 @@ void setmode()
     // mode &= ~ENABLE_MOUSE_INPUT;     //disable mouse input
     SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), mode);
 }
- 
+
 //wait before the mouse moves
 MOUSE_EVENT_RECORD waitmouse(bool move = true)
 {
-    INPUT_RECORD record; //?入事件
-    DWORD reg;           //??寄存
+    INPUT_RECORD record;
+    DWORD reg;
     while (1)
     {
         Sleep(10);
-        ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &record, 1, &reg);                                  //??入事件存入record
-        if (record.EventType == MOUSE_EVENT && (move | record.Event.MouseEvent.dwEventFlags != MOUSE_MOVED)) //是鼠?事件 && 移?事件与模式??
+        ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &record, 1, &reg);
+        if (record.EventType == MOUSE_EVENT && (move | record.Event.MouseEvent.dwEventFlags != MOUSE_MOVED))
             return record.Event.MouseEvent;
     }
 }
@@ -121,7 +114,7 @@ bool Menu::implement(COORD clickpos){
                 cout << e.what() << endl;
                 Sleep(2000);
                 pause();
-                
+
             }
             setmode();
             hidecursor(1);
@@ -152,10 +145,12 @@ Menu& Menu::settitle(string s){
     title_ = s;
     return *this;
 }
+
 Menu& Menu::add(const std::function<void(void)> &p, string d = "Unkown."){
     nodes_.push_back(node(d, p));
     return *this;
 }
+
 void Menu::start(){
     setmode();
     MOUSE_EVENT_RECORD mouse;
@@ -175,7 +170,7 @@ void Menu::start(){
             clrscr();
             highlight(mouse.dwMousePosition);
         }
-            
+
     } while (mouse.dwButtonState != R_BUTTON);
     while(mouse.dwButtonState == R_BUTTON){
         mouse = waitmouse();
@@ -183,4 +178,5 @@ void Menu::start(){
     }
     FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 }
-#endif
+
+

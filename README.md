@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
+> ### 2023/12/22.a (v2.8.2)
+> Complete comment on VK.h, Server.h and Client.h <br>
+> Block.h's comment is near completed, remain 7 block derive class
 
 > ### 2023/12/20.a (v2.8.1)
 > Fixed b2b and tspin <br>
