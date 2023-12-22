@@ -58,13 +58,16 @@ private:
 public:
     Table() : current(nullptr) { memset(board, 0, sizeof(board));}
     ~Table() {}
+    // move the table 
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
+    // initailize the table
     void init(){
         pb2b = 0, b2b = 0;
         bTime = 0, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
         qClear(next);
     }
+    // the initializer used to count the time passed
     void init(clock_t time){
         tStart = time;
         pb2b = 0, b2b = 0;
@@ -74,7 +77,9 @@ public:
     }
     //block existence
     void new_block();
+    // to fix the block
     void fix_block() {for (auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
+    // to hold the block
     void hold_block();
     //block move
     void hard_drop();
@@ -173,7 +178,7 @@ void Table::new_block(){
     before = current->clone();
     next.pop();
 }
-
+// hold the block
 void Table::hold_block(){
     if(hold){
         std::swap(current, hold);
@@ -346,7 +351,7 @@ void Table::print_table() const{
         }
         (*(next.front())) = Point(d_x, d_y);
     }
-    //status
+    //set status
     set_color(color_table[0] + (bright?128:0));
     goto_xy(x + width + 7, y + 7);
     std::cout << "Level:" << level;
