@@ -27,6 +27,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
+> ### 2023/12/22.c (v2.9.1)
+> Game.h's comment is nearly finished (pause and quit function left) <br>
+> Completed comment on Conosle.h
 
 > ### 2023/12/22.b (v2.9)
 > Improve UX by enhancing SetFont function(square or rect)
