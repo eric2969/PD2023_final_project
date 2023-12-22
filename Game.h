@@ -113,7 +113,7 @@ struct Quit{
 };
 
 struct QuitChk{
-	static sub_option1(){
+	static void sub_option1(){
 		throw std::runtime_error("Quit");
 	}
 	void operator() (){

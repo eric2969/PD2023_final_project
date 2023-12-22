@@ -150,6 +150,7 @@ void Menu::start(){
     cout << title_ << endl //show title
          << "========================================" << endl;
     recordposition(); //record mouse's position
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
     do
     {
         Sleep(10); //update ticks

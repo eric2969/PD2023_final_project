@@ -28,6 +28,9 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 ## Version Histrory
 
+> ### 2023/12/22.f (v2.10.1)
+> Bug about quit menu was fixed by flushing the input console
+
 > ### 2023/12/22.e (v2.10beta)
 > add comment on Block.h <br>
 > Add pause menu and quit menu(some isuue need to be fixed) <br>
