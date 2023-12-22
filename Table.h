@@ -3,17 +3,22 @@
 #define d_y 19
 
 std::string text_table[5] {"T-Spin","Single","Double","Triple","Tetris"};
-void goto_xy(short x, short y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsole, pos);}
+void goto_xy(short x, short y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsole, pos);}// move the cursor
 void set_color(const unsigned short textColor) {SetConsoleTextAttribute(hConsole, textColor);}
-void qClear(std::queue<Block*>& q) {std::queue<Block*> empty; std::swap(empty, q);}
+void qClear(std::queue<Block*>& q) {
+	while(!q.empty()){
+		delete q.front();
+		q.pop();
+	}
+}// give the table a empty queue
 
 const short color_table[8] = {DEFAULT_COLOR, 5*16, 0, 1*16, 2*16, 4*16, 3*16, 6*16}; //[0] for none
 
 //5-stage test for kick_table
 const Point Kick_Table(bool isI,short start, const short& drc, const short& test){
-    const static Point delta_notI[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };
-    const static Point delta_I1[5] = { Point(0, 0), Point(-1, 0), Point(2, 0), Point(-1, 2), Point(2, -1) };
-    const static Point delta_I2[5] = { Point(0, 0), Point(-2, 0), Point(1, 0), Point(-2, -1), Point(1, 2) };
+    const static Point delta_notI[5] = { Point(0, 0), Point(-1, 0), Point(-1, 1), Point(0, -2), Point(-1,-2) };// for kick table try
+    const static Point delta_I1[5] = { Point(0, 0), Point(-1, 0), Point(2, 0), Point(-1, 2), Point(2, -1) };// for kick table try
+    const static Point delta_I2[5] = { Point(0, 0), Point(-2, 0), Point(1, 0), Point(-2, -1), Point(1, 2) };// for kick table try
     start = (start - drc + 4) %4;
     if(!isI){
         Point tmp; short factor;
@@ -175,7 +180,7 @@ void Table::new_block(){
 }
 // hold the block
 void Table::hold_block(){
-    if(hold){
+    if(hold){// see if there is already one block hold
         std::swap(current, hold);
         (*hold) = Point(d_x, d_y);
     }
@@ -188,7 +193,7 @@ void Table::hold_block(){
 }
 //block move
 void Table::hard_drop(){
-    Block *bTmp = current -> clone();
+    Block *bTmp = current -> clone();// clone one to try if it works
     while(isValid(*bTmp)){
         (*bTmp) += Point(0, -1);
     }
@@ -200,7 +205,7 @@ void Table::hard_drop(){
 }
 
 bool Table::move_block(const short x, const short y){
-    Block *bTmp = current -> clone();
+    Block *bTmp = current -> clone();// clone one to try if it works
     bool valid = isValid((*bTmp) += Point(x, y));
     if(valid){
         (*current) += Point(x, y);
@@ -212,13 +217,13 @@ bool Table::move_block(const short x, const short y){
 }
 
 void Table::rotate(const short direction){
-    Block *bTmp = current -> clone(); // Change here
+    Block *bTmp = current -> clone(); // clone one to try if it works
     bTmp -> rotate_set(direction);
     //current.rotate;
     for(int i = 0; i < 5; i++){
         Block *moveTmp = bTmp->clone();
         if(isValid((*moveTmp) += Kick_Table(bTmp -> isI(), bTmp -> get_direction(), direction, i))){
-            current -> rotate_set(direction); // Change here
+            current -> rotate_set(direction); 
             (*current) += Kick_Table(current -> isI(), current -> get_direction(), direction, i);
             break;
         }
@@ -263,6 +268,7 @@ bool Table::chk_clear(int& line, int& tscore){
             i--; //check the line that have cleared. because move down
         }
     }
+    // update the current condition
     tSpin = (tSpin && cnt);
     b2b = (pb2b && (cnt == 4 || tSpin));
     pb2b = (cnt?(cnt == 4 || tSpin):pb2b);
