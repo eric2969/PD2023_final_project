@@ -347,15 +347,14 @@ void print_pic(){
     goto_xy(0,0);
     set_color(7);
     COORD buffersize;
-    // 修改緩衝區大小
     buffersize.X = 600;
     buffersize.Y = 600;
     HWND hwnd = GetConsoleWindow();
-    SetConsoleScreenBufferSize(hConsole, buffersize);
-    SetConsoleSize(600, 600, 600, 600);
+    SetConsoleScreenBufferSize(hConsole, buffersize); //resize console buffer
+    SetConsoleSize(600, 600, 600, 600); //resize console
     ifstream pic(PIC_PATH);
     string str;
-    while(getline(pic,str)) cout << str << endl;
+    while(getline(pic,str)) cout << str << endl; //print out the picture
     pic.close();
 }
 
