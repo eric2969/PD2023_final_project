@@ -28,6 +28,10 @@ And we divided our game architecture into several parts, listed at the below.
   - [Socket](#socket)
 ## Version Histrory
 
+> ### 2023/12/22.g (v2.10.2)
+> Fixed the bug that block stucked can never be fixed <br>
+> Completed Game.h's comment 
+
 > ### 2023/12/22.f (v2.10.1)
 > Bug about quit menu was fixed by flushing the input console
 

@@ -173,15 +173,15 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     getKeyState(); //get which key is pressed
     //fall
     if (clock() - before > fall_tick){
-       stuck = !player.move_block(0,-1);
-       before = clock();
-       if(stuck){
-          sCnt = 0;
-          tStuck = clock();
-       }
+        if(!player.move_block(0,-1) && !stuck){
+            stuck = 1;
+            sCnt = 0;
+            tStuck = clock();
+        }
+        before = clock();
     }
     //if the block is stuck on the place for a long time
-    if(stuck && clock() - tStuck > ((sCnt + 10) * fTick / 25) && !player.check_block(Point(0,-1))){
+    if(stuck && clock() - tStuck > stuck_wait && !player.check_block(Point(0,-1))){
         //fix the block into place
         player.fix_block();
         if(player.chk_clear(line, score)){
@@ -216,7 +216,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 tDas = clock(), tArrow = clock();
                 //start counting down the lock timer if stuck
                 if(stuck)
-                	stuck_wait += (sCnt++ >= sLimit)?0:(fTick*2/25);
+                	stuck_wait += (sCnt++ >= sLimit)?0:(fTick/10);
             }
             KeyState[2 + i] = 1; //change key state to prevent multiple move
         }
@@ -228,11 +228,10 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if(KeyPressed[i + (i?4:0)]){
             if(!KeyState[i + (i?4:0)]){
                 //the button have been pressed just now
-                
                 player.rotate((i%2?-1:1)); //rotate the block according to the button pressed
                 //start counting down the lock timer if stuck
                 if(stuck)
-                	stuck_wait += (sCnt++ >= sLimit)?0:(fTick*2/25);
+                	stuck_wait += (sCnt++ >= sLimit)?0:(fTick/10);
             }
             KeyState[i + (i?4:0)] = 1; //change the key state to prevent rotating for multiple times
         }
@@ -268,7 +267,6 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     }
     else
         KeyState[4] = 0; //change the key state back
-    
     //p:pause (9)
     if(single){
         if (KeyPressed[9]){
@@ -277,9 +275,9 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 clrscr();
                 SetFont(26);
                 set_color(7);
-                Menu PauseMenu; SettingMenu SM; QuitChk QM;
+                Menu PauseMenu; SettingMenu SM; QuitChk QM; //make the pause menu
                 PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(QM, "Quit");
-                PauseMenu.start();
+                PauseMenu.start(); //execute the menu
                 set_color(0);
                 clrscr();
                 SetFont(26, 1);
@@ -297,9 +295,9 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             clrscr();
             SetFont(26);
             set_color(7);
-            Menu QuitMenu; Quit quit;
+            Menu QuitMenu; Quit quit; // make a quit menu
 			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(quit, "Quit");
-			QuitMenu.start(); 
+			QuitMenu.start(); // execute the menu
             set_color(0);
             clrscr();
             SetFont(26, 1);
@@ -310,10 +308,10 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     else
         KeyState[10] = 0;
     player.print_block(); //print out the block
-    if(clr && clock() - tClear >= 2 * fTick * speed){ //print out play time
+    if(clr && clock() - tClear >= 2 * fTick * speed){ //clear the message box to the left
         set_color(0);
         goto_xy(player.get_x() + 18, player.get_y() + 17);
-        std::cout << "      ";
+        std::cout << "           ";
         goto_xy(player.get_x() + 18, player.get_y() + 18);
         std::cout << "      ";
         goto_xy(player.get_x() + 18, player.get_y() + 19);

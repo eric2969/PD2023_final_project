@@ -168,11 +168,6 @@ void Table::new_block(){
     delete before;
     before = nullptr;
     delete current;
-#ifdef DEBUG
-    set_color(15);
-    goto_xy(27,2);
-    std::cout << current;
-#endif // DEBUG
     current = nullptr;
     current = next.front();
     before = current->clone();
@@ -250,7 +245,8 @@ void Table::rotate(const short direction){
 //line clear
 bool Table::chk_clear(int& line, int& tscore){
     bool allExist;// see if the whole row is filled
-    int cnt = 0, point = 5, multiplier = 1;// the total line num cleared
+    int cnt = 0, point = 5;
+    double multiplier = 1.0;// the total line num cleared
     for(int i=0; i<20; i++){
         allExist = true;
         for(int j=0; j<10; j++){
@@ -273,7 +269,8 @@ bool Table::chk_clear(int& line, int& tscore){
     this -> clear_line += cnt;
     combo = (cnt?(combo+1):0);
     point = ((cnt?(point<<cnt):0));
-    multiplier <<= (combo + tSpin - 1 + b2b * 3);
+    multiplier *= pow(2,(tSpin + b2b * 3));
+    multiplier *= combo?pow(1.1, combo-1):0;
     this -> score += point * multiplier;
     set_color(14);
     if(cnt){
