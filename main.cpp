@@ -30,16 +30,17 @@ void record_reset() {playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highC
 void record_update(int& clr, int& score, const int& time);
 void print_pic();
 
-struct option1{
+struct option1{ //option from single player mode
     static int line, score, usedTime, gameMode, goal;
     static clock_t t;
-    static void run(){
+    static void run(){ //execute the sub-menu
         t = clock();
         SetFont(26, 1);
         try{
             singlePlayer(line, score, gameMode, goal);
         }
-        catch(runtime_error e){
+        catch(runtime_error e){ 
+                //game over
         		usedTime = (clock() - t) / 1000;
                 print_pic();
                 Sleep(1000);
@@ -54,13 +55,13 @@ struct option1{
                 Sleep(800);
                 pause();
         }
-        record_update(line, score, usedTime);
+        record_update(line, score, usedTime); //update record
     }
-    static void sub_option1(){
+    static void sub_option1(){ //infinite mode
         gameMode = 0;
         run();
     }
-    static void sub_option2(){
+    static void sub_option2(){ //line mode
         cout << "Please input your goal (line)?" << endl;
         while(1){
             cin >> goal;
@@ -68,14 +69,14 @@ struct option1{
                 break;
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number bigger than 0" << endl;
             }
         }
         gameMode = 1;
         run();
     }
-    static void sub_option3(){
+    static void sub_option3(){ //time mode
         cout << "Please input your time (second)?" << endl;
         while(1){
             cin >> goal;
@@ -83,7 +84,7 @@ struct option1{
                 break;
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number bigger than 0" << endl;
             }
         }
@@ -91,7 +92,7 @@ struct option1{
         run();
     }
     void operator() (){
-        Menu sub_menu;
+        Menu sub_menu; //create sub-menu
         set_color(0);
         clrscr();
         sub_menu.settitle("Single Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
@@ -105,15 +106,16 @@ int option1::score = 0;
 int option1::goal = 0;
 clock_t option1::t = 0;
 
-struct option2{
+struct option2{ //option from multi-player
     static int line, score, usedTime;
     static clock_t t;
-    static void run(){
+    static void run(){ //execute sub-menu
     	SetFont(20);
         try{
             multiPlayer(line, score);
         }
-        catch(runtime_error e){
+        catch(runtime_error e){ 
+                //game over
         		usedTime = (clock() - t) / 1000;
                 set_color(0);
                 clrscr();
@@ -125,13 +127,13 @@ struct option2{
                 Sleep(800);
                 pause();
         }
-        record_update(line, score, usedTime);
+        record_update(line, score, usedTime); //update the record
 	}
 	static void sub_option1(){
         run();
     }
     void operator() (){
-		Menu sub_menu;
+		Menu sub_menu; //create sub-menu
 		set_color(0);
         clrscr();
         sub_menu.settitle("Multi Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Game Start");
@@ -143,9 +145,9 @@ int option2::score = 0;
 int option2::usedTime = 0;
 clock_t option2::t = 0;
 
-struct option3{
+struct option3{ //record option
     static int iTmp;
-    static void sub_option1(){
+    static void sub_option1(){ //show record
         set_color(0);
         clrscr();
         set_color(7);
@@ -157,9 +159,9 @@ struct option3{
         cout << "Best Clear Line:     " << highClear << endl;
         cout << "Best Score:          " << highScore << endl << endl;
         Sleep(800);
-        pause();
+        pause(); //press any key to continue
     }
-    static void sub_option2(){
+    static void sub_option2(){ //reset record
         cout << "Are you sure you want to reset your record?\n[1(No)/2(Yes)]: ";
         while(1){
             cin >> iTmp;
@@ -176,33 +178,34 @@ struct option3{
                 pause();
                 break;
             }
-            else{
+            else{ //invalid value
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input 1 or 2: ";
             }
         }
     }
     void operator() (){
-        Menu sub_menu;
+        Menu sub_menu; //create sub-menu
         set_color(0);
         clrscr();
         sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
         sub_menu.start();
         ofstream record(RECORD_PATH);
+        //write new record
         record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
-        record.close();
+        record.close(); //close file
     }
 };
 int option3::iTmp = 0;
 
-struct option4{
+struct option4{ //settings
     static int iTmp;
     static void sub_option1(){
         cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n[1(slow)-500(fast)]: ";
         while(1){
             cin >> arr;
-            if(arr > 0 && arr <= 500){
+            if(arr > 0 && arr <= 500){  
                 set_color(0);
                 clrscr();
                 set_color(7);
@@ -213,7 +216,7 @@ struct option4{
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 500: ";
             }
         }
@@ -233,7 +236,7 @@ struct option4{
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 1000: ";
             }
         }
@@ -254,7 +257,7 @@ struct option4{
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin);//flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 50: ";
             }
          }
@@ -293,13 +296,14 @@ struct option4{
 };
 int option4::iTmp = 0;
 
-struct option5{
+struct option5{ //exit game
     void operator() (){
         game_exit();
     }
 };
 
 signed main(){
+    //initialize the main menu
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     FullScreen();
     SetFont();
@@ -316,6 +320,7 @@ signed main(){
 }
 
 void game_init(){
+    // read user preference
     ifstream setting(SET_PATH), record(RECORD_PATH);
     setting >> arr >> das >> gravity >> bright;
     record >> playCnt >> TimeCnt >> clearCnt >> scoreCnt >> highClear >> highScore;
@@ -324,6 +329,7 @@ void game_init(){
 }
 
 void game_exit(){
+    //save user preference
     ofstream setting(SET_PATH), record(RECORD_PATH);
     setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
     record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;

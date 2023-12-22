@@ -11,97 +11,97 @@ clock_t before, tStuck, tClear, tStart, tArrow,tDas;
 
 struct SettingMenu{
     static int iTmp;
-    static void sub_option1(){
+    static void sub_option1(){ //set ARR
         cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n[1(slow)-500(fast)]: ";
         while(1){
             cin >> arr;
-            if(arr > 0 && arr <= 500){
+            if(arr > 0 && arr <= 500){ //valid value
                 set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause();
+                pause(); // press any key to continue
                 break;
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 500: ";
             }
         }
     }
     static void sub_option2(){
         cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n[1(slow)-1000(fast)]: ";
-        while(1){
+        while(1){ //set DAS
             cin >> das;
-            if(das > 0 && das <= 1000){
+            if(das > 0 && das <= 1000){ //valid value
                 set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause();
+                pause(); //press any key to continue
                 break;
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 1000: ";
             }
         }
 
     }
-    static void sub_option3(){
+    static void sub_option3(){ //set gravity
          cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n[1(slow)-50(fast)]: ";
          while(1){
-            cin >> gravity;
-            if(gravity > 0 && gravity <= 50){
+            cin >> gravity; 
+            if(gravity > 0 && gravity <= 50){ //valid value
                 set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause();
+                pause(); //press any key to continue
                 break;
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 50: ";
             }
          }
     }
-    static void sub_option4(){
+    static void sub_option4(){ //switch between light and dark mode
         cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n[1(Dark)/2(Bright)]: ";
         while(1){
             cin >> iTmp;
-            if(iTmp == 1 || iTmp == 2){
+            if(iTmp == 1 || iTmp == 2){ //valid value
                 bright = iTmp - 1;
                 set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause();
+                pause(); //press any key to continue
                 break;
             }
             else{
                 cin.clear();
-                fflush(stdin);
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
                 cout << "Please input 1 or 2: ";
             }
         }
     }
     void operator() (){
-        Menu sub_menu;
+        Menu sub_menu; //create sub-menu
         set_color(0);
         clrscr();
         sub_menu.settitle("Game Setting\nRight click for return to menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
-        sub_menu.start();
-        ofstream setting(SET_PATH);
-        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
-        setting.close();
+        sub_menu.start(); //execute sub-menu
+        ofstream setting(SET_PATH); //open setting preference
+        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright; //write setting
+        setting.close(); //close the file
     }
 };
 int SettingMenu::iTmp = 0;
@@ -114,14 +114,14 @@ struct Quit{
 
 struct QuitChk{
 	static void sub_option1(){
-		throw std::runtime_error("Quit");
+		throw std::runtime_error("Quit"); //exit game
 	}
 	void operator() (){
-		Menu sub_menu;
+		Menu sub_menu; //create check menu 
 		set_color(0);
 		clrscr();
 		sub_menu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(sub_option1, "Yes");
-		sub_menu.start();
+		sub_menu.start(); //execute check menu
 	}
 };
 
@@ -129,16 +129,18 @@ void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeySta
 void game_cycle(Table& player, int& line, int& score, bool single);
 
 void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(infinite), 1 (line, line), 2(time, second)
-    Table player;
+    Table player; //create new Table for player
     speed = 1.0, line = 0, score = 0, stuck = 0;
     set_color(0);
     clrscr();
-    before = clock(), tStart = clock(); //initialize time
+    //initialize the game
+    before = clock(), tStart = clock(); 
     player.set_position(2,2);
     player.init(tStart);
     player.new_block();
     player.print_table();
     while (1) {
+        //run the game
         if(mode == 1 && line >= goal)
             throw std::runtime_error("Goal Achieved");
         else if(mode == 2 && clock() - tStart >= goal * 1000)
@@ -149,7 +151,8 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
 }
 
 void multiPlayer(int& line, int& score){
-    Table player, opponent;
+    Table player, opponent; //create table for player and opponent
+    //initialize the game
     speed = 1.0, line = 0, score = 0;
     set_color(0);
     clrscr();
@@ -164,6 +167,7 @@ void multiPlayer(int& line, int& score){
     player.print_table();
     opponent.print_table();
     while (1) {
+        //run the multi-player game
         game_cycle(player, line, score, 0);
         Sleep(flush_tick);
     }
@@ -308,7 +312,8 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     else
         KeyState[10] = 0;
     player.print_block(); //print out the block
-    if(clr && clock() - tClear >= 2 * fTick * speed){ //clear the message box to the left
+    if(clr && clock() - tClear >= 2 * fTick * speed){ 
+        //clear the message box to the left
         set_color(0);
         goto_xy(player.get_x() + 18, player.get_y() + 17);
         std::cout << "           ";
