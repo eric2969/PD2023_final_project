@@ -92,9 +92,9 @@ And we divided our game architecture into several parts, listed at the below.
 > Game's bug is yet to be fix (happens when new_block(), possibly because of delete current)
 
 > ### 2023/12/17.b (v2.2)
-> Refine game.h and table.h
-> Add pause and quit function
-> Add display of line clear status
+> Refine game.h and table.h <br>
+> Add pause and quit function <br>
+> Add display of line clear status <br>
 > Menu will be added later
 
 > ### 2023/12/17.a (v2.1beta2)
