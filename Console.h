@@ -1,9 +1,9 @@
 //set location of the cursor
-void SetFont(int size = 30) {
+void SetFont(int size = 26, bool square = 0) {
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof cfi;
     cfi.nFont = 0;
-    cfi.dwFontSize.X = size;
+    cfi.dwFontSize.X = (square?size:0);
     cfi.dwFontSize.Y = size;
     cfi.FontFamily = FF_DONTCARE;
     cfi.FontWeight = FW_NORMAL;

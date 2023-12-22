@@ -149,6 +149,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             if (!KeyState[9]){
                 set_color(0);
                 clrscr();
+                SetFont(26);
                 set_color(7);
                 goto_xy(1, 1);
                 std::cout << "You have paused the game";
@@ -166,6 +167,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 }
                 set_color(0);
                 clrscr();
+                SetFont(26, 1);
                 player.print_table();
             }
             KeyState[9] = 1;
@@ -179,6 +181,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             quit();
             set_color(0);
             clrscr();
+            SetFont(26, 1);
             player.print_table();
         }
         KeyState[10] = 1;
@@ -204,6 +207,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
 void quit(){
     KeyState[10] = 1;
     set_color(0);
+    SetFont(26);
     clrscr();
     set_color(7);
     goto_xy(1, 1);

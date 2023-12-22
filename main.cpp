@@ -22,39 +22,39 @@ const short flush_tick = 2;
 #include "Menu.h"
 #include "Game.h"
 
-int playTimes, clearCnt, scoreCnt, highClear, highScore;
+int playCnt, TimeCnt, clearCnt, scoreCnt, highClear, highScore;
 
 void game_init();
 void game_exit();
-void record_reset() {playTimes = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
-void record_update(int& clr, int& score);
+void record_reset() {playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
+void record_update(int& clr, int& score, const int& time);
 void print_pic();
 
 struct option1{
-    static int line, score, gameMode, goal;
+    static int line, score, usedTime, gameMode, goal;
     static clock_t t;
     static void run(){
         t = clock();
+        SetFont(26, 1);
         try{
             singlePlayer(line, score, gameMode, goal);
         }
         catch(runtime_error e){
+        		usedTime = (clock() - t) / 1000;
                 print_pic();
-                Sleep(800);
-                SetFont(25);
+                Sleep(1000);
+                SetFont();
                 set_color(0);
                 clrscr();
                 set_color(7);
                 cout << e.what() << endl << endl;
-                cout << "Used Time:  " << (clock() - t)/1000 << endl;
-                cout << "Clear Line: " << line << endl;
-                cout << "Score:      " << score << endl << endl;
+                cout << "Used Time(s):  " << usedTime << endl;
+                cout << "Clear Line:    " << line << endl;
+                cout << "Score:         " << score << endl << endl;
                 Sleep(800);
                 pause();
         }
-        
-        
-        record_update(line, score);
+        record_update(line, score, usedTime);
     }
     static void sub_option1(){
         gameMode = 0;
@@ -99,13 +99,14 @@ struct option1{
     }
 };
 int option1::gameMode = 0;
+int option1::usedTime = 0;
 int option1::line = 0;
 int option1::score = 0;
 int option1::goal = 0;
 clock_t option1::t = 0;
 
 struct option2{
-    static int line, score;
+    static int line, score, usedTime;
     static clock_t t;
     static void run(){
     	SetFont(20);
@@ -113,17 +114,18 @@ struct option2{
             multiPlayer(line, score);
         }
         catch(runtime_error e){
+        		usedTime = (clock() - t) / 1000;
                 set_color(0);
                 clrscr();
                 set_color(7);
                 cout << e.what() << endl;
-                cout << "Used Time:  " << (clock() - t)/1000 << endl;
+                cout << "Used Time(s):  " << usedTime << endl;
                 cout << "Clear Line: " << line << endl;
                 cout << "Score:      " << score << endl << endl;
                 Sleep(800);
                 pause();
         }
-        record_update(line, score);
+        record_update(line, score, usedTime);
 	}
 	static void sub_option1(){
         run();
@@ -138,6 +140,7 @@ struct option2{
 };
 int option2::line = 0;
 int option2::score = 0;
+int option2::usedTime = 0;
 clock_t option2::t = 0;
 
 struct option3{
@@ -147,11 +150,12 @@ struct option3{
         clrscr();
         set_color(7);
         cout << "Records\n\n";
-        cout << "Game Played:      " << playTimes << endl;
-        cout << "Total Clear Line: " << clearCnt << endl;
-        cout << "Total Score:      " << scoreCnt << endl;
-        cout << "Best Clear Line:  " << highClear << endl;
-        cout << "Best Score:       " << highScore << endl << endl;
+        cout << "Game Played:         " << playCnt << endl;
+        cout << "Total Play Time(s):  " << TimeCnt << endl;
+        cout << "Total Clear Line:    " << clearCnt << endl;
+        cout << "Total Score:         " << scoreCnt << endl;
+        cout << "Best Clear Line:     " << highClear << endl;
+        cout << "Best Score:          " << highScore << endl << endl;
         Sleep(800);
         pause();
     }
@@ -186,20 +190,9 @@ struct option3{
         sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
         sub_menu.start();
         ofstream record(RECORD_PATH);
-        record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+        record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
         record.close();
     }
-    void start(){
-    	Menu sub_menu;
-        set_color(0);
-        clrscr();
-        sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
-        sub_menu.start();
-        ofstream record(RECORD_PATH);
-        record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
-        record.close();
-        clrscr();
-	}
 };
 int option3::iTmp = 0;
 
@@ -309,7 +302,7 @@ struct option5{
 signed main(){
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     FullScreen();
-    SetFont(25);
+    SetFont();
     game_init();
     Menu Main;
     option1 opt1;
@@ -325,7 +318,7 @@ signed main(){
 void game_init(){
     ifstream setting(SET_PATH), record(RECORD_PATH);
     setting >> arr >> das >> gravity >> bright;
-    record >> playTimes >> clearCnt >> scoreCnt >> highClear >> highScore;
+    record >> playCnt >> TimeCnt >> clearCnt >> scoreCnt >> highClear >> highScore;
     setting.close();
     record.close();
 }
@@ -333,14 +326,15 @@ void game_init(){
 void game_exit(){
     ofstream setting(SET_PATH), record(RECORD_PATH);
     setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
-    record << playTimes << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+    record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
     setting.close();
     record.close();
     exit(0);
 }
 
-void record_update(int& clr, int& score){
-    playTimes++;
+void record_update(int& clr, int& score,const int& time){
+    playCnt++;
+    TimeCnt += time;
     clearCnt += clr;
     scoreCnt += score;
     highClear = max(highClear, clr);
@@ -349,7 +343,7 @@ void record_update(int& clr, int& score){
 
 void print_pic(){
     clrscr();
-    SetFont(5);
+    SetFont(5, 1);
     goto_xy(0,0);
     set_color(7);
     COORD buffersize;
@@ -357,8 +351,8 @@ void print_pic(){
     buffersize.X = 600;
     buffersize.Y = 600;
     HWND hwnd = GetConsoleWindow();
-    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), buffersize);
-    SetConsoleSize(600,600,600,600);
+    SetConsoleScreenBufferSize(hConsole, buffersize);
+    SetConsoleSize(600, 600, 600, 600);
     ifstream pic(PIC_PATH);
     string str;
     while(getline(pic,str)) cout << str << endl;
