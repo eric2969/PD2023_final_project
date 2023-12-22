@@ -27,6 +27,8 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
+> ### 2023/12/22.h (v2.10.3)
+> put comment on Table
 
 > ### 2023/12/22.g (v2.10.2)
 > Fixed the bug that block stucked can never be fixed <br>
