@@ -163,7 +163,7 @@ void Menu::start(){
     {
         Sleep(10); //update ticks
         mouse = waitmouse();
-        if (mouse.dwEventFlags == MOUSE_MOVED)
+        if (mouse.dwEventFlags == MOUSE_MOVED) //if mouse moves
             highlight(mouse.dwMousePosition);
         else if (mouse.dwButtonState == L_BUTTON){
             implement(mouse.dwMousePosition);
@@ -172,11 +172,11 @@ void Menu::start(){
         }
 
     } while (mouse.dwButtonState != R_BUTTON);
-    while(mouse.dwButtonState == R_BUTTON){
+    while(mouse.dwButtonState == R_BUTTON){ //prevent the clicking affect the other page
         mouse = waitmouse();
         Sleep(10);
     }
-    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+    FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE)); //prevent the clicking affect the other page
 }
 
 

@@ -18,7 +18,7 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     speed = 1.0, line = 0, score = 0, stuck = 0;
     set_color(0);
     clrscr();
-    before = clock(), tStart = clock();
+    before = clock(), tStart = clock(); //initialize time
     player.set_position(2,2);
     player.init(tStart);
     player.new_block();
@@ -55,7 +55,7 @@ void multiPlayer(int& line, int& score){
 }
 
 void game_cycle(Table& player, int& line, int& score, bool single){
-    getKeyState();
+    getKeyState(); //get which key is pressed
     //fall
     if (clock() - before > fall_tick){
        stuck = !player.move_block(0,-1);
@@ -65,16 +65,18 @@ void game_cycle(Table& player, int& line, int& score, bool single){
           tStuck = clock();
        }
     }
+    //if the block is stuck on the place for a long time
     if(stuck && clock() - tStuck > ((sCnt + 10) * fTick / 25) && !player.check_block(Point(0,-1))){
+        //fix the block into place
         player.fix_block();
         if(player.chk_clear(line, score)){
             clr = 1;
-            tClear = clock();
+            tClear = clock(); //reset timer
         }
         stuck = 0, sCnt = 0;
         player.new_block();
         player.print_table();
-        KeyState[7] = 0;
+        KeyState[7] = 0; //reset the key state
     }
     //down arrow
     fall_tick = (KeyPressed[1])?(fTick*speed*(51 - gravity)/50):(fTick*speed);
@@ -82,44 +84,53 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     for(int i = 0;i < 2;i++){
         if (KeyPressed[2 + i]) {
             if (KeyState[2 + i]){
+                //the button haven't been released
+                
+                //if the arrow key is pressed for too long
                 if(clock() - tDas > (1001 - das) * speed && clock() - tArrow > (501 - arr) * speed){
-                    tArrow = clock();
-                    player.move_block((i%2?1:-1), 0);
+                    tArrow = clock(); //reset arr timer
+                    player.move_block((i%2?1:-1), 0); //move according to the pressed button
+                    //start counting down the lock timer if stuck
                     if(stuck)
                     	stuck_wait += (sCnt++ >= sLimit)?0:(fTick*2/25);
                 }
             }
             else{
+                //the button have been pressed just now
                 player.move_block((i%2?1:-1), 0);
                 tDas = clock(), tArrow = clock();
+                //start counting down the lock timer if stuck
                 if(stuck)
                 	stuck_wait += (sCnt++ >= sLimit)?0:(fTick*2/25);
             }
-            KeyState[2 + i] = 1;
+            KeyState[2 + i] = 1; //change key state to prevent multiple move
         }
         else
-            KeyState[2 + i] = 0;
+            KeyState[2 + i] = 0; //change key state back
     }
     //Up(0), Z(5), X(6) even:clockwise
     for(int i = 0;i < 3;i++){
         if(KeyPressed[i + (i?4:0)]){
             if(!KeyState[i + (i?4:0)]){
-                player.rotate((i%2?-1:1));
+                //the button have been pressed just now
+                
+                player.rotate((i%2?-1:1)); //rotate the block according to the button pressed
+                //start counting down the lock timer if stuck
                 if(stuck)
                 	stuck_wait += (sCnt++ >= sLimit)?0:(fTick*2/25);
             }
-            KeyState[i + (i?4:0)] = 1;
+            KeyState[i + (i?4:0)] = 1; //change the key state to prevent rotating for multiple times
         }
         else
-            KeyState[i + (i?4:0)] = 0;
+            KeyState[i + (i?4:0)] = 0; //change the key state back
     }
     //C(7), Shift(8)
     for(int i = 0;i < 2;i++){
         if (KeyPressed[i + 7]) {
-            if(!KeyState[7]){
-                player.hold_block(); //keep
-                stuck = 0, sCnt = 0;
-                KeyState[7] = 1;
+            if(!KeyState[7]){ //if not hold before
+                player.hold_block(); //hold
+                stuck = 0, sCnt = 0; //reset t-spin criteria and stuck state
+                KeyState[7] = 1; //change the key state to prevent it being hold for multiple times
                 player.print_table();
             }
         }
@@ -128,21 +139,21 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     if (KeyPressed[4]){
         if(!KeyState[4]){
             player.hard_drop();
-            stuck = 0;
+            stuck = 0; //reset stuck state
             player.fix_block();
-            if(player.chk_clear(line, score)){
-                    clr = 1;
-                    tClear = clock();
+            if(player.chk_clear(line, score)){ //if clear any line
+                clr = 1;
+                tClear = clock();
             }
             player.new_block();
             player.print_table();
-            stuck = 0;
-            KeyState[7] = 0;
+            KeyState[7] = 0; //reset hold state
         }
-        KeyState[4] = 1;
+        KeyState[4] = 1; //change the key state to prevent multiple hard drop
     }
     else
-        KeyState[4] = 0;
+        KeyState[4] = 0; //change the key state back
+    
     //p:pause (9)
     if(single){
         if (KeyPressed[9]){
@@ -188,8 +199,8 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     }
     else
         KeyState[10] = 0;
-    player.print_block();
-    if(clr && clock() - tClear >= 2 * fTick * speed){
+    player.print_block(); //print out the block
+    if(clr && clock() - tClear >= 2 * fTick * speed){ //print out play time
         set_color(0);
         goto_xy(player.get_x() + 18, player.get_y() + 17);
         std::cout << "      ";
@@ -201,7 +212,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         std::cout << "      ";
         clr = 0;
     }
-    speed = (1.0 - 0.032 * player.get_level());
+    speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
 }
 
 void quit(){
