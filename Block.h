@@ -84,74 +84,103 @@ public:
 
 class Block_T : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(-1, 0), delta[3] = Point(0, 1);}
 public:
+    //constructor for creating a Block at specific position
     Block_T(const Point &p = Point(0,0) ) : Block(p, 1) {createDeltaTable();}
-	Block_T(const Block &b) : Block(b) {createDeltaTable();}
+	//copy constructor
+    Block_T(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_T() {}
+    //a fn for returning a Block reference that its value is identical to itself
     Block *clone() const{return new Block_T(*this);}
 };
 
 class Block_L : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(-1, 0), delta[3] = Point(1, 1);}
 public:
+    //constructor for creating a Block at specific position
     Block_L(const Point& p = Point(0,0) ) : Block(p, 2) {createDeltaTable();}
-	Block_L(const Block &b) : Block(b) {createDeltaTable();}
+	//copy constructor
+    Block_L(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_L() {}
+    //a fn for returning a Block reference that its value is identical to itself
     Block *clone() const{return new Block_L(*this);}
 };
 
 class Block_J : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(-1, 0), delta[3] = Point(-1, 1);}
 public:
+    //constructor for creating a Block at specific position
     Block_J(const Point& p = Point(0,0) ) : Block(p, 3) {createDeltaTable();}
-	Block_J(const Block& b) : Block(b) {createDeltaTable();}
+	//copy constructor
+    Block_J(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_J() {}
-    Block *clone() const{Block *bTmp = new Block_J((*this));return bTmp;}
+    //a fn for returning a Block reference that its value is identical to itself
+    Block *clone() const{return new Block_J(*this);}
 };
 
 class Block_S : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(0, 1), delta[2] = Point(1, 1), delta[3] = Point(-1, 0);}
 public:
+    //constructor for creating a Block at specific position
     Block_S(const Point& p = Point(0,0) ) : Block(p, 4) {createDeltaTable();}
-	Block_S(const Block &b) : Block(b) {createDeltaTable();}
+	//copy constructor
+    Block_S(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_S() {}
+    //a fn for returning a Block reference that its value is identical to itself
     Block *clone() const{return new Block_S(*this);}
 };
 
 class Block_Z : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(0, 1), delta[2] = Point(1, 0), delta[3] = Point(-1, 1);}
 public:
+    //constructor for creating a Block at specific position
     Block_Z(const Point& p = Point(0,0) ) : Block(p, 5) {createDeltaTable();}
-	Block_Z(const Block &b) : Block(b) {createDeltaTable();}
+	//copy constructor
+    Block_Z(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_Z() {}
+    //a fn for returning a Block reference that its value is identical to itself
     Block *clone() const{return new Block_Z(*this);}
 };
 
 class Block_I : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(1, 0), delta[2] = Point(-2, 0), delta[3] = Point(-1, 0);}
 public:
+    //constructor for creating a Block at specific position
     Block_I(const Point& p = Point(0,0) ) : Block(p, 6) {createDeltaTable();}
+    //copy constructor
     Block_I(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_I() {}
+    //a fn for returning a Block reference that its value is identical to itself
     Block *clone() const{return new Block_I(*this);}
+    //a function that return true to identify this block is I block
     bool isI() override {return 1;}
+    //rotate the I block under SRS rule
     void rotate_set(const short& drc) override{ //positive is clockwise
+        //rotate I block using (0, 0) as pivot (not center, thus we need fixing position) 
         short x_tmp, y_tmp;
         for(int i = 0; i < 4; i++){
             x_tmp = delta[i].x, y_tmp = delta[i].y;
             delta[i].x = drc * y_tmp, delta[i].y = drc * (-1) * x_tmp;
         }
+        //fixing position
         short x_delta = (direction%2) * ((direction>>1)?1:-1), y_delta = (direction%2 - 1) * ((direction>>1)?-1:1);
         if(drc == 1)
             (*this) += Point(x_delta, y_delta);
         else
             (*this) += Point(y_delta, (-1) * x_delta);
+        //update direction data
         this -> direction = ( (this -> direction) + drc + 4) % 4;
         return;
     }
@@ -159,11 +188,15 @@ public:
 
 class Block_O : public Block{
 private:
+    //create unique delta table for specific block
     void createDeltaTable() {delta[0] = Point(0, 0), delta[1] = Point(-1, 0), delta[2] = Point(-1, -1), delta[3] = Point(0, -1);}
 public:
+    //constructor for creating a Block at specific position
     Block_O(const Point& p = Point(0,0) ) : Block(p, 7) {createDeltaTable();}
-	Block_O(const Block &b) : Block(b) {createDeltaTable();}
+	//copy constructor
+    Block_O(const Block &b) : Block(b) {createDeltaTable();}
     ~Block_O() {}
+    //a fn for returning a Block reference that its value is identical to itself
     Block *clone() const{return new Block_O(*this);}
-    void rotate_set(const short& direction) override{}
+    void rotate_set(const short& drc) override{this -> direction = ( (this -> direction) + drc + 4) % 4; return;}
 };

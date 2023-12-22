@@ -1,6 +1,6 @@
 #define DEFAULT_COLOR 112
 #define d_x 5
-#define d_y 20
+#define d_y 19
 
 std::string text_table[5] {"T-Spin","Single","Double","Triple","Tetris"};
 void goto_xy(short x, short y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsole, pos);}

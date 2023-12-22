@@ -27,6 +27,12 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
+
+> ### 2023/12/22.e (v2.10beta)
+> add comment on Block.h <br>
+> Add pause menu and quit menu(some isuue need to be fixed) <br>
+> Add setting fn in pause menu
+
 > ### 2023/12/22.d (v2.9.2)
 > add comment for Table.h
 

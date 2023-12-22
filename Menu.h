@@ -106,16 +106,7 @@ bool Menu::implement(COORD clickpos){
         {
             hidecursor(0);
             clean();
-            try{p->pf_();}
-            catch(std::runtime_error e){
-                set_color(0);
-                clrscr();
-                set_color(7);
-                cout << e.what() << endl;
-                Sleep(2000);
-                pause();
-
-            }
+            p->pf_();
             setmode();
             hidecursor(1);
             return true;

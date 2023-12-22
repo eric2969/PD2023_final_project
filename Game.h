@@ -9,7 +9,122 @@ short fall_tick, stuck_wait, sCnt;
 //arrow:Left, Right
 clock_t before, tStuck, tClear, tStart, tArrow,tDas;
 
-void quit();
+struct SettingMenu{
+    static int iTmp;
+    static void sub_option1(){
+        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n[1(slow)-500(fast)]: ";
+        while(1){
+            cin >> arr;
+            if(arr > 0 && arr <= 500){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Set\n\n";
+                Sleep(800);
+                pause();
+                break;
+            }
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input a number between than 1 and 500: ";
+            }
+        }
+    }
+    static void sub_option2(){
+        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n[1(slow)-1000(fast)]: ";
+        while(1){
+            cin >> das;
+            if(das > 0 && das <= 1000){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Set\n\n";
+                Sleep(800);
+                pause();
+                break;
+            }
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input a number between than 1 and 1000: ";
+            }
+        }
+
+    }
+    static void sub_option3(){
+         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n[1(slow)-50(fast)]: ";
+         while(1){
+            cin >> gravity;
+            if(gravity > 0 && gravity <= 50){
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Set\n\n";
+                Sleep(800);
+                pause();
+                break;
+            }
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input a number between than 1 and 50: ";
+            }
+         }
+    }
+    static void sub_option4(){
+        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n[1(Dark)/2(Bright)]: ";
+        while(1){
+            cin >> iTmp;
+            if(iTmp == 1 || iTmp == 2){
+                bright = iTmp - 1;
+                set_color(0);
+                clrscr();
+                set_color(7);
+                cout << "Configuration Set\n\n";
+                Sleep(800);
+                pause();
+                break;
+            }
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input 1 or 2: ";
+            }
+        }
+    }
+    void operator() (){
+        Menu sub_menu;
+        set_color(0);
+        clrscr();
+        sub_menu.settitle("Game Setting\nRight click for return to menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
+        sub_menu.start();
+        ofstream setting(SET_PATH);
+        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
+        setting.close();
+    }
+};
+int SettingMenu::iTmp = 0;
+
+struct Quit{
+	void operator() (){
+		throw std::runtime_error("Quit");
+	}
+};
+
+struct QuitChk{
+	static sub_option1(){
+		throw std::runtime_error("Quit");
+	}
+	void operator() (){
+		Menu sub_menu;
+		set_color(0);
+		clrscr();
+		sub_menu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(sub_option1, "Yes");
+		sub_menu.start();
+	}
+};
+
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
 void game_cycle(Table& player, int& line, int& score, bool single);
 
@@ -162,20 +277,9 @@ void game_cycle(Table& player, int& line, int& score, bool single){
                 clrscr();
                 SetFont(26);
                 set_color(7);
-                goto_xy(1, 1);
-                std::cout << "You have paused the game";
-                goto_xy(1, 2);
-                std::cout << "Press R to resume the game";
-                goto_xy(1, 3);
-                std::cout << "Press Q to quit the game";
-                while(1){
-                    getKeyState();
-                    if(KeyPressed[11])
-                        break;
-                    if(KeyPressed[10])
-                        quit();
-                    Sleep(flush_tick);
-                }
+                Menu PauseMenu; SettingMenu SM; QuitChk QM;
+                PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(QM, "Quit");
+                PauseMenu.start();
                 set_color(0);
                 clrscr();
                 SetFont(26, 1);
@@ -189,7 +293,13 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     //q:quit(10)
     if (KeyPressed[10]){
         if(!KeyState[10]){
-            quit();
+            set_color(0);
+            clrscr();
+            SetFont(26);
+            set_color(7);
+            Menu QuitMenu; Quit quit;
+			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(quit, "Quit");
+			QuitMenu.start(); 
             set_color(0);
             clrscr();
             SetFont(26, 1);
@@ -213,31 +323,4 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         clr = 0;
     }
     speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
-}
-
-void quit(){
-    KeyState[10] = 1;
-    set_color(0);
-    SetFont(26);
-    clrscr();
-    set_color(7);
-    goto_xy(1, 1);
-    std::cout << "Are you sure you want to quit the game?";
-    goto_xy(1, 2);
-    std::cout << "If yes please press Q";
-    goto_xy(1, 3);
-    std::cout << "If no please press R to resume the game";
-    while(1){
-        getKeyState();
-        if(KeyPressed[10]){
-            if(!KeyState[10])
-                throw std::runtime_error("Quit");
-            KeyState[10] = 1;
-        }
-        else
-            KeyState[10] = 0;
-        if(KeyPressed[11])
-            return;
-        Sleep(flush_tick);
-    }
 }
