@@ -1,32 +1,69 @@
-# PD2023_final_project
-2023 IM Program Designing Final Project
+**2023 IM Program Designing Final Project - Tetris**
+===
+ <br>
 
-- [What](#what)
-- [Team Member](#team-member)
-- [Architecture](#architecture)
-- [Version History](#version-history)
+1. [What](#what)
+2. [Team Member](#team-member)
+3. [Requirement](#Requirement)
+4. [How to Play](#how-to-play)
+5. [Architecture](#architecture)
+6. [Version History](#version-history)
 
 ## What
-
-Our project is to build a tetris game by "windows.h", allowing playing in double-player or single-player mode.
-
+---
+Our project is to build a tetris game by "windows.h", allowing playing in single player or multi player mode(under construction).
 ## Team Member
-&nbsp; 趙子佾 資管一 B12705064 <br>
-&nbsp; 詹詠翔 資管一 B12705063 <br>
-&nbsp; 陳泊華 資管一 B12705014 <br>
-&nbsp; 吳秉哲 資管一 B12705049 <br>
+---
+| Name | Department | Student ID | Position|
+| :--: | :--: | :--: | :--: |
+| 趙子佾 | IM Freshman | B12705064 | PM, Programmer, UI/UX Designer, Architecture Designer |
+| 詹詠翔 | IM Freshman | B12705063 | Programmer, API applying, UI/UX Designer |
+| 陳泊華 | IM Freshman | B12705014 | Socket Programmer, Presentation, Report |
+| 吳秉哲 | IM Freshman | B12705049 | Block Programmer, Presentation, Report |
+## Requirement
+---
+This application is required to be running on windows 10 or newer. <br>
+## How To Play
+---
+> ### Preparation
+> [Windows 10](#windows-10) <br>
+> [Windows 11](#windows-11) <br>
+>> ### Windows 10
+---
+>> Just click the main.exe in the repo, Enjoy <br>
+>> ![execute](assets/execution.png "游標顯示")
+>> ### Windows 11
+---
+>> 1. Open the settings in your computer, it may be in the Start Menu <br>
+>> ![setting](assets/win11-setting.png "游標顯示")
+>> 2. Click the search bar and type "terminal" or "終端機", and click the first one. <br>
+>> ![terminal](assets/win11-terminal.png "游標顯示")
+>> 3. Click the terminal, and select the second one. <br>
+>> ![console](assets/win11-console.png "游標顯示")
+>> 4. Go to the repo folder, and click the main.exe, Enjoy <br>
+>> ![execute](assets/execution.png "游標顯示")
 
 ## Architecture
+---
+Our game is based on cpp, and UI/UX is powered by "windows.h". <br>
+We would like to use socket as our api to transmit enemy player data by TCP protocol <br>
+We about to use some techniques like File I/O, Polymorphism, Operator Overloading, Inheritance, Exception Handling, etc... <br>
+And we divided our game architecture into several parts, listed at the below. <br>
 
-Our game is based on cpp, and interface is powered by "windows.h".
-We would like to use socket as our api to transmit enemy player data by TCP protocol
-We about to use some techniques like File I/O, Polymorphism, Operator Overloading, Inheritance, Exception Handling, etc...
-And we divided our game architecture into several parts, listed at the below.
-  - [Main](#main)
-  - [Table](#table)
-  - [Block](#block)
-  - [Socket](#socket)
+> 1. [Main](#main) <br>
+> 2. [Game](#game) <br>
+> 3. [Menu](#menu) <br>
+> 4. [Console](#console) <br>
+> 5. [Table](#table) <br>
+> 6. [Block](#block) <br>
+> 7. [Socket](#socket) <br>
+>>- [Server](#server) <br>
+>>- [Client](#Client) <br>
+
 ## Version Histrory
+---
+> ### 2023/12/24.b
+> Upgrade README.md
 
 > ### 2023/12/24.a (v2.10.3)
 > Fixing waiting time when block is stucked
