@@ -1,10 +1,9 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
- <br>
 
 1. [What](#what)
 2. [Team Member](#team-member)
-3. [Requirement](#Requirement)
+3. [Requirement](#requirement)
 4. [How to Play](#how-to-play)
 5. [Architecture](#architecture)
 6. [Version History](#version-history)
@@ -29,11 +28,9 @@ This application is required to be running on windows 10 or newer. <br>
 > [Windows 10](#windows-10) <br>
 > [Windows 11](#windows-11) <br>
 >> ### Windows 10
----
->> Just click the main.exe in the repo, Enjoy <br>
->> ![execute](assets/execution.png)
+>> 1. Just click the main.exe in the repo, Enjoy <br>
+>> ![execute](assets/execution.png "游標顯示")
 >> ### Windows 11
----
 >> 1. Open the settings in your computer, it may be in the Start Menu <br>
 >> ![setting](assets/win11-setting.png)
 >> 2. Click the search bar and type "terminal" or "終端機", and click the first one. <br>
@@ -60,7 +57,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 >>- [Server](#server) <br>
 >>- [Client](#Client) <br>
 
-## Version Histrory
+## Version History
 ---
 > ### 2023/12/24.b
 > Upgrade README.md
