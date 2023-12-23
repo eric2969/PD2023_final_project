@@ -59,7 +59,7 @@ And we divided our game architecture into several parts, listed at the below.
 > ### 2023/12/22.b (v2.9)
 > Improve UX by enhancing SetFont function(square or rect)
 
-> ### 2023/12/22.a (v2.8.2)
+> ### 2023/12/22.a
 > Complete comment on VK.h, Server.h and Client.h <br>
 > Block.h's comment is near completed, remain 7 block derive class
 
