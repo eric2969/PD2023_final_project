@@ -27,10 +27,14 @@ And we divided our game architecture into several parts, listed at the below.
   - [Block](#block)
   - [Socket](#socket)
 ## Version Histrory
-> ### 2023/12/22.i (v2.10.4)
+
+> ### 2023/12/24.a (v2.10.3)
+> Fixing waiting time when block is stucked
+
+> ### 2023/12/22.i
 > Completed comment on Main.cpp
 
-> ### 2023/12/22.h (v2.10.3)
+> ### 2023/12/22.h
 > put comment on Table
 
 > ### 2023/12/22.g (v2.10.2)
