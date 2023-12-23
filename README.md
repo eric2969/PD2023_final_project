@@ -31,17 +31,17 @@ This application is required to be running on windows 10 or newer. <br>
 >> ### Windows 10
 ---
 >> Just click the main.exe in the repo, Enjoy <br>
->> ![execute](assets/execution.png "游標顯示")
+>> ![execute](assets/execution.png)
 >> ### Windows 11
 ---
 >> 1. Open the settings in your computer, it may be in the Start Menu <br>
->> ![setting](assets/win11-setting.png "游標顯示")
+>> ![setting](assets/win11-setting.png)
 >> 2. Click the search bar and type "terminal" or "終端機", and click the first one. <br>
->> ![terminal](assets/win11-terminal.png "游標顯示")
+>> ![terminal](assets/win11-terminal.png)
 >> 3. Click the terminal, and select the second one. <br>
->> ![console](assets/win11-console.png "游標顯示")
+>> ![console](assets/win11-console.png)
 >> 4. Go to the repo folder, and click the main.exe, Enjoy <br>
->> ![execute](assets/execution.png "游標顯示")
+>> ![execute](assets/execution.png)
 
 ## Architecture
 ---
@@ -49,7 +49,7 @@ Our game is based on cpp, and UI/UX is powered by "windows.h". <br>
 We would like to use socket as our api to transmit enemy player data by TCP protocol <br>
 We about to use some techniques like File I/O, Polymorphism, Operator Overloading, Inheritance, Exception Handling, etc... <br>
 And we divided our game architecture into several parts, listed at the below. <br>
-
+> ![mind-set](assets/architecture.png) 
 > 1. [Main](#main) <br>
 > 2. [Game](#game) <br>
 > 3. [Menu](#menu) <br>
