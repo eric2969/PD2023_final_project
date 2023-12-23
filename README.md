@@ -49,10 +49,10 @@ And we divided our game architecture into several parts, listed at the below.
 > Add pause menu and quit menu(some isuue need to be fixed) <br>
 > Add setting fn in pause menu
 
-> ### 2023/12/22.d (v2.9.2)
+> ### 2023/12/22.d
 > add comment for Table.h
 
-> ### 2023/12/22.c (v2.9.1)
+> ### 2023/12/22.c
 > Game.h's comment is nearly finished (pause and quit function left) <br>
 > Completed comment on Conosle.h
 
