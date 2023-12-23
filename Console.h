@@ -7,41 +7,37 @@ void SetFont(int size = 26, bool square = 0) {
     cfi.dwFontSize.Y = size; //set the size of the font
     cfi.FontFamily = FF_DONTCARE;
     cfi.FontWeight = FW_NORMAL;
-    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
+    SetCurrentConsoleFontEx(hConsole, FALSE, &cfi);
 }
 //set location of the cursor
 void setcursor(short x = 0, short y = 0){
     COORD temp = {x, y};
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), temp);
+    SetConsoleCursorPosition(hConsole, temp);
 }
 void setcursor(const COORD &temp){
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), temp);
+    SetConsoleCursorPosition(hConsole, temp);
 }
  
 // get location of the cursor
-void getcursor(COORD &other)
-{
+void getcursor(COORD &other){
     CONSOLE_SCREEN_BUFFER_INFO temp;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &temp);
+    GetConsoleScreenBufferInfo(hConsole, &temp);
     other = temp.dwCursorPosition;
 }
-COORD getcursor()
-{
+COORD getcursor(){
     CONSOLE_SCREEN_BUFFER_INFO temp;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &temp);
+    GetConsoleScreenBufferInfo(hConsole, &temp);
     return temp.dwCursorPosition;
 }
 // hide the cursor
-void hidecursor(bool hide = true)
-{
+void hidecursor(bool hide = true){
     CONSOLE_CURSOR_INFO CursorInfo;
-    GetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
+    GetConsoleCursorInfo(hConsole, &CursorInfo);
     CursorInfo.bVisible = !hide;
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CursorInfo);
+    SetConsoleCursorInfo(hConsole, &CursorInfo);
 }
 // clear the screen above cursor's location(specialize for menu highlight function) 
- void clean()
-{
+void clean(){
     COORD temp = getcursor();
     setcursor(0, 0);
     for (int i = 0; i <= temp.Y; i++)
@@ -50,6 +46,7 @@ void hidecursor(bool hide = true)
 }
 // clear the screen
 void clrscr(){
+    SetConsoleTextAttribute(hConsole, 0);
     setcursor(0, 0);
     hidecursor(0);
     for (int i = 0; i <= 110; i++)
@@ -102,15 +99,14 @@ void FullScreen() {
 }
 //set the console size
 //*it won't actually change the windows size, but rather number of rows and columns
-void SetConsoleSize(int x, int y, int cols, int lines)
-{
+void SetConsoleSize(int x, int y, int cols, int lines){
     HANDLE hOut;
     CONSOLE_FONT_INFO consoleCurrentFont;
     COORD bufferSize,fontSize;
     TCHAR title[256];
     HWND hWnd;
     //Set console buffer size
-    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    hOut = hConsole;
     GetCurrentConsoleFont(hOut, false, &consoleCurrentFont);
     fontSize = GetConsoleFontSize(hOut,consoleCurrentFont.nFont);
     bufferSize.X = cols;

@@ -36,16 +36,13 @@ struct option1{ //option from single player mode
     static void run(){ //execute the sub-menu
         t = clock();
         SetFont(26, 1);
-        try{
-            singlePlayer(line, score, gameMode, goal);
-        }
+        try{singlePlayer(line, score, gameMode, goal);}
         catch(runtime_error e){ 
                 //game over
         		usedTime = (clock() - t) / 1000;
                 print_pic();
                 Sleep(1000);
                 SetFont();
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << e.what() << endl << endl;
@@ -93,7 +90,6 @@ struct option1{ //option from single player mode
     }
     void operator() (){
         Menu sub_menu; //create sub-menu
-        set_color(0);
         clrscr();
         sub_menu.settitle("Single Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
         sub_menu.start();
@@ -110,31 +106,31 @@ struct option2{ //option from multi-player
     static int line, score, usedTime;
     static clock_t t;
     static void run(){ //execute sub-menu
-    	SetFont(20);
-        try{
-            multiPlayer(line, score);
-        }
+    	t = clock();
+        SetFont(22, 1);
+        try{multiPlayer(line, score);}
         catch(runtime_error e){ 
                 //game over
         		usedTime = (clock() - t) / 1000;
-                set_color(0);
+                print_pic();
+                Sleep(1000);
+                SetFont();
                 clrscr();
                 set_color(7);
-                cout << e.what() << endl;
+                cout << e.what() << endl << endl;
                 cout << "Used Time(s):  " << usedTime << endl;
-                cout << "Clear Line: " << line << endl;
-                cout << "Score:      " << score << endl << endl;
+                cout << "Clear Line:    " << line << endl;
+                cout << "Score:         " << score << endl << endl;
                 Sleep(800);
                 pause();
         }
-        record_update(line, score, usedTime); //update the record
+        record_update(line, score, usedTime); //update record
 	}
 	static void sub_option1(){
         run();
     }
     void operator() (){
 		Menu sub_menu; //create sub-menu
-		set_color(0);
         clrscr();
         sub_menu.settitle("Multi Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Game Start");
         sub_menu.start();
@@ -148,7 +144,6 @@ clock_t option2::t = 0;
 struct option3{ //record option
     static int iTmp;
     static void sub_option1(){ //show record
-        set_color(0);
         clrscr();
         set_color(7);
         cout << "Records\n\n";
@@ -170,7 +165,6 @@ struct option3{ //record option
             }
             else if(iTmp == 2){
                 record_reset();
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Record Reset\n\n";
@@ -187,7 +181,6 @@ struct option3{ //record option
     }
     void operator() (){
         Menu sub_menu; //create sub-menu
-        set_color(0);
         clrscr();
         sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
         sub_menu.start();
@@ -206,7 +199,6 @@ struct option4{ //settings
         while(1){
             cin >> arr;
             if(arr > 0 && arr <= 500){  
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -226,7 +218,6 @@ struct option4{ //settings
         while(1){
             cin >> das;
             if(das > 0 && das <= 1000){
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -247,7 +238,6 @@ struct option4{ //settings
          while(1){
             cin >> gravity;
             if(gravity > 0 && gravity <= 50){
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -268,7 +258,6 @@ struct option4{ //settings
             cin >> iTmp;
             if(iTmp == 1 || iTmp == 2){
                 bright = iTmp - 1;
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -285,7 +274,6 @@ struct option4{ //settings
     }
     void operator() (){
         Menu sub_menu;
-        set_color(0);
         clrscr();
         sub_menu.settitle("Game Setting\nRight click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
         sub_menu.start();

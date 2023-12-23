@@ -281,7 +281,7 @@ bool Table::chk_clear(int& line, int& tscore){
     set_color(14);
     if(cnt){
         goto_xy(x+18, y+17);
-        std::cout << "+" << point * multiplier;
+        std::cout << "+" << int(point * multiplier);
     }
     goto_xy(x+18, y+18);
     std::cout << (b2b?"b2b":"");
@@ -363,6 +363,10 @@ void Table::print_table() const{
     goto_xy(x + width + 7, y + 9);
     std::cout << "Clear Line:" << clear_line;
     goto_xy(x + width + 7, y + 10);
+    set_color(0);
+    std::cout << "                    ";
+    goto_xy(x + width + 7, y + 10);
+    set_color(color_table[0] + (bright?128:0));
     std::cout << "Combo:" << combo;
     return;
 };

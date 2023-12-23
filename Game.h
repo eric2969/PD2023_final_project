@@ -1,13 +1,12 @@
-#define KeyCnt 12
-//Up, Down, Left, Right, Space, Z, X, C, Shift, P(pause), Q(quit), R(resume)
-const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q, VK_R};
-//keyState C,shift(7)
+#define KeyCnt 11
+//Up, Down, Left, Right, Space, Z, X, C, Shift, P(pause), Q(quit)
+const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q};
 double speed;
 bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
 const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt;
 //arrow:Left, Right
-clock_t before, tStuck, tClear, tStart, tArrow,tDas;
+clock_t before, tStuck, tClear, tStart, tArrow, tDas;
 
 struct SettingMenu{
     static int iTmp;
@@ -16,7 +15,6 @@ struct SettingMenu{
         while(1){
             cin >> arr;
             if(arr > 0 && arr <= 500){ //valid value
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -36,7 +34,6 @@ struct SettingMenu{
         while(1){ //set DAS
             cin >> das;
             if(das > 0 && das <= 1000){ //valid value
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -57,7 +54,6 @@ struct SettingMenu{
          while(1){
             cin >> gravity; 
             if(gravity > 0 && gravity <= 50){ //valid value
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -78,7 +74,6 @@ struct SettingMenu{
             cin >> iTmp;
             if(iTmp == 1 || iTmp == 2){ //valid value
                 bright = iTmp - 1;
-                set_color(0);
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
@@ -95,7 +90,6 @@ struct SettingMenu{
     }
     void operator() (){
         Menu sub_menu; //create sub-menu
-        set_color(0);
         clrscr();
         sub_menu.settitle("Game Setting\nRight click for return to menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
         sub_menu.start(); //execute sub-menu
@@ -118,7 +112,6 @@ struct QuitChk{
 	}
 	void operator() (){
 		Menu sub_menu; //create check menu 
-		set_color(0);
 		clrscr();
 		sub_menu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(sub_option1, "Yes");
 		sub_menu.start(); //execute check menu
@@ -131,12 +124,11 @@ void game_cycle(Table& player, int& line, int& score, bool single);
 void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Table player; //create new Table for player
     speed = 1.0, line = 0, score = 0, stuck = 0;
-    set_color(0);
     clrscr();
     //initialize the game
-    before = clock(), tStart = clock(); 
+    tStart = before = clock();
     player.set_position(2,2);
-    player.init(tStart);
+    player.init(clock());
     player.new_block();
     player.print_table();
     while (1) {
@@ -154,14 +146,11 @@ void multiPlayer(int& line, int& score){
     Table player, opponent; //create table for player and opponent
     //initialize the game
     speed = 1.0, line = 0, score = 0;
-    set_color(0);
     clrscr();
-    before = clock(), tStart = clock();
-    tStuck = clock();
-    stuck_wait = fTick * 0.8;
+    tStart = before = clock();
     player.set_position(2, 2);
     opponent.set_position(35, 2);
-    player.init(tStart);
+    player.init(clock());
     opponent.init();
     player.new_block();
     player.print_table();
@@ -276,14 +265,12 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     if(single){
         if (KeyPressed[9]){
             if (!KeyState[9]){
-                set_color(0);
                 clrscr();
                 SetFont(26);
                 set_color(7);
                 Menu PauseMenu; SettingMenu SM; QuitChk QM; //make the pause menu
                 PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(QM, "Quit");
                 PauseMenu.start(); //execute the menu
-                set_color(0);
                 clrscr();
                 SetFont(26, 1);
                 player.print_table();
@@ -296,14 +283,12 @@ void game_cycle(Table& player, int& line, int& score, bool single){
     //q:quit(10)
     if (KeyPressed[10]){
         if(!KeyState[10]){
-            set_color(0);
             clrscr();
             SetFont(26);
             set_color(7);
             Menu QuitMenu; Quit quit; // make a quit menu
 			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(quit, "Quit");
 			QuitMenu.start(); // execute the menu
-            set_color(0);
             clrscr();
             SetFont(26, 1);
             player.print_table();

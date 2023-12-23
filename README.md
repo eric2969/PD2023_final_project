@@ -57,8 +57,26 @@ And we divided our game architecture into several parts, listed at the below. <b
 >>- [Server](#server) <br>
 >>- [Client](#Client) <br>
 
+>> ### Main
+>> ### Game
+>> ### Menu
+>> ### Console
+>> ### Table
+>> ### Block
+>> This file contain struct Point(for coordinate) and class Block(abstract class) <br>class Block save some general data of each block, and provid some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J , K O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
+>> ### Socket
+>> This is for transmit data of opponent and player
+>>> ### Server
+>>> 
+>>> ### Client
+
 ## Version History
 ---
+> ### 2023/12/24.c (v2.10.4)
+> Fix Combo digit bug <br>
+> modify clrscr() <br>
+> README.md under updating
+
 > ### 2023/12/24.b
 > Upgrade README.md
 
