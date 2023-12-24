@@ -1,7 +1,7 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-4.3.4-brightgreen">](#20231224c-v434) [<img src="https://img.shields.io/badge/Beta-4.4beta-blue">](#20231225a-v44beta)
+[<img src="https://img.shields.io/badge/Release-4.3.4-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.3.5>)    <!--img src="https://img.shields.io/badge/Beta-4.4beta-blue"-->
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -103,9 +103,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-4.3.4-brightgreen">](#20231224c-v434) [<img src="https://img.shields.io/badge/Beta-4.4beta-blue">](#20231225a-v44beta)
-- [Version 4](#20231224c-v434) Fix Combo digit Bug
-> - [v4.3](#20231224c-v434) Fix Combo digit Bug
+[<img src="https://img.shields.io/badge/Release-4.3.5-brightgreen">](<https://github.com/eric2969/PD2023_final_project/tree/v4.3.5>)    <!--img src="https://img.shields.io/badge/Beta-4.4beta-blue"-->
+- [Version 4](#20231225a-v435) Table destructor
+> - [v4.3](#20231225a-v435) Table destructor
 > - [v4.2](#20231222b-v42) Improve UI/UX by enable Square/Rect Font
 > - [v4.1](#20231220a-v411) Fix stuck-wait Verdiction
 > - [v4.0](#20231219b-v401) Big enhancement in Game UI/UX
@@ -116,7 +116,8 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
-> ### 2023/12/25.a (v4.4beta)
+> ### 2023/12/25.a (v4.3.5)
+> Verify beta version <br>
 > Completed Upgrade README.md
 
 > ### 2023/12/24.d (v4.3.5beta)
@@ -255,10 +256,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 > ### 2023/12/15.c (v2.3beta)
 > Refine socket server-client mechanism
 
-> ### 2023/12/15.b (v2.2)
+> ### 2023/12/15.b (v2.2.1)
 > Complete block keep (need to complete keep block display)
 
-> ### 2023/12/15.a (v2.1.1)
+> ### 2023/12/15.a (v2.2)
 > Fix some bugs <br>
 > Complete game over and verify every Block's rotation <br>
 > Modify our introduction <br>

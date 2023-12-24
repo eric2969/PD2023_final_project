@@ -6,7 +6,6 @@ using namespace std;
 HANDLE hConsole;
 bool bright;
 int das, arr, gravity, addrlen;
-string sbuff;
 const short flush_tick = 2;
 
 #define SET_PATH "src/settings.txt"
