@@ -1,7 +1,7 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-4.3.4-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.3.5>)    <!--img src="https://img.shields.io/badge/Beta-4.4beta-blue"-->
+[<img src="https://img.shields.io/badge/Release-4.3.5-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.3.5>)    <!--img src="https://img.shields.io/badge/Beta-4.4beta-blue"-->
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
