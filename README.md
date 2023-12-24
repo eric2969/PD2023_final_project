@@ -44,7 +44,7 @@ This application is required to be running on windows 10 or newer. <br>
 > Keyboard Operation
 > | KeyBoard | Left/Right Arrow | Down Arrow | Space | Up Arrow<br>X | Z | C/Shift | P | Q |
 > | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
-> | Function | Move Left/Right | Falling faster | Hard Drop | Rotate clockwise | Rotate counterclockwise | Hold | Pause | Quit |
+> | Function | Move Left/Right | Falling faster | Hard Drop | Rotate CW | Rotate CCW | Hold | Pause | Quit |
 <br>
 
 > Configurations Setting
