@@ -42,7 +42,7 @@ This application is required to be running on windows 10 or newer. <br>
 <br>
 
 > Keyboard Operation
-> | KeyBoard | Left/Right Arrow | Down Arrow | Space | Up Arrow/X | Z | C/Shift | P | Q |
+> | KeyBoard | Left/Right Arrow | Down Arrow | Space | Up Arrow<br>X | Z | C/Shift | P | Q |
 > | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
 > | Function | Move Left/Right | Falling faster | Hard Drop | Rotate clockwise | Rotate counterclockwise | Hold | Pause | Quit |
 <br>
@@ -69,7 +69,6 @@ And we divided our game architecture into several parts, listed at the below. <b
 > 7. [Socket (abstract)](#socket-(abstract)) <br>
 >>- [Server.h](#server.h) <br>
 >>- [Client.h](#client.h) <br>
-
 >> ### Main.cpp
 >> This contain game initailize and exit function that can input and output the data in the src <br>
 >> And establish main menu based on Menu.h, providing below functions<br>
