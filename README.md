@@ -60,15 +60,15 @@ We would like to use socket as our api to transmit enemy player data by TCP prot
 We about to use some techniques like File I/O, Polymorphism, Operator Overloading, Inheritance, Exception Handling, etc... <br>
 And we divided our game architecture into several parts, listed at the below. <br>
 > ![mind-set](assets/architecture.png) 
-> 1. [Main.cpp](#main.cpp) <br>
-> 2. [Game.h](#game.h) <br>
-> 3. [Menu.h](#menu.h) <br>
-> 4. [Console.h](#console.h) <br>
-> 5. [Table.h](#table.h) <br>
-> 6. [Block.h](#block.h) <br>
-> 7. [Socket (abstract)](#socket-(abstract)) <br>
->>- [Server.h](#server.h) <br>
->>- [Client.h](#client.h) <br>
+> 1. [Main.cpp](#maincpp) <br>
+> 2. [Game.h](#gameh) <br>
+> 3. [Menu.h](#menuh) <br>
+> 4. [Console.h](#consoleh) <br>
+> 5. [Table.h](#tableh) <br>
+> 6. [Block.h](#blockh) <br>
+> 7. [Socket (abstract)](#socket-abstract) <br>
+>>- [Server.h](#serverh) <br>
+>>- [Client.h](#clienth) <br>
 >> ### Main.cpp
 >> This contain game initailize and exit function that can input and output the data in the src <br>
 >> And establish main menu based on Menu.h, providing below functions<br>

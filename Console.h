@@ -1,3 +1,5 @@
+void goto_xy(short x, short y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsole, pos);}// move the cursor
+void set_color(const unsigned short textColor) {SetConsoleTextAttribute(hConsole, textColor);}
 //set the font size
 void SetFont(int size = 26, bool square = 0) {
     CONSOLE_FONT_INFOEX cfi;
