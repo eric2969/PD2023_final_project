@@ -170,7 +170,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             stuck = 1;
             sCnt = 0;
             tStuck = clock();
-            stuck_wait = (fTick * 4 / 5);
+            stuck_wait = 800;
         }
         before = clock();
     }

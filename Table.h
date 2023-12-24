@@ -61,24 +61,27 @@ private:
     int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
     clock_t tStart;
 public:
-    Table() : current(nullptr) { memset(board, 0, sizeof(board));}
-    ~Table() {}
+    Table() : current(nullptr), before(nullptr), hold(nullptr) { memset(board, 0, sizeof(board));}
+    ~Table() {
+        delete current; delete before; delete hold;
+        qClear(next);
+    }
     // move the table 
     void set_position(const short x, const short y){this -> x = x, this -> y = y;}
     // initailize the table
     void init(){
+        std::queue<Block*> empty; std::swap(empty, next);
         pb2b = 0, b2b = 0;
         bTime = 0, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
-        qClear(next);
     }
     // the initializer used to count the time passed
     void init(clock_t time){
+        std::queue<Block*> empty; std::swap(empty, next);
         tStart = time;
         pb2b = 0, b2b = 0;
         bTime = 1, combo = 0, tSpin = 0, score = 0, clear_line = 0; memset(board, 0, sizeof(board));
         current = nullptr, before = nullptr, hold = nullptr;
-        qClear(next);
     }
     //block existence
     void new_block();
