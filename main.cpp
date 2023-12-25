@@ -159,9 +159,8 @@ struct option3{ //record option
         cout << "Are you sure you want to reset your record?\n[1(No)/2(Yes)]: ";
         while(1){
             cin >> iTmp;
-            if(iTmp == 1){
+            if(iTmp == 1)
                 break;
-            }
             else if(iTmp == 2){
                 record_reset();
                 clrscr();
@@ -309,8 +308,22 @@ signed main(){
 void game_init(){
     // read user preference
     ifstream setting(SET_PATH), record(RECORD_PATH);
-    setting >> arr >> das >> gravity >> bright;
-    record >> playCnt >> TimeCnt >> clearCnt >> scoreCnt >> highClear >> highScore;
+    if(setting.is_open())
+        setting >> arr >> das >> gravity >> bright;
+    else{
+        set_color(7);
+        goto_xy(2, 2);
+        cout << "Configuration data loaded fail, use default setting\nYou can modify it in the menu";
+        pause();
+    }
+    if(record.is_open())
+        record >> playCnt >> TimeCnt >> clearCnt >> scoreCnt >> highClear >> highScore;
+    else{
+        set_color(7);
+        goto_xy(2, 2);
+        cout << "Recode data loaded fail, record has reset";
+        pause();
+    }
     setting.close();
     record.close();
 }
