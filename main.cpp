@@ -4,7 +4,7 @@
 using namespace std;
 
 HANDLE hConsole;
-bool bright;
+bool bright, pic_ava;
 int das, arr, gravity, addrlen;
 const short flush_tick = 2;
 
@@ -39,8 +39,10 @@ struct option1{ //option from single player mode
         catch(runtime_error e){ 
                 //game over
         		usedTime = (clock() - t) / 1000;
-                print_pic();
-                Sleep(1000);
+        		if(pic_ava){
+        			print_pic();
+                	Sleep(1000);
+				}
                 SetFont();
                 clrscr();
                 set_color(7);
@@ -111,8 +113,10 @@ struct option2{ //option from multi-player
         catch(runtime_error e){ 
                 //game over
         		usedTime = (clock() - t) / 1000;
-                print_pic();
-                Sleep(1000);
+                if(pic_ava){
+        			print_pic();
+                	Sleep(1000);
+				}
                 SetFont();
                 clrscr();
                 set_color(7);
@@ -164,6 +168,10 @@ struct option3{ //record option
             else if(iTmp == 2){
                 record_reset();
                 clrscr();
+                ofstream record(RECORD_PATH);
+        		//write new record
+        		record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+        		record.close(); //close file
                 set_color(7);
                 cout << "Record Reset\n\n";
                 Sleep(800);
@@ -182,10 +190,6 @@ struct option3{ //record option
         clrscr();
         sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
         sub_menu.start();
-        ofstream record(RECORD_PATH);
-        //write new record
-        record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
-        record.close(); //close file
     }
 };
 int option3::iTmp = 0;
@@ -307,23 +311,34 @@ signed main(){
 
 void game_init(){
     // read user preference
-    ifstream setting(SET_PATH), record(RECORD_PATH);
+    ifstream setting(SET_PATH), record(RECORD_PATH), pic(PIC_PATH);
     if(setting.is_open())
         setting >> arr >> das >> gravity >> bright;
     else{
         set_color(7);
-        goto_xy(2, 2);
-        cout << "Configuration data loaded fail, use default setting\nYou can modify it in the menu";
+        cout << "Configuration data loaded fail, restore to default setting\nYou can modify it in the menu\n";
+        arr = 300, das = 700, gravity = 40, bright = 1;
         pause();
+        clrscr();
     }
     if(record.is_open())
         record >> playCnt >> TimeCnt >> clearCnt >> scoreCnt >> highClear >> highScore;
     else{
         set_color(7);
-        goto_xy(2, 2);
-        cout << "Recode data loaded fail, record has reset";
+        cout << "Recode data loaded fail, record has reset\n";
+        playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;
         pause();
+        clrscr();
     }
+    if(!(pic_ava =pic.is_open())){
+    	pic_ava = 0;
+    	set_color(7);
+    	cout << "Picture file loaded fail, picture function disabled\n";
+    	cout << "To restore, please download data from Github to src/pic.txt\n";
+    	pause();
+        clrscr();
+	}
+	pic.close();
     setting.close();
     record.close();
 }
@@ -348,6 +363,8 @@ void record_update(int& clr, int& score,const int& time){
 }
 
 void print_pic(){
+	if(!pic_ava)
+		return;
     clrscr();
     SetFont(5, 1);
     goto_xy(0,0);
