@@ -93,9 +93,6 @@ struct SettingMenu{
         clrscr();
         sub_menu.settitle("Game Setting\nRight click for return to menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
         sub_menu.start(); //execute sub-menu
-        ofstream setting(SET_PATH); //open setting preference
-        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright; //write setting
-        setting.close(); //close the file
     }
 };
 int SettingMenu::iTmp = 0;
