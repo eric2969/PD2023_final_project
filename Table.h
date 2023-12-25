@@ -355,6 +355,12 @@ void Table::print_table() const{
         }
         (*(next.front())) = Point(d_x, d_y);
     }
+    //hold/next Title
+    set_color(color_table[0] + (bright?128:0));
+    goto_xy(x + 1, y);
+    std::cout << "HOLD";
+    goto_xy(x + width + 7, y);
+    std::cout << "NEXT";
     //set status
     set_color(color_table[0] + (bright?128:0));
     goto_xy(x + width + 7, y + 7);

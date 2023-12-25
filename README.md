@@ -120,6 +120,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 ---
 > ### 2023/12/25.b (v4.4beta)
 > Add file checking function
+> Add title on hold and next
 
 > ### 2023/12/25.a (v4.3.5)
 > Verify beta version <br>
