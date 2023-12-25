@@ -1,5 +1,5 @@
 //declare server address and client address
-SOCKADDR_IN Server_addr, cliAddr;
+SOCKADDR_IN Server_addr;
 //declare socket for listen and connection
 SOCKET sListen, sConnection;
 
@@ -15,13 +15,9 @@ void socket_init(){
 //let this server connect to input ip and input port
 int server_connect(const char ip[], const int& port){
     //set server address (localhost:port)
-    Server_addr.sin_addr.s_addr    = inet_addr("127.0.0.1");
+    Server_addr.sin_addr.s_addr    = inet_addr(ip);
     Server_addr.sin_family         = AF_INET;
     Server_addr.sin_port           = htons(port);
-    //set client address (ip:port)
-    cliAddr.sin_addr.s_addr    = inet_addr(ip);
-    cliAddr.sin_family         = AF_INET;
-    cliAddr.sin_port           = htons(port);
     //create listening socket and check return value
     sListen = socket(AF_INET,SOCK_STREAM,0);
     //if fail, return -1 and clean up connection data
@@ -44,7 +40,7 @@ int server_connect(const char ip[], const int& port){
         return -3;
     }
     //try to connect to destination ip
-    if(sConnection = accept(sListen,(SOCKADDR*)&cliAddr,&addrlen))
+    if(sConnection = accept(sListen, NULL, NULL))
         return 0; //if success, return 0
     else{
         //if fail, return 1, terminate socket and clean up connection data
