@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v4.5-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.5>)    [<img src="https://img.shields.io/badge/Download-v4.5-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v4.5.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v5.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v4.0beta>) [<img src="https://img.shields.io/badge/Download-v5.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.0beta.zip>) <br> -->
+<br>[<img src="https://img.shields.io/badge/Beta-v5.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v4.0beta>) [<img src="https://img.shields.io/badge/Download-v5.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.0beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
