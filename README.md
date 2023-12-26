@@ -104,7 +104,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-4.5-brightgreen">](#20231226b-v45)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.0beta-blue">](#20231225c-v50beta)
+[<img src="https://img.shields.io/badge/Release-4.5-brightgreen">](#20231226b-v45)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.0beta-blue">](#20231226c-v50beta)
 - [Version 5](#20231225c-v50beta) Multi Player Mode
 > - [v5.0beta](#20231225c-v50beta)Socket applying construction
 - [Version 4](#20231225a-v435) UI/UX improved
