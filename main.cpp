@@ -387,7 +387,7 @@ signed main(){
     option3 opt3;
     option4 opt4;
     option5 opt5;
-    Main.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
+    Main.settitle("Tetris").add(opt1, "Single Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
     Main.start();
     return 0;
 }
