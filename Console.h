@@ -12,13 +12,8 @@ void SetFont(int size = 26, bool square = 0) {
     SetCurrentConsoleFontEx(hConsole, FALSE, &cfi);
 }
 //set location of the cursor
-void setcursor(short x = 0, short y = 0){
-    COORD temp = {x, y};
-    SetConsoleCursorPosition(hConsole, temp);
-}
-void setcursor(const COORD &temp){
-    SetConsoleCursorPosition(hConsole, temp);
-}
+void setcursor(short x = 0, short y = 0){SetConsoleCursorPosition(hConsole, COORD{x,y});}
+void setcursor(const COORD &temp){SetConsoleCursorPosition(hConsole, temp);}
  
 // get location of the cursor
 void getcursor(COORD &other){
@@ -40,19 +35,22 @@ void hidecursor(bool hide = true){
 }
 // clear the screen above cursor's location(specialize for menu highlight function) 
 void clean(){
-    COORD temp = getcursor();
+    COORD temp = getcursor(), topLeft = {0, 0};
     setcursor(0, 0);
-    for (int i = 0; i <= temp.Y; i++)
-        std::cout << "                                                                                                                                                                                                                                                        \n";
-    setcursor(0, 0);
+    CONSOLE_SCREEN_BUFFER_INFO screen;
+    DWORD written;
+    GetConsoleScreenBufferInfo(hConsole, &screen);
+    FillConsoleOutputCharacterA(hConsole, ' ', screen.dwSize.X * temp.Y, topLeft, &written);
+    FillConsoleOutputAttribute(hConsole, 0, screen.dwSize.X * temp.Y, topLeft, &written);
 }
 // clear the screen
 void clrscr(){
-    SetConsoleTextAttribute(hConsole, 0);
-    setcursor(0, 0);
-    hidecursor(0);
-    for (int i = 0; i <= 110; i++)
-        std::cout << "                                                                                                                                                                                                                                        \n";
+    COORD topLeft = {0, 0};
+    CONSOLE_SCREEN_BUFFER_INFO screen;
+    DWORD written;
+    GetConsoleScreenBufferInfo(hConsole, &screen);
+    FillConsoleOutputCharacterA(hConsole, ' ', screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
+    FillConsoleOutputAttribute(hConsole, 0, screen.dwSize.X * screen.dwSize.Y, topLeft, &written);
     setcursor(0, 0);
     hidecursor(1);
 }
@@ -62,9 +60,6 @@ void pause(){
     INPUT_RECORD event;         /* Input event */
     BOOL         done = false;  /* Program termination flag */
     unsigned int counter = 0;   /* The number of times 'Esc' is pressed */
-
-    /* Don't use binary for text files, OK?  ;-) */
-
     /* Get the console input handle */
     HANDLE hstdin = GetStdHandle( STD_INPUT_HANDLE );
 
@@ -82,40 +77,31 @@ void pause(){
         if (WaitForSingleObject( hstdin, 0 ) == WAIT_OBJECT_0)  /* if kbhit */
         {
             DWORD count;  /* ignored */
-
             /* Get the input event */
             ReadConsoleInput( hstdin, &event, 1, &count );
-
             /* Only respond to key release events */
-            if ((event.EventType == KEY_EVENT)
-            &&  !event.Event.KeyEvent.bKeyDown)
+            if ((event.EventType == KEY_EVENT) &&  !event.Event.KeyEvent.bKeyDown)
                 done = true;
         }
     }
-    SetConsoleMode( hstdin, mode );
+    SetConsoleMode(hstdin, mode );
 }
 //set the console to fullscreen mode
-void FullScreen() {
-  HWND hwnd = GetConsoleWindow();
-  ShowWindow(hwnd, SW_SHOWMAXIMIZED);
-}
+void FullScreen() {ShowWindow(GetConsoleWindow(), SW_SHOWMAXIMIZED);}
+
 //set the console size
 //*it won't actually change the windows size, but rather number of rows and columns
 void SetConsoleSize(int x, int y, int cols, int lines){
-    HANDLE hOut;
     CONSOLE_FONT_INFO consoleCurrentFont;
-    COORD bufferSize,fontSize;
-    TCHAR title[256];
+    COORD bufferSize, fontSize;
     HWND hWnd;
     //Set console buffer size
-    hOut = hConsole;
-    GetCurrentConsoleFont(hOut, false, &consoleCurrentFont);
-    fontSize = GetConsoleFontSize(hOut,consoleCurrentFont.nFont);
+    GetCurrentConsoleFont(hConsole, false, &consoleCurrentFont);
+    fontSize = GetConsoleFontSize(hConsole, consoleCurrentFont.nFont);
     bufferSize.X = cols;
     bufferSize.Y = lines;
-    SetConsoleScreenBufferSize(hOut, bufferSize);
+    SetConsoleScreenBufferSize(hConsole, bufferSize);
     //Set console's size
-    hWnd = GetConsoleWindow();
-    MoveWindow(hWnd,0,0,(cols+4)*fontSize.X,(lines+2)*fontSize.Y,true);
+    MoveWindow(GetConsoleWindow(),0,0,(cols+4)*fontSize.X,(lines+2)*fontSize.Y,true);
 }
 

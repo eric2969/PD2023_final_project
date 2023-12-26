@@ -16,7 +16,6 @@ using std::ios_base;
 using std::ostream;
 using std::string;
 using std::vector;
-using std::cin;
 using std::cout;
 using std::endl;
 
@@ -55,20 +54,11 @@ ostream &operator<<(ostream &pout, const COORD &temp){
     return pout;
 }
 
-
 //button - click
 //check if cursor's location is in the affecting region (Same row and same column + 5 tiles)
-bool operator-(const COORD &button, const COORD &click)
-{
-    if (button.Y == click.Y && button.X <= click.X && click.X <= button.X + 20)
-        return true;
-    else
-        return false;
-};
-
+bool operator-(const COORD &button, const COORD &click) {return (button.Y == click.Y && button.X <= click.X && click.X <= button.X + 20);}
 // reset the console mode
-void setmode()
-{
+void setmode(){
     DWORD mode;
     GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &mode);
     mode &= ~ENABLE_QUICK_EDIT_MODE; //disable fast update mode
@@ -78,12 +68,10 @@ void setmode()
 }
 
 //wait before the mouse moves
-MOUSE_EVENT_RECORD waitmouse(bool move = true)
-{
+MOUSE_EVENT_RECORD waitmouse(bool move = true){
     INPUT_RECORD record;
     DWORD reg;
-    while (1)
-    {
+    while (1){
         Sleep(10);
         ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &record, 1, &reg);
         if (record.EventType == MOUSE_EVENT && (move | record.Event.MouseEvent.dwEventFlags != MOUSE_MOVED))
@@ -92,18 +80,15 @@ MOUSE_EVENT_RECORD waitmouse(bool move = true)
 }
 
 void Menu::recordposition(){
-    for (auto p = nodes_.begin(); p != nodes_.end(); p++)
-    {
+    for (auto p = nodes_.begin(); p != nodes_.end(); p++){
         getcursor(p->pos_);
         cout << p->display_ << "\n\n";
     }
 }
 //execute
 bool Menu::implement(COORD clickpos){
-    for (auto p = nodes_.begin(); p != nodes_.end(); p++)
-    {
-        if (p->pos_ - clickpos) //if clicked at the right position
-        {
+    for (auto p = nodes_.begin(); p != nodes_.end(); p++){
+        if (p->pos_ - clickpos){ //if clicked at the right position
             hidecursor(0);
             clean();
             p->pf_();
@@ -117,12 +102,9 @@ bool Menu::implement(COORD clickpos){
 void Menu::highlight(COORD hang){
     COLOR_default;
     clean();
-    cout << title_ << endl //show title
-         << "========================================" << endl;
-    for (auto p = nodes_.begin(); p != nodes_.end(); p++)
-    {
-        if (p->pos_ - hang) //hovering
-        {
+    cout << title_ << "\n========================================\n"; //show title
+    for (auto p = nodes_.begin(); p != nodes_.end(); p++){
+        if (p->pos_ - hang) { //hovering
             COLOR_Black_Cyan;
             cout << p->display_ << "\n\n";
             COLOR_default;
@@ -132,28 +114,20 @@ void Menu::highlight(COORD hang){
     }
 }
 
-Menu& Menu::settitle(string s){
-    title_ = s;
-    return *this;
-}
-
-Menu& Menu::add(const std::function<void(void)> &p, string d = "Unkown."){
-    nodes_.push_back(node(d, p));
-    return *this;
-}
+Menu& Menu::settitle(string s){title_ = s; return *this;}
+Menu& Menu::add(const std::function<void(void)> &p, string d){ nodes_.push_back(node(d, p)); return *this;}
 
 void Menu::start(){
     setmode();
     MOUSE_EVENT_RECORD mouse;
     clrscr();
     hidecursor(1);
-    cout << title_ << endl //show title
-         << "========================================" << endl;
+    COLOR_default;
+    cout << title_ << "\n========================================\n"; //show title
     recordposition(); //record mouse's position
     FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
-    do
-    {
-        Sleep(10); //update ticks
+    do{
+        Sleep(flush_tick); //update ticks
         mouse = waitmouse();
         if (mouse.dwEventFlags == MOUSE_MOVED) //if mouse moves
             highlight(mouse.dwMousePosition);
@@ -162,8 +136,7 @@ void Menu::start(){
             clrscr();
             highlight(mouse.dwMousePosition);
         }
-
-    } while (mouse.dwButtonState != R_BUTTON);
+    }while (mouse.dwButtonState != R_BUTTON);
     while(mouse.dwButtonState == R_BUTTON){ //prevent the clicking affect the other page
         mouse = waitmouse();
         Sleep(10);

@@ -101,29 +101,17 @@ struct Quit{
 	void operator() (){
 		throw std::runtime_error("Quit");
 	}
-};
-
-struct QuitChk{
-	static void sub_option1(){
-		throw std::runtime_error("Quit"); //exit game
-	}
-	void operator() (){
-		Menu sub_menu; //create check menu 
-		clrscr();
-		sub_menu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(sub_option1, "Yes");
-		sub_menu.start(); //execute check menu
-	}
-};
+};	
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
 void game_cycle(Table& player, int& line, int& score, bool single);
 
 void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Table player; //create new Table for player
-    speed = 1.0, line = 0, score = 0, stuck = 0;
+    speed = 1.0, stuck = 0, line = 0, score = 0;
+    tStart = before = clock();
     clrscr();
     //initialize the game
-    tStart = before = clock();
     player.set_position(2,2);
     player.init(clock());
     player.new_block();
@@ -141,11 +129,11 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
 
 void multiPlayer(int& line, int& score, const bool& server){
     Table player, opponent; //create table for player and opponent
-    //initialize the game
-    speed = 1.0, line = 0, score = 0;
+    speed = 1.0, stuck = 0, line = 0, score = 0;
+    tStart = before = clock();
     char BoardData[256];
     clrscr();
-    tStart = before = clock();
+    //initialize the game
     player.set_position(2, 2);
     opponent.set_position(35, 2);
     player.init(clock());
@@ -279,9 +267,8 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             if (!KeyState[9]){
                 clrscr();
                 SetFont(26);
-                set_color(7);
-                Menu PauseMenu; SettingMenu SM; QuitChk QM; //make the pause menu
-                PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(QM, "Quit");
+                Menu PauseMenu; Quit quit; SettingMenu SM;//make the pause menu
+                PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(quit, "Quit");
                 PauseMenu.start(); //execute the menu
                 clrscr();
                 SetFont(26, 1);
@@ -297,8 +284,7 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if(!KeyState[10]){
             clrscr();
             SetFont(26);
-            set_color(7);
-            Menu QuitMenu; Quit quit; // make a quit menu
+            Menu QuitMenu; Quit quit;//make the quit menu
 			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(quit, "Quit");
 			QuitMenu.start(); // execute the menu
             clrscr();

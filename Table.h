@@ -322,9 +322,11 @@ void Table::print_table() const{
         (*hold) = Point(d_x, d_y);
     }
     //board
-    goto_xy(x, y);
+    goto_xy(x, y); //row 0
     set_color(color_table[0] + (bright?128:0));
-    for(int i = 0;i < width + 12; i++) std::cout << '-'; //row 0
+    std::cout << "-HOLD-";
+    for(int i = 0;i < width; i++) std::cout << '-'; 
+    std::cout << "-NEXT-";
     for(int i = 0; i < height; ++i) { //row 1-20
         goto_xy(x + 5, y + i + 1); //column 0
         std::cout << '|';
@@ -355,12 +357,6 @@ void Table::print_table() const{
         }
         (*(next.front())) = Point(d_x, d_y);
     }
-    //hold/next Title
-    set_color(color_table[0] + (bright?128:0));
-    goto_xy(x + 1, y);
-    std::cout << "HOLD";
-    goto_xy(x + width + 7, y);
-    std::cout << "NEXT";
     //set status
     set_color(color_table[0] + (bright?128:0));
     goto_xy(x + width + 7, y + 7);

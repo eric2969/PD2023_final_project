@@ -1,8 +1,8 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-v4.5-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.5>)    [<img src="https://img.shields.io/badge/Download-v4.5-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v4.5.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v5.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v5.0beta>) [<img src="https://img.shields.io/badge/Download-v5.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.0beta.zip>) <br>
+[<img src="https://img.shields.io/badge/Release-v4.4.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.4.1>)    [<img src="https://img.shields.io/badge/Download-v4.4.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v4.4.1.zip>)
+<br>[<img src="https://img.shields.io/badge/Beta-v5.0.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v5.0.2beta>) [<img src="https://img.shields.io/badge/Download-v5.0.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.0.2beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -104,11 +104,11 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-4.5-brightgreen">](#20231226b-v45)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.0beta-blue">](#20231226c-v50beta)
-- [Version 5](#20231225c-v50beta) Multi Player Mode
-> - [v5.0beta](#20231225c-v50beta)Socket applying construction
-- [Version 4](#20231225a-v435) UI/UX improved
-> - [v4.4](#20231225b-v44beta) File check and hold/next Title
+[<img src="https://img.shields.io/badge/Release-4.4.1-brightgreen">](#20231226d-v502betav441)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.0.2beta-blue">](#20231226d-v502betav441)
+- [Version 5](#20231226d-v502beta) Multi Player Mode
+> - [v5.0.1beta](#20231226d-v502beta)Socket applying construction
+- [Version 4](#20231226d-v451) UI/UX improved
+> - [v4.4](#20231226d-v451) File check and hold/next Title
 > - [v4.3](#20231225a-v435) Table destructor
 > - [v4.2](#20231222b-v42) Improve UI/UX by enable Square/Rect Font
 > - [v4.1](#20231220a-v411) Fix stuck-wait Verdiction
@@ -120,12 +120,17 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
-> ### 2023/12/26.c (v5.0beta)
+> ### 2023/12/26.d (v5.0.2beta/v4.4.1)
+> Optimized screen clean fn by replace using cout by ConsoleApi(filling) <br>
+> Refine menu in Game.h <br>
+> Update Hold/Next title display
+
+> ### 2023/12/26.c (v5.0.1beta)
 > Trying to implement Board Data sending and receiving SOP <br>
 > Multiplayer still have some problem in memory allocation(Table player) <br>
 > Add multi player connecting function menu
 
-> ### 2023/12/26.b (v4.5)
+> ### 2023/12/26.b (v5.0beta)
 > Fixed server/client header file <br>
 > Example file included
 
