@@ -139,10 +139,11 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     }
 }
 
-void multiPlayer(int& line, int& score){
+void multiPlayer(int& line, int& score, const bool& server){
     Table player, opponent; //create table for player and opponent
     //initialize the game
     speed = 1.0, line = 0, score = 0;
+    char BoardData[256];
     clrscr();
     tStart = before = clock();
     player.set_position(2, 2);
@@ -155,6 +156,20 @@ void multiPlayer(int& line, int& score){
     while (1) {
         //run the multi-player game
         game_cycle(player, line, score, 0);
+        player.SendTable(BoardData);
+        if(server){
+            if(server_send(BoardData))
+                throw std::runtime_error("Opponent Exit");
+            if(server_recv(BoardData))
+                throw std::runtime_error("Opponent Exit");
+        }
+        else{
+            if(client_send(BoardData))
+                throw std::runtime_error("Opponent Exit");
+            if(client_recv(BoardData))
+                throw std::runtime_error("Opponent Exit");
+        }
+        opponent.RecvTable(BoardData);
         Sleep(flush_tick);
     }
 }

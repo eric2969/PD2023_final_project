@@ -50,6 +50,11 @@ int server_connect(const char ip[], const int& port){
     }
 }
 
+void server_disconn(){
+    closesocket(sConnection);
+    WSACleanup();
+}
+
 //sending cstring via socket
 int server_send(const char mes[]){
     //trying to send data

@@ -414,10 +414,10 @@ void Table::SendTable(char str[]) {
             tmp |= (board[ty][tx + j] << (j * 3));
         snd[i] = tmp;
     }
-    //for(auto i:current -> block_position()){
-      //  sTmp = i.y * 5 + i.x / 5;
-    //    snd[sTmp] |= ((current -> get_ID()) <<  ((i.x % 2)?3:0));
-    //}
+    for(auto i:current -> block_position()){
+        sTmp = i.y * 5 + i.x / 5;
+        snd[sTmp] |= ((current -> get_ID()) <<  ((i.x % 2)?3:0));
+    }
     strcpy(str, snd);
 }
 void Table::RecvTable(const char str[]) {
@@ -434,4 +434,3 @@ void Table::RecvTable(const char str[]) {
 }
 void Table::send_garbage() {}
 void Table::get_garbage() {}
-

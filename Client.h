@@ -18,6 +18,11 @@ int client_connect(const char ip[], const int& port){
 		return 0; //if success return 0
 }
 
+void client_disconn(){
+	closesocket(sConnect);
+	WSACleanup();
+}
+
 //sending cstring via socket
 int client_send(const char mes[]){
 	//trying to send data

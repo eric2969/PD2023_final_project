@@ -6,7 +6,7 @@ using namespace std;
 HANDLE hConsole;
 bool bright, pic_ava;
 int das, arr, gravity, addrlen;
-const short flush_tick = 2;
+const short flush_tick = 2, port = 9487;
 
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
@@ -103,13 +103,23 @@ int option1::score = 0;
 int option1::goal = 0;
 clock_t option1::t = 0;
 
+//under socket application
 struct option2{ //option from multi-player
     static int line, score, usedTime;
+    static bool conn, server;
     static clock_t t;
     static void run(){ //execute sub-menu
+        if(!conn){
+            clrscr();
+            set_color(7);
+            cout << "Please connect to another player first\n";
+            Sleep(800);
+            pause();
+            return;
+        }
     	t = clock();
         SetFont(22, 1);
-        try{multiPlayer(line, score);}
+        try{multiPlayer(line, score, server);}
         catch(runtime_error e){ 
                 //game over
         		usedTime = (clock() - t) / 1000;
@@ -128,20 +138,92 @@ struct option2{ //option from multi-player
                 pause();
         }
         record_update(line, score, usedTime); //update record
-	}
-	static void sub_option1(){
+	}  
+    static void sub_option1(){
+        SetFont();
+        clrscr();
+        set_color(7);
+        int status;
+        char ip[16];
+        cout << "Please input your ip(in setting)\n";
+        cin >> ip;
+        cout << "Waiting for your opponent...\n";
+        status = server_connect(ip, port);
+        if(status)
+            cout << "Connect Error, error code : " << status << endl;
+        else{
+            cout << "Connected successfully\n";
+            conn = 1;
+            server = 1;
+        }
+        Sleep(800);
+        pause();
+    }
+    static void sub_option2(){
+        SetFont();
+        clrscr();
+        set_color(7);
+        int status;
+        char ip[16];
+        cout << "Please input opponent's ip\n";
+        cin >> ip;
+        cout << "Waiting for connect...\n";
+        status = client_connect(ip, port);
+        if(status)
+            cout << "Connect Error, error code : " << status << endl;
+        else{
+            cout << "Connected successfully\n";
+            conn = 1;
+            server = 0;
+        }
+        Sleep(800);
+        pause();
+    }
+    static void sub_option3(){
+        SetFont();
+        clrscr();
+        set_color(7);
+        if(conn)
+            cout << (server?"Connected, you are host\n":"Connected, you are guest\n");
+        else
+            cout << "Disconnected\n";
+        Sleep(800);
+        pause();
+    }
+    static void sub_option4(){
+        SetFont();
+        clrscr();
+        set_color(7);
+        if(conn){
+            if(server)
+                server_disconn();
+            else
+                client_disconn();
+            cout << "Disconnected\n";
+            conn = 0;
+            server = 0;
+        }
+        else
+            cout << "No connection\n";
+        Sleep(800);
+        pause();
+    }
+	static void sub_option5(){
         run();
     }
     void operator() (){
 		Menu sub_menu; //create sub-menu
         clrscr();
-        sub_menu.settitle("Multi Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Game Start");
+        sub_menu.settitle("Multi Game\nRight click for return to main menu");
+        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Status").add(sub_option4, "Disconnect").add(sub_option5, "Game Start");
         sub_menu.start();
     }
 };
 int option2::line = 0;
 int option2::score = 0;
 int option2::usedTime = 0;
+bool option2::conn = 0;
+bool option2::server = 0;
 clock_t option2::t = 0;
 
 struct option3{ //record option
@@ -298,13 +380,14 @@ signed main(){
     FullScreen();
     SetFont();
     game_init();
+    socket_init();
     Menu Main;
     option1 opt1;
     option2 opt2;
     option3 opt3;
     option4 opt4;
     option5 opt5;
-    Main.settitle("Tetris").add(opt1, "Single Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
+    Main.settitle("Tetris").add(opt1, "Single Player").add(opt2,"Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
     Main.start();
     return 0;
 }
@@ -330,7 +413,7 @@ void game_init(){
         pause();
         clrscr();
     }
-    if(!(pic_ava =pic.is_open())){
+    if(!(pic_ava = pic.is_open())){
     	pic_ava = 0;
     	set_color(7);
     	cout << "Picture file loaded fail, picture function disabled\n";
