@@ -107,8 +107,8 @@ And we divided our game architecture into several parts, listed at the below. <b
 [<img src="https://img.shields.io/badge/Release-4.4.1-brightgreen">](#20231226d-v502betav441)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.0.2beta-blue">](#20231226d-v502betav441)
 - [Version 5](#20231226d-v502beta) Multi Player Mode
 > - [v5.0.1beta](#20231226d-v502beta)Socket applying construction
-- [Version 4](#20231226d-v451) UI/UX improved
-> - [v4.4](#20231226d-v451) File check and hold/next Title
+- [Version 4](#20231226d-v502betav441) UI/UX improved
+> - [v4.4](#20231226d-v502betav441) File check and hold/next Title
 > - [v4.3](#20231225a-v435) Table destructor
 > - [v4.2](#20231222b-v42) Improve UI/UX by enable Square/Rect Font
 > - [v4.1](#20231220a-v411) Fix stuck-wait Verdiction
