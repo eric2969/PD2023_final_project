@@ -104,10 +104,10 @@ struct Quit{
 };	
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
-void game_cycle(Table& player, int& line, int& score, bool single);
+void game_cycle(Player& player, int& line, int& score, bool single);
 
 void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(infinite), 1 (line, line), 2(time, second)
-    Table player; //create new Table for player
+    Player player; //create new Table for player
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     clrscr();
@@ -128,10 +128,10 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
 }
 
 void multiPlayer(int& line, int& score, const bool& server){
-    Table player, opponent; //create table for player and opponent
+    Player player;Opponent opponent; //create table for player and opponent
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
-    char BoardData[256];
+    char BoardData[120];
     clrscr();
     //initialize the game
     player.set_position(2, 2);
@@ -162,7 +162,7 @@ void multiPlayer(int& line, int& score, const bool& server){
     }
 }
 
-void game_cycle(Table& player, int& line, int& score, bool single){
+void game_cycle(Player& player, int& line, int& score, bool single){
     getKeyState(); //get which key is pressed
     //fall
     if (clock() - before > fall_tick){

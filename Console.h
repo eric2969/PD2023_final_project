@@ -61,13 +61,13 @@ void pause(){
     BOOL         done = false;  /* Program termination flag */
     unsigned int counter = 0;   /* The number of times 'Esc' is pressed */
     /* Get the console input handle */
-    HANDLE hstdin = GetStdHandle( STD_INPUT_HANDLE );
+    HANDLE hstdin = GetStdHandle(STD_INPUT_HANDLE);
 
     /* Preserve the original console mode */
-    GetConsoleMode( hstdin, &mode );
+    GetConsoleMode(hstdin, &mode );
 
     /* Set to no line-buffering, no echo, no special-key-processing */
-    SetConsoleMode( hstdin, 0 );
+    SetConsoleMode(hstdin, 0 );
 
     std::cout << "Press Any Key to Continue\n";
     // Flush the buffer to make sure that it won't be affected by the loads of key presses we did while playing the game

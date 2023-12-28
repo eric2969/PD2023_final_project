@@ -109,7 +109,7 @@ struct option2{ //option from multi-player
     static bool conn, server;
     static clock_t t;
     static void run(){ //execute sub-menu
-        if(!conn){
+        if(!conn && 0){
             clrscr();
             set_color(7);
             cout << "Please connect to another player first\n";
@@ -121,21 +121,21 @@ struct option2{ //option from multi-player
         SetFont(22, 1);
         try{multiPlayer(line, score, server);}
         catch(runtime_error e){ 
-                //game over
-        		usedTime = (clock() - t) / 1000;
-                if(pic_ava){
-        			print_pic();
-                	Sleep(1000);
-				}
-                SetFont();
-                clrscr();
-                set_color(7);
-                cout << e.what() << endl << endl;
-                cout << "Used Time(s):  " << usedTime << endl;
-                cout << "Clear Line:    " << line << endl;
-                cout << "Score:         " << score << endl << endl;
-                Sleep(800);
-                pause();
+            //game over
+        	usedTime = (clock() - t) / 1000;
+            if(pic_ava){
+        		print_pic();
+               	Sleep(1000);
+			}
+            SetFont();
+            clrscr();
+            set_color(7);
+            cout << e.what() << endl << endl;
+            cout << "Used Time(s):  " << usedTime << endl;
+            cout << "Clear Line:    " << line << endl;
+            cout << "Score:         " << score << endl << endl;
+            Sleep(800);
+            pause();
         }
         record_update(line, score, usedTime); //update record
 	}  
