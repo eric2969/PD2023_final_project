@@ -4,9 +4,9 @@
 using namespace std;
 
 HANDLE hConsole;
-bool bright, pic_ava;
+bool bright, pic_ava, conn, server;
 int das, arr, gravity, addrlen;
-const short flush_tick = 2, port = 9487;
+const short flush_tick = 2, port = 9487, DataSize = 130;
 
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
@@ -37,21 +37,21 @@ struct option1{ //option from single player mode
         SetFont(26, 1);
         try{singlePlayer(line, score, gameMode, goal);}
         catch(runtime_error e){ 
-                //game over
-        		usedTime = (clock() - t) / 1000;
-        		if(pic_ava){
-        			print_pic();
-                	Sleep(1000);
-				}
-                SetFont();
-                clrscr();
-                set_color(7);
-                cout << e.what() << endl << endl;
-                cout << "Used Time(s):  " << usedTime << endl;
-                cout << "Clear Line:    " << line << endl;
-                cout << "Score:         " << score << endl << endl;
-                Sleep(800);
-                pause();
+            //game over
+        	usedTime = (clock() - t) / 1000;
+        	if(pic_ava){
+        		print_pic();
+            	Sleep(1000);
+			}
+            SetFont();
+            clrscr();
+            set_color(7);
+            cout << e.what() << endl << endl;
+            cout << "Used Time(s):  " << usedTime << endl;
+            cout << "Clear Line:    " << line << endl;
+            cout << "Score:         " << score << endl << endl;
+            Sleep(800);
+            pause();
         }
         record_update(line, score, usedTime); //update record
     }
@@ -106,7 +106,6 @@ clock_t option1::t = 0;
 //under socket application
 struct option2{ //option from multi-player
     static int line, score, usedTime;
-    static bool conn, server;
     static clock_t t;
     static void run(){ //execute sub-menu
         if(!conn && 0){
@@ -200,8 +199,6 @@ struct option2{ //option from multi-player
             else
                 client_disconn();
             cout << "Disconnected\n";
-            conn = 0;
-            server = 0;
         }
         else
             cout << "No connection\n";
@@ -222,8 +219,6 @@ struct option2{ //option from multi-player
 int option2::line = 0;
 int option2::score = 0;
 int option2::usedTime = 0;
-bool option2::conn = 0;
-bool option2::server = 0;
 clock_t option2::t = 0;
 
 struct option3{ //record option

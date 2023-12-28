@@ -87,7 +87,7 @@ public:
 	~Table() {}
 	//move the table
 	void set_position(const short x, const short y){this -> x = x, this -> y = y;}
-	virtual void print_table() const = 0; //print table on windows.h (x,y) is the origin of the table
+	virtual void print_table() = 0; //print table on windows.h (x,y) is the origin of the table
 	//return table data
     inline short get_x() const {return this -> x;}
     inline short get_y() const {return this -> y;}
@@ -129,7 +129,7 @@ public:
     bool move_block(const short x, const short y);
     void rotate(const short direction);
     //printing
-    void print_table() const override; //print table on windows.h (x,y) is the origin of the table
+    void print_table() override; //print table on windows.h (x,y) is the origin of the table
     void print_block();
     //checking
     bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
@@ -225,7 +225,7 @@ void Player::rotate(const short direction){
     bTmp = nullptr;
 }
 //printing
-void Player::print_table() const{
+void Player::print_table(){
     //hold
     for(int i = 0; i < 4; ++i) {
         goto_xy(x, y + i + 1);
@@ -429,12 +429,14 @@ public:
         hold = 0, next = 0;
     }
     //printing
-    void print_table() const override;
+    void print_table() override;
     //multi playing
     void RecvTable(const char str[]);
 };
 //printing
-void Opponent::print_table() const{
+void Opponent::print_table(){
+    //reset Board
+    memset(board, 0, sizeof(board)); hold = 0, next = 0;
     //hold
     for(int i = 0; i < 4; ++i) {
         goto_xy(x, y + i + 1);
@@ -473,11 +475,11 @@ void Opponent::print_table() const{
     for(int i = 0;i < 5;i++) std::cout << '-';
     set_color(color_table[0] + (bright?128:0));
     goto_xy(x + width + 7, y + 6);
-    std::cout << "Level:     0";
+    std::cout << "Level:     " << level;
     goto_xy(x + width + 7, y + 7);
-    std::cout << "Score:     0";
+    std::cout << "Score:     " << score;
     goto_xy(x + width + 7, y + 8);
-    std::cout << "Clear Line:0";
+    std::cout << "Clear Line:" << clear_line;
     return;
 }
 //multi playing

@@ -22,7 +22,6 @@ int server_connect(const char ip[], const int& port){
     sListen = socket(AF_INET,SOCK_STREAM,0);
     //if fail, return -1 and clean up connection data
     if (sListen == INVALID_SOCKET){
-        WSACleanup();
         return -1;
     }
     // Bind the socket and check return value
@@ -30,13 +29,11 @@ int server_connect(const char ip[], const int& port){
     //if fail, return -2, terminate socket and clean up connection data
     if (iResult == SOCKET_ERROR){
         closesocket(sListen);
-        WSACleanup();
         return -2;
     }
     //if error occur when listening, return -3, terminate socket and clean up connection data
     if(listen(sListen, 5) == SOCKET_ERROR){
         closesocket(sListen);
-        WSACleanup();
         return -3;
     }
     //try to connect to destination ip
@@ -45,23 +42,24 @@ int server_connect(const char ip[], const int& port){
     else{
         //if fail, return 1, terminate socket and clean up connection data
         closesocket(sListen);
-        WSACleanup();
         return 1;
     }
 }
 
 void server_disconn(){
+	conn = 0;
+	closesocket(sListen);
     closesocket(sConnection);
-    WSACleanup();
 }
 
 //sending cstring via socket
 int server_send(const char mes[]){
     //trying to send data
-    if(send(sConnection, mes, sizeof(mes), 0) == SOCKET_ERROR){
+    if(send(sConnection, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
         //if fail, return -1, terminate socket and clean up connection data
+        conn = 0;
+        closesocket(sListen);
         closesocket(sConnection);
-        WSACleanup();
         return -1;
     }
     else
@@ -70,13 +68,12 @@ int server_send(const char mes[]){
 
 //receive cstring from socket
 int server_recv(char mes[]){
-    //reset container
-    strcpy(mes, "");
     //try to receiving data
-    if(recv(sConnection, mes, sizeof(mes), 0) == SOCKET_ERROR){
+    if(recv(sConnection, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
         //if fail, return -1, terminate socket and clean up connection data
+        conn = 0;
+        closesocket(sListen);
         closesocket(sConnection);
-        WSACleanup();
         return -1;
     }
     else
