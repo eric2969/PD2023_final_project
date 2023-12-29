@@ -18,27 +18,37 @@ int client_connect(const char ip[], const int& port){
 		return 0; //if success return 0
 }
 
-void client_disconn(){
+void client_quit(){
+	conn = 0;
 	closesocket(sConnect);
 	WSACleanup();
+}
+
+void client_disconn(){
+	conn = 0;
+	closesocket(sConnect);
 }
 
 //sending cstring via socket
 int client_send(const char mes[]){
 	//trying to send data
-	if(send(sConnect, mes, sizeof(mes), 0) == SOCKET_ERROR)
-        return -1; //if fail, return -1 
+	if(send(sConnect, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
+		conn = 0;
+		closesocket(sConnect);
+		return -1; //if fail, return -1
+	} 
     else
         return 0; //if success return 0
 }
 
 //receive cstring from socket
 int client_recv(char mes[]){
-	//reset container
-	strcpy(mes, "");
 	//try to receiving data
-	if(recv(sConnect, mes, sizeof(mes), 0) == SOCKET_ERROR)
-		return -1; //if fail, return -1 
+	if(recv(sConnect, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
+		conn = 0;
+		closesocket(sConnect);
+		return -1; //if fail, return -1
+	}
 	else
 		return 0; //if success return 0
 }

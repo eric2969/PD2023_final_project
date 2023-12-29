@@ -97,17 +97,24 @@ struct SettingMenu{
 };
 int SettingMenu::iTmp = 0;
 
-struct Quit{
-	void operator() (){
-		throw std::runtime_error("Quit");
-	}
-};	
+static void Quit() {
+    if(conn){
+        if(server)
+            server_disconn();
+        else
+            client_disconn();
+
+        throw std::runtime_error("Quit, you lose!");
+    }
+    else
+    	throw std::runtime_error("Quit");
+}
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
-void game_cycle(Table& player, int& line, int& score, bool single);
+int game_cycle(Player& player, int& line, int& score, bool single);
 
-void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(infinite), 1 (line, line), 2(time, second)
-    Table player; //create new Table for player
+void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mode:0(infinite), 1 (line, line), 2(time, second)
+    Player player; //create new Table for player
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     clrscr();
@@ -115,6 +122,7 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     player.set_position(2,2);
     player.init(clock());
     player.new_block();
+    SetFont(26, 1);
     player.print_table();
     while (1) {
         //run the game
@@ -127,11 +135,13 @@ void singlePlayer(int& line, int& score, int mode = 0, int goal = 40){ //mode:0(
     }
 }
 
-void multiPlayer(int& line, int& score, const bool& server){
-    Table player, opponent; //create table for player and opponent
+void multiPlayer(int& line, int& score){
+    Player player;Opponent opponent; //create table for player and opponent
+    int mode = 0, goal = 0;
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
-    char BoardData[256];
+    char BoardData[DataSize];
+    bool status;
     clrscr();
     //initialize the game
     player.set_position(2, 2);
@@ -139,30 +149,62 @@ void multiPlayer(int& line, int& score, const bool& server){
     player.init(clock());
     opponent.init();
     player.new_block();
+    set_color(7);
+    goto_xy(1, 1);
+    std::cout << "Please wait for your opponent!";
+    if(server){
+    	if(server_send("Start"))
+    		throw std::runtime_error("Opponent have exited");
+    	if(server_recv(BoardData))
+    		throw std::runtime_error("Opponent have exited");
+    }
+    else{
+    	if(client_send("Start"))
+    		throw std::runtime_error("Opponent have exited");
+    	if(client_recv(BoardData))
+    		throw std::runtime_error("Opponent have exited");
+    }
+    clrscr();
+    SetFont(22, 1);
     player.print_table();
     opponent.print_table();
     while (1) {
         //run the multi-player game
-        game_cycle(player, line, score, 0);
+        status = game_cycle(player, line, score, 0);
+        if(mode == 1 && line >= goal){
+        	if(server){
+        		server_send("win");
+        		throw std::runtime_error("You win!");
+        	}
+        	else{
+        		client_send("win");
+        		throw std::runtime_error("You win!");
+        	}
+        }
+        if(status) opponent.print_table();
         player.SendTable(BoardData);
         if(server){
             if(server_send(BoardData))
-                throw std::runtime_error("Opponent Exit");
+                throw std::runtime_error("Opponent Exit, you win!");
             if(server_recv(BoardData))
-                throw std::runtime_error("Opponent Exit");
+                throw std::runtime_error("Opponent Exit, you win!");
         }
         else{
             if(client_send(BoardData))
-                throw std::runtime_error("Opponent Exit");
+                throw std::runtime_error("Opponent Exit, you win!");
             if(client_recv(BoardData))
-                throw std::runtime_error("Opponent Exit");
+                throw std::runtime_error("Opponent Exit, you win!");
         }
+        if(!strcmp(BoardData, "win"))
+        	throw std::runtime_error("You lose!");
+        else if(!strcmp(BoardData, "lose"))
+        	throw std::runtime_error("You win!");
         opponent.RecvTable(BoardData);
         Sleep(flush_tick);
     }
 }
 
-void game_cycle(Table& player, int& line, int& score, bool single){
+int game_cycle(Player& player, int& line, int& score, bool single){
     getKeyState(); //get which key is pressed
     //fall
     if (clock() - before > fall_tick){
@@ -267,12 +309,13 @@ void game_cycle(Table& player, int& line, int& score, bool single){
             if (!KeyState[9]){
                 clrscr();
                 SetFont(26);
-                Menu PauseMenu; Quit quit; SettingMenu SM;//make the pause menu
-                PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(quit, "Quit");
+                Menu PauseMenu; SettingMenu SM;//make the pause menu
+                PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(Quit, "Quit");
                 PauseMenu.start(); //execute the menu
                 clrscr();
                 SetFont(26, 1);
                 player.print_table();
+                return 1;
             }
             KeyState[9] = 1;
         }
@@ -284,12 +327,13 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         if(!KeyState[10]){
             clrscr();
             SetFont(26);
-            Menu QuitMenu; Quit quit;//make the quit menu
-			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(quit, "Quit");
+            Menu QuitMenu;//make the quit menu
+			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(Quit, "Quit");
 			QuitMenu.start(); // execute the menu
             clrscr();
             SetFont(26, 1);
             player.print_table();
+            return 1;
         }
         KeyState[10] = 1;
     }
@@ -310,4 +354,5 @@ void game_cycle(Table& player, int& line, int& score, bool single){
         clr = 0;
     }
     speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
+    return 0;
 }

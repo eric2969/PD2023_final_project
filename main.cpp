@@ -4,9 +4,9 @@
 using namespace std;
 
 HANDLE hConsole;
-bool bright, pic_ava;
+bool bright, pic_ava, conn, server;
 int das, arr, gravity, addrlen;
-const short flush_tick = 2, port = 9487;
+const short flush_tick = 2, port = 9487, DataSize = 130;
 
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
@@ -34,24 +34,23 @@ struct option1{ //option from single player mode
     static clock_t t;
     static void run(){ //execute the sub-menu
         t = clock();
-        SetFont(26, 1);
         try{singlePlayer(line, score, gameMode, goal);}
         catch(runtime_error e){ 
-                //game over
-        		usedTime = (clock() - t) / 1000;
-        		if(pic_ava){
-        			print_pic();
-                	Sleep(1000);
-				}
-				clrscr();
-                SetFont();
-                set_color(7);
-                cout << e.what() << endl << endl;
-                cout << "Used Time(s):  " << usedTime << endl;
-                cout << "Clear Line:    " << line << endl;
-                cout << "Score:         " << score << endl << endl;
-                Sleep(800);
-                pause();
+            //game over
+    		usedTime = (clock() - t) / 1000;
+    		if(pic_ava){
+    			print_pic();
+            	Sleep(1000);
+			}
+			clrscr();
+            SetFont();
+            set_color(7);
+            cout << e.what() << endl << endl;
+            cout << "Used Time(s):  " << usedTime << endl;
+            cout << "Clear Line:    " << line << endl;
+            cout << "Score:         " << score << endl << endl;
+            Sleep(800);
+            pause();
         }
         record_update(line, score, usedTime); //update record
     }
@@ -97,16 +96,15 @@ struct option1{ //option from single player mode
     }
 };
 int option1::gameMode = 0;
+int option1::goal = 0;
 int option1::usedTime = 0;
 int option1::line = 0;
 int option1::score = 0;
-int option1::goal = 0;
 clock_t option1::t = 0;
 
 //under socket application
 struct option2{ //option from multi-player
     static int line, score, usedTime;
-    static bool conn, server;
     static clock_t t;
     static void run(){ //execute sub-menu
         if(!conn){
@@ -118,24 +116,29 @@ struct option2{ //option from multi-player
             return;
         }
     	t = clock();
-        SetFont(22, 1);
-        try{multiPlayer(line, score, server);}
+        try{multiPlayer(line, score);}
         catch(runtime_error e){ 
-                //game over
-        		usedTime = (clock() - t) / 1000;
-                if(pic_ava){
-        			print_pic();
-                	Sleep(1000);
-				}
-                SetFont();
-                clrscr();
-                set_color(7);
-                cout << e.what() << endl << endl;
-                cout << "Used Time(s):  " << usedTime << endl;
-                cout << "Clear Line:    " << line << endl;
-                cout << "Score:         " << score << endl << endl;
-                Sleep(800);
-                pause();
+            //game over
+        	usedTime = (clock() - t) / 1000;
+            if(pic_ava){
+        		print_pic();
+               	Sleep(1000);
+			}
+            if(conn){ //chk socket disconnected
+                if(server)
+                    server_disconn();
+                else
+                    client_disconn();
+            }
+            SetFont();
+            clrscr();
+            set_color(7);
+            cout << e.what() << endl << endl;
+            cout << "Used Time(s):  " << usedTime << endl;
+            cout << "Clear Line:    " << line << endl;
+            cout << "Score:         " << score << endl << endl;
+            Sleep(800);
+            pause();
         }
         record_update(line, score, usedTime); //update record
 	}  
@@ -200,30 +203,23 @@ struct option2{ //option from multi-player
             else
                 client_disconn();
             cout << "Disconnected\n";
-            conn = 0;
-            server = 0;
         }
         else
             cout << "No connection\n";
         Sleep(800);
         pause();
     }
-	static void sub_option5(){
-        run();
-    }
     void operator() (){
 		Menu sub_menu; //create sub-menu
         clrscr();
         sub_menu.settitle("Multi Game\nRight click for return to main menu");
-        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Status").add(sub_option4, "Disconnect").add(sub_option5, "Game Start");
+        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Status").add(sub_option4, "Disconnect").add(run, "Game Start");
         sub_menu.start();
     }
 };
 int option2::line = 0;
 int option2::score = 0;
 int option2::usedTime = 0;
-bool option2::conn = 0;
-bool option2::server = 0;
 clock_t option2::t = 0;
 
 struct option3{ //record option
@@ -428,6 +424,13 @@ void game_init(){
 }
 
 void game_exit(){
+	//close socket
+	if(conn){
+		if(server)
+			server_quit();
+		else
+			client_quit();
+	}
     //save user preference
     ofstream setting(SET_PATH), record(RECORD_PATH);
     setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;

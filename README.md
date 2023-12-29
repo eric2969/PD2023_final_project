@@ -1,8 +1,8 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-v4.4.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v4.4.1>)    [<img src="https://img.shields.io/badge/Download-v4.4.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v4.4.1.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v5.0.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v5.0.2beta>) [<img src="https://img.shields.io/badge/Download-v5.0.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.0.2beta.zip>) <br>
+[<img src="https://img.shields.io/badge/Release-v5.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v5.1>)    [<img src="https://img.shields.io/badge/Download-v5.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.1.zip>)
+<br>[<img src="https://img.shields.io/badge/Beta-v5.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v5.2beta>) [<img src="https://img.shields.io/badge/Download-v5.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.2beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -94,7 +94,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 >> ### Table.h
 >> This establish a class that can control and display the whole player game board <br>It will scan the keyboard state and does cooresponding operation such that move or rotate the block and verify the validation of this operation <br>Block operations are provided and maintained by Block.h
 >> ### Block.h
->> This contain struct Point(for coordinate) and class Block(abstract class) <br>Class Block save some general data of each block, <br>and provide some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J , K O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
+>> This contain struct Point(for coordinate) and class Block(abstract class) <br>Class Block save some general data of each block, <br>and provide some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J, K, O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
 >> ### Socket (abstract)
 >> This is for transmit data of opponent and player
 >>> ### Server.h
@@ -104,9 +104,11 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-4.4.1-brightgreen">](#20231226d-v502betav441)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.0.2beta-blue">](#20231226d-v502betav441)
-- [Version 5](#20231226d-v502betav441) Multi Player Mode
-> - [v5.0.2beta](#20231226d-v502betav441)Socket applying construction
+[<img src="https://img.shields.io/badge/Release-5.1-brightgreen">](#20231229b-v51)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.2beta-blue">](#20231229c-v52beta)
+- [Version 5](#20231229c-v52beta) Multi Player Mode
+> - [v5.2](#20231229c-v52beta) Complete Game status Transmit, comptete is available
+> - [v5.1](#20231229b-v51) Finished Table de/compression and Opponent display
+> - [v5.0](#20231226d-v502betav441) Socket applying construction
 - [Version 4](#20231226d-v502betav441) UI/UX improved
 > - [v4.4](#20231226d-v502betav441) File check and hold/next Title
 > - [v4.3](#20231225a-v435) Table destructor
@@ -120,6 +122,22 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2023/12/29.c (v5.2beta)
+> Add wait opponent function <br>
+> Win/loss msg is enable <br>
+> Rearrange multiplaying menu <br>
+> Can append mode choosing feature
+
+> ### 2023/12/29.b (v5.1)
+> Data transmit and displaying is completed <br>
+> Some socket bug fixed <br>
+> Still need to implement some token msg to control the game
+
+> ### 2023/12/29.a (v5.1beta)
+> Finished Table de/compression <br>
+> Opponent displaying is completed <br>
+> Connecting fn is waiting to verify
+
 > ### 2023/12/26.d (v5.0.2beta/v4.4.1)
 > Optimized screen clean fn by replace using cout by ConsoleApi(filling) <br>
 > Refine menu in Game.h <br>
