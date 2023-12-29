@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v5.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v5.1>)    [<img src="https://img.shields.io/badge/Download-v5.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.1.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v5.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v5.2beta>) [<img src="https://img.shields.io/badge/Download-v5.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.2beta.zip>) <br>
+<br>[<img src="https://img.shields.io/badge/Beta-v5.2.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v5.2.1beta>) [<img src="https://img.shields.io/badge/Download-v5.2.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.2.1beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -104,9 +104,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-5.1-brightgreen">](#20231229b-v51)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.2beta-blue">](#20231229c-v52beta)
-- [Version 5](#20231229c-v52beta) Multi Player Mode
-> - [v5.2](#20231229c-v52beta) Complete Game status Transmit, comptete is available
+[<img src="https://img.shields.io/badge/Release-5.1-brightgreen">](#20231229b-v51)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.2.1beta-blue">](#20231229d-v521beta)
+- [Version 5](#20231229d-v521beta) Multi Player Mode
+> - [v5.2](#20231229d-v521beta) Complete Game status Transmit, comptete is available
 > - [v5.1](#20231229b-v51) Finished Table de/compression and Opponent display
 > - [v5.0](#20231226d-v502betav441) Socket applying construction
 - [Version 4](#20231226d-v502betav441) UI/UX improved
@@ -122,6 +122,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2023/12/29.d (v5.2.1beta)
+> Add change keyboard fn <br>
+> Modify disconnecting mechanism
+
 > ### 2023/12/29.c (v5.2beta)
 > Add wait opponent function <br>
 > Win/loss msg is enable <br>

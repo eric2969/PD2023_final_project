@@ -100,10 +100,9 @@ int SettingMenu::iTmp = 0;
 static void Quit() {
     if(conn){
         if(server)
-            server_disconn();
+            server_send("lose");
         else
-            client_disconn();
-
+            client_send("lose");
         throw std::runtime_error("Quit, you lose!");
     }
     else
@@ -184,16 +183,24 @@ void multiPlayer(int& line, int& score){
         if(status) opponent.print_table();
         player.SendTable(BoardData);
         if(server){
-            if(server_send(BoardData))
+            if(server_send(BoardData)){
+                server_disconn();
                 throw std::runtime_error("Opponent Exit, you win!");
-            if(server_recv(BoardData))
+            }
+            if(server_recv(BoardData)){
+                server_disconn();
                 throw std::runtime_error("Opponent Exit, you win!");
+            }
         }
         else{
-            if(client_send(BoardData))
+            if(client_send(BoardData)){
+                client_disconn();
                 throw std::runtime_error("Opponent Exit, you win!");
-            if(client_recv(BoardData))
+            }
+            if(client_recv(BoardData)){
+                client_disconn();
                 throw std::runtime_error("Opponent Exit, you win!");
+            }
         }
         if(!strcmp(BoardData, "win"))
         	throw std::runtime_error("You lose!");

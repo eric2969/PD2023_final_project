@@ -124,12 +124,6 @@ struct option2{ //option from multi-player
         		print_pic();
                	Sleep(1000);
 			}
-            if(conn){ //chk socket disconnected
-                if(server)
-                    server_disconn();
-                else
-                    client_disconn();
-            }
             SetFont();
             clrscr();
             set_color(7);
