@@ -34,7 +34,6 @@ struct option1{ //option from single player mode
     static clock_t t;
     static void run(){ //execute the sub-menu
         t = clock();
-        SetFont(26, 1);
         try{singlePlayer(line, score, gameMode, goal);}
         catch(runtime_error e){ 
             //game over
@@ -97,10 +96,10 @@ struct option1{ //option from single player mode
     }
 };
 int option1::gameMode = 0;
+int option1::goal = 0;
 int option1::usedTime = 0;
 int option1::line = 0;
 int option1::score = 0;
-int option1::goal = 0;
 clock_t option1::t = 0;
 
 //under socket application
@@ -108,7 +107,7 @@ struct option2{ //option from multi-player
     static int line, score, usedTime;
     static clock_t t;
     static void run(){ //execute sub-menu
-        if(!conn && 0){
+        if(!conn){
             clrscr();
             set_color(7);
             cout << "Please connect to another player first\n";
@@ -117,8 +116,7 @@ struct option2{ //option from multi-player
             return;
         }
     	t = clock();
-        SetFont(22, 1);
-        try{multiPlayer(line, score, server);}
+        try{multiPlayer(line, score);}
         catch(runtime_error e){ 
             //game over
         	usedTime = (clock() - t) / 1000;
@@ -126,6 +124,12 @@ struct option2{ //option from multi-player
         		print_pic();
                	Sleep(1000);
 			}
+            if(conn){ //chk socket disconnected
+                if(server)
+                    server_disconn();
+                else
+                    client_disconn();
+            }
             SetFont();
             clrscr();
             set_color(7);
@@ -205,14 +209,11 @@ struct option2{ //option from multi-player
         Sleep(800);
         pause();
     }
-	static void sub_option5(){
-        run();
-    }
     void operator() (){
 		Menu sub_menu; //create sub-menu
         clrscr();
         sub_menu.settitle("Multi Game\nRight click for return to main menu");
-        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Status").add(sub_option4, "Disconnect").add(sub_option5, "Game Start");
+        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Status").add(sub_option4, "Disconnect").add(run, "Game Start");
         sub_menu.start();
     }
 };
@@ -422,6 +423,13 @@ void game_init(){
 }
 
 void game_exit(){
+	//close socket
+	if(conn){
+		if(server)
+			server_quit();
+		else
+			client_quit();
+	}
     //save user preference
     ofstream setting(SET_PATH), record(RECORD_PATH);
     setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;

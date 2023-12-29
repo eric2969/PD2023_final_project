@@ -18,6 +18,12 @@ int client_connect(const char ip[], const int& port){
 		return 0; //if success return 0
 }
 
+void client_quit(){
+	conn = 0;
+	closesocket(sConnect);
+	WSACleanup();
+}
+
 void client_disconn(){
 	conn = 0;
 	closesocket(sConnect);

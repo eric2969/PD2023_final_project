@@ -374,8 +374,17 @@ bool Player::chk_clear(int& line, int& tscore){
     line = this -> clear_line;
     tscore = this -> score;
     for(int i = 0;i < 10;i++)
-        if(board[20][i])
-            throw std::runtime_error("Game over");
+        if(board[20][i]){
+            if(conn){
+                if(server)
+                    server_send("lose");
+                else
+                    client_send("lose");
+                throw std::runtime_error("You lose!");
+            }
+            else
+                throw std::runtime_error("Game over");
+        }
     return cnt;
 }
 //multi playing

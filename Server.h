@@ -46,6 +46,13 @@ int server_connect(const char ip[], const int& port){
     }
 }
 
+void server_quit(){
+	conn = 0;
+	closesocket(sListen);
+    closesocket(sConnection);
+    WSACleanup();
+}
+
 void server_disconn(){
 	conn = 0;
 	closesocket(sListen);
