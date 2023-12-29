@@ -131,8 +131,8 @@ struct option2{ //option from multi-player
 					server_disconn();
 				else
 					client_disconn();
-				sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
 			}
+            sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
             SetFont();
             clrscr();
             set_color(7);
