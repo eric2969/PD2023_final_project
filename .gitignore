@@ -3,3 +3,5 @@
 *.h.gch
 *.o
 tmp
+src/records.txt
+src/settings.txt
