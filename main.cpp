@@ -104,6 +104,7 @@ clock_t option1::t = 0;
 
 //under socket application
 struct option2{ //option from multi-player
+	static Menu sub_menu;
     static int line, score, usedTime;
     static clock_t t;
     static void run(){ //execute sub-menu
@@ -115,8 +116,6 @@ struct option2{ //option from multi-player
             pause();
             return;
         }
-        Menu mode_menu;
-
     	t = clock();
         try{multiPlayer(line, score);}
         catch(runtime_error e){ 
@@ -131,6 +130,7 @@ struct option2{ //option from multi-player
 					server_disconn();
 				else
 					client_disconn();
+				sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
 			}
             SetFont();
             clrscr();
@@ -152,11 +152,12 @@ struct option2{ //option from multi-player
         char ip[16];
         cout << "Please input your ip(in setting)\n";
         cin >> ip;
-        cout << "Waiting for your opponent...\n";
+        cout << "Waiting for connection...\n";
         status = server_connect(ip, port);
         if(status)
             cout << "Connect Error, error code : " << status << endl;
         else{
+        	sub_menu.settitle("Multi Game\nYou are connected as a host!\nRight click for return to main menu");
             cout << "Connected successfully\n";
             conn = 1;
             server = 1;
@@ -169,14 +170,18 @@ struct option2{ //option from multi-player
         clrscr();
         set_color(7);
         int status;
-        char ip[16];
+        char ip[16], title[256];
         cout << "Please input opponent's ip\n";
         cin >> ip;
-        cout << "Waiting for connect...\n";
+        cout << "Waiting for connection...\n";
         status = client_connect(ip, port);
         if(status)
             cout << "Connect Error, error code : " << status << endl;
         else{
+            strcpy(title, "Multi Game\nYou are guest!Server IP:");
+            strcat(title, ip);
+            strcat(title, "\nRight click for return to main menu");
+            sub_menu.settitle(title);
             cout << "Connected successfully\n";
             conn = 1;
             server = 0;
@@ -188,22 +193,12 @@ struct option2{ //option from multi-player
         SetFont();
         clrscr();
         set_color(7);
-        if(conn)
-            cout << (server?"Connected, you are host\n":"Connected, you are guest\n");
-        else
-            cout << "Disconnected\n";
-        Sleep(800);
-        pause();
-    }
-    static void sub_option4(){
-        SetFont();
-        clrscr();
-        set_color(7);
         if(conn){
             if(server)
                 server_disconn();
             else
                 client_disconn();
+            sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
             cout << "Disconnected\n";
         }
         else
@@ -212,13 +207,13 @@ struct option2{ //option from multi-player
         pause();
     }
     void operator() (){
-		Menu sub_menu; //create sub-menu
         clrscr();
-        sub_menu.settitle("Multi Game\nRight click for return to main menu");
-        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Status").add(sub_option4, "Disconnect").add(run, "Game Start");
+        sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
+        sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Disconnect").add(run, "Game Start");
         sub_menu.start();
     }
 };
+Menu option2::sub_menu;
 int option2::line = 0;
 int option2::score = 0;
 int option2::usedTime = 0;
@@ -392,7 +387,7 @@ void game_init(){
     else{
         set_color(7);
         cout << "Configuration data loaded fail, restore to default setting\nYou can modify it in the menu\n";
-        arr = 300, das = 700, gravity = 40, bright = 1;
+        arr = 430, das = 700, gravity = 47, bright = 1;
         pause();
         clrscr();
     }

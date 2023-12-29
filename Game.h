@@ -136,7 +136,7 @@ void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mo
 
 void multiPlayer(int& line, int& score){
     Player player;Opponent opponent; //create table for player and opponent
-    int mode = 0, goal = 0;
+    int mode = 0, goal = 0, iTmp;
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     char BoardData[DataSize];
@@ -159,7 +159,7 @@ void multiPlayer(int& line, int& score){
     }
     //choose mode
     if(server){
-        std::cout << "Please choose your mode!\n[1(Infinite Mode)/2(Line Mode)]:";
+        std::cout << "Please choose your mode!\n1(Infinite Mode)/2(Line Mode):";
         while(1){
             cin >> mode;
             if(mode == 1 || mode == 2){
@@ -174,7 +174,7 @@ void multiPlayer(int& line, int& score){
                     else{
                         cin.clear();
                         fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                        cout << "Please input a number bigger than 0" << endl;
+                        cout << "Please input a number bigger than 0:\n";
                     }
                 } 
                 break;
@@ -203,9 +203,22 @@ void multiPlayer(int& line, int& score){
         }
         std::cout << "Mode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
         if(mode)
-            std::cout << "Goal set(line) : " << goal << std::endl;
-        Sleep(800);
-        pause();
+            std::cout << "Goal set(line) : " << goal << "\n\n";
+        std::cout << "If you want to start, please input 1\nIf you want quit, please input 2\n";
+        while(1){
+            cin >> iTmp;
+            if(iTmp == 1){
+                client_send("Start");
+                break;
+            }
+            else if(iTmp ==2)
+                throw std::runtime_error("Quit");
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input 1 or 2: ";
+            }
+        }
     }
     //initialize the game
     player.set_position(2, 2);
@@ -214,17 +227,9 @@ void multiPlayer(int& line, int& score){
     opponent.init();
     player.new_block();
     set_color(7);
-    std::cout << "Please wait for your opponent starting!";
     if(server){
-    	if(server_send("Start"))
-    		throw std::runtime_error("Opponent have exited");
+        std::cout << "Please wait for your opponent starting!";
     	if(server_recv(BoardData))
-    		throw std::runtime_error("Opponent have exited");
-    }
-    else{
-    	if(client_send("Start"))
-    		throw std::runtime_error("Opponent have exited");
-    	if(client_recv(BoardData))
     		throw std::runtime_error("Opponent have exited");
     }
     clrscr();
@@ -247,31 +252,22 @@ void multiPlayer(int& line, int& score){
         if(status) opponent.print_table();
         player.SendTable(BoardData);
         if(server){
-            if(server_send(BoardData)){
-                server_disconn();
+            if(server_send(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            }
-            if(server_recv(BoardData)){
-                server_disconn();
+            if(server_recv(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            }
         }
         else{
-            if(client_send(BoardData)){
-                client_disconn();
+            if(client_send(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            }
-            if(client_recv(BoardData)){
-                client_disconn();
+            if(client_recv(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            }
         }
         if(!strcmp(BoardData, "win"))
         	throw std::runtime_error("You lose!");
         else if(!strcmp(BoardData, "lose"))
         	throw std::runtime_error("You win!");
         opponent.RecvTable(BoardData);
-        Sleep(flush_tick);
     }
 }
 
