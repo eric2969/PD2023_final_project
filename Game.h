@@ -149,14 +149,12 @@ void multiPlayer(int& line, int& score){
         if(server){
             if(server_send("Ready"))
                 throw std::runtime_error("Opponent have exited");
-            if(server_recv(BoardData))
-                throw std::runtime_error("Opponent have exited");
+            server_recv(BoardData);
         }
         else{
             if(client_send("Ready"))
                 throw std::runtime_error("Opponent have exited");
-            if(client_recv(BoardData))
-                throw std::runtime_error("Opponent have exited");
+            client_recv(BoardData);
         }
     }while(strcmp(BoardData, "Ready"));
     //choose mode
@@ -197,7 +195,8 @@ void multiPlayer(int& line, int& score){
     else{
         std::cout << "Please wait for the host select mode...\n";
         do{
-            if(client_recv(BoardData))
+            client_recv(BoardData);
+            if(client_send("chk"))
                 throw std::runtime_error("Opponent have exited");
         }while(strcmp(BoardData, "Mode set"));
         mode = BoardData[10];
@@ -216,8 +215,11 @@ void multiPlayer(int& line, int& score){
                 client_send("Start");
                 break;
             }
-            else if(iTmp ==2)
+            else if(iTmp ==2){
+                client_send("quit");
+                client_disconn();
                 throw std::runtime_error("Quit");
+            }
             else{
                 cin.clear();
                 fflush(stdin);
@@ -235,7 +237,8 @@ void multiPlayer(int& line, int& score){
     if(server){
         std::cout << "Please wait for your opponent starting!";
         do{
-        	if(server_recv(BoardData))
+            server_recv(BoardData);
+        	if(server_send("chk"))
         		throw std::runtime_error("Opponent have exited");
         }while(strcmp(BoardData, "Start"));
     }
@@ -261,14 +264,16 @@ void multiPlayer(int& line, int& score){
         if(server){
             if(server_send(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            if(server_recv(BoardData))
-                throw std::runtime_error("Opponent Exit, you win!");
+            server_recv(BoardData);
+            if(!strcmp(BoardData, "chk"))
+                continue;
         }
         else{
             if(client_send(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            if(client_recv(BoardData))
-                throw std::runtime_error("Opponent Exit, you win!");
+            client_recv(BoardData);
+            if(!strcmp(BoardData, "chk"))
+                continue;
         }
         if(!strcmp(BoardData, "win"))
         	throw std::runtime_error("You lose!");

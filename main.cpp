@@ -187,7 +187,7 @@ struct option2{ //option from multi-player
             else if(client_send("test"))
             	cout << "Failed, please connect after host starting connection!\n";
             else{
-                strcpy(title, "Multi Game\nYou are guest!Server IP:");
+                strcpy(title, "Multi Game\nYou are guest!Host IP:");
                 strcat(title, ip);
                 strcat(title, "\nRight click for return to main menu");
                 sub_menu.settitle(title);
@@ -230,7 +230,7 @@ struct option2{ //option from multi-player
                 if(client_send("test"))
                     sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
                 else{
-                    strcpy(title, "Multi Game\nYou are guest!Server IP:");
+                    strcpy(title, "Multi Game\nYou are guest!Host IP:");
                     strcat(title, ip);
                     strcat(title, "\nRight click for return to main menu");
                     sub_menu.settitle(title);
