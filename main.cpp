@@ -149,18 +149,22 @@ struct option2{ //option from multi-player
         SetFont();
         clrscr();
         set_color(7);
-        int status;
-        cout << "Please input your ip(in setting)\n";
-        cin >> ip;
-        cout << "Waiting for connection...\n";
-        status = server_connect(ip, port);
-        if(status)
-            cout << "Connect Error, error code : " << status << endl;
+        if(conn)
+            cout << "You have connected\n";
         else{
-        	sub_menu.settitle("Multi Game\nYou are connected as a host!\nRight click for return to main menu");
-            cout << "Connected successfully\n";
-            conn = 1;
-            server = 1;
+            int status;
+            cout << "Please input your ip(in setting)\n";
+            cin >> ip;
+            cout << "Waiting for connection...\n";
+            status = server_connect(ip, port);
+            if(status)
+                cout << "Connect Error, error code : " << status << endl;
+            else{
+            	sub_menu.settitle("Multi Game\nYou are connected as a host!\nRight click for return to main menu");
+                cout << "Connected successfully\n";
+                conn = 1;
+                server = 1;
+            }
         }
         Sleep(800);
         pause();
@@ -169,24 +173,28 @@ struct option2{ //option from multi-player
         SetFont();
         clrscr();
         set_color(7);
-        int status;
-        char title[256];
-        cout << "Please input opponent's ip\n";
-        cin >> ip;
-        cout << "Waiting for connection...\n";
-        status = client_connect(ip, port);
-        if(status)
-            cout << "Connect Error, error code : " << status << endl;
-        else if(client_send("test"))
-        	cout << "Failed, please connect after host starting connection!\n";
+        if(conn)
+            cout << "You have connected\n";
         else{
-            strcpy(title, "Multi Game\nYou are guest!Server IP:");
-            strcat(title, ip);
-            strcat(title, "\nRight click for return to main menu");
-            sub_menu.settitle(title);
-            cout << "Connected successfully\n";
-            conn = 1;
-            server = 0;
+            int status;
+            char title[256];
+            cout << "Please input opponent's ip\n";
+            cin >> ip;
+            cout << "Waiting for connection...\n";
+            status = client_connect(ip, port);
+            if(status)
+                cout << "Connect Error, error code : " << status << endl;
+            else if(client_send("test"))
+            	cout << "Failed, please connect after host starting connection!\n";
+            else{
+                strcpy(title, "Multi Game\nYou are guest!Server IP:");
+                strcat(title, ip);
+                strcat(title, "\nRight click for return to main menu");
+                sub_menu.settitle(title);
+                cout << "Connected successfully\n";
+                conn = 1;
+                server = 0;
+            }
         }
         Sleep(800);
         pause();
