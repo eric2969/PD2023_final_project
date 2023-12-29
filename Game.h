@@ -158,7 +158,7 @@ void multiPlayer(int& line, int& score){
             if(client_recv(BoardData))
                 throw std::runtime_error("Opponent have exited");
         }
-    }while(!strcmp(BoardData, "Ready"));
+    }while(strcmp(BoardData, "Ready"));
     //choose mode
     if(server){
         std::cout << "Please choose your mode!\n1(Infinite Mode)/2(Line Mode):";
@@ -234,7 +234,7 @@ void multiPlayer(int& line, int& score){
         do{
         	if(server_recv(BoardData))
         		throw std::runtime_error("Opponent have exited");
-        }while(!strcmp(BoardData, "Start"));
+        }while(strcmp(BoardData, "Start"));
     }
     clrscr();
     SetFont(22, 1);
