@@ -107,6 +107,7 @@ struct option2{ //option from multi-player
 	static Menu sub_menu;
     static int line, score, usedTime;
     static clock_t t;
+    static char ip[16];
     static void run(){ //execute sub-menu
         if(!conn){
             clrscr();
@@ -149,7 +150,6 @@ struct option2{ //option from multi-player
         clrscr();
         set_color(7);
         int status;
-        char ip[16];
         cout << "Please input your ip(in setting)\n";
         cin >> ip;
         cout << "Waiting for connection...\n";
@@ -170,13 +170,15 @@ struct option2{ //option from multi-player
         clrscr();
         set_color(7);
         int status;
-        char ip[16], title[256];
+        char title[256];
         cout << "Please input opponent's ip\n";
         cin >> ip;
         cout << "Waiting for connection...\n";
         status = client_connect(ip, port);
         if(status)
             cout << "Connect Error, error code : " << status << endl;
+        else if(client_send("test"))
+        	cout << "Failed, please connect after host starting connection!\n";
         else{
             strcpy(title, "Multi Game\nYou are guest!Server IP:");
             strcat(title, ip);
@@ -207,8 +209,28 @@ struct option2{ //option from multi-player
         pause();
     }
     void operator() (){
+        char title[256];
         clrscr();
-        sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
+        sub_menu.init();
+        if(conn){
+            if(server)
+                if(server_send("test"))
+                    sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
+                else
+                    sub_menu.settitle("Multi Game\nYou are connected as a host!\nRight click for return to main menu");
+            else{
+                if(client_send("test"))
+                    sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
+                else{
+                    strcpy(title, "Multi Game\nYou are guest!Server IP:");
+                    strcat(title, ip);
+                    strcat(title, "\nRight click for return to main menu");
+                    sub_menu.settitle(title);
+                }
+            }
+        }
+        else
+            sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
         sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Disconnect").add(run, "Game Start");
         sub_menu.start();
     }
@@ -217,6 +239,7 @@ Menu option2::sub_menu;
 int option2::line = 0;
 int option2::score = 0;
 int option2::usedTime = 0;
+char option2::ip[16];
 clock_t option2::t = 0;
 
 struct option3{ //record option
@@ -388,6 +411,9 @@ void game_init(){
         set_color(7);
         cout << "Configuration data loaded fail, restore to default setting\nYou can modify it in the menu\n";
         arr = 430, das = 700, gravity = 47, bright = 1;
+        ofstream set(SET_PATH);
+        set << das << ' ' << arr << ' ' << gravity << ' ' << bright;
+        set.close();
         pause();
         clrscr();
     }
@@ -397,6 +423,9 @@ void game_init(){
         set_color(7);
         cout << "Recode data loaded fail, record has reset\n";
         playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;
+        ofstream rec(RECORD_PATH);
+        rec << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+        rec.close();
         pause();
         clrscr();
     }

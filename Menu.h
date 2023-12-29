@@ -19,15 +19,16 @@ using std::vector;
 using std::cout;
 using std::endl;
 
+struct node { //menu's options
+    COORD pos_;
+    std::string display_;
+    const std::function<void(void)> &pf_;
+    node(std::string d, const std::function<void(void)> &func) : display_(d), pf_(func){};
+};
+
 class Menu
 {
 private:
-    struct node { //menu's options
-        COORD pos_;
-        std::string display_;
-        const std::function<void(void)> &pf_;
-        node(std::string d, const std::function<void(void)> &func) : display_(d), pf_(func){};
-    };
     std::vector<node> nodes_;
     std::string title_; //title of the menu
 protected:
@@ -38,6 +39,8 @@ public:
     //constructor
     Menu(){}
     ~Menu(){}
+    //menu init
+    void init();
     //methods
     Menu &settitle(std::string s);
     //add an option to the menu
@@ -46,6 +49,10 @@ public:
     void start();
 };
 
+void Menu::init(){
+    (this -> nodes_).clear();
+    title_ = "";
+}
 
 //print cursor's location
 ostream &operator<<(ostream &pout, const COORD &temp){

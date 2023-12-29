@@ -145,18 +145,20 @@ void multiPlayer(int& line, int& score){
     set_color(7);
     //chk join
     std::cout << "Please wait for your opponent joining!\n";
-    if(server){
-        if(server_send("Ready"))
-            throw std::runtime_error("Opponent have exited");
-        if(server_recv(BoardData))
-            throw std::runtime_error("Opponent have exited");
-    }
-    else{
-        if(client_send("Ready"))
-            throw std::runtime_error("Opponent have exited");
-        if(client_recv(BoardData))
-            throw std::runtime_error("Opponent have exited");
-    }
+    do{
+        if(server){
+            if(server_send("Ready"))
+                throw std::runtime_error("Opponent have exited");
+            if(server_recv(BoardData))
+                throw std::runtime_error("Opponent have exited");
+        }
+        else{
+            if(client_send("Ready"))
+                throw std::runtime_error("Opponent have exited");
+            if(client_recv(BoardData))
+                throw std::runtime_error("Opponent have exited");
+        }
+    }while(!strcmp(BoardData, "Ready"));
     //choose mode
     if(server){
         std::cout << "Please choose your mode!\n1(Infinite Mode)/2(Line Mode):";
@@ -229,8 +231,10 @@ void multiPlayer(int& line, int& score){
     set_color(7);
     if(server){
         std::cout << "Please wait for your opponent starting!";
-    	if(server_recv(BoardData))
-    		throw std::runtime_error("Opponent have exited");
+        do{
+        	if(server_recv(BoardData))
+        		throw std::runtime_error("Opponent have exited");
+        }while(!strcmp(BoardData, "Start"));
     }
     clrscr();
     SetFont(22, 1);
