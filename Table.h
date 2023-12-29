@@ -393,7 +393,7 @@ void Player::SendTable(char str[]) const{
     int tlevel = (this -> level), tScore = (this -> score), tLine = (this -> clear_line);
     char tmp;
     for(int i = 0;i < 100;i++){
-        tmp = 128;
+        tmp = 0;
         tx = (i * 2) % 10, ty = (i * 2) / 10;
         for(int j = 0;j < 2;j++)
             tmp |= (board[ty][tx + j] << (j * 3));
@@ -403,27 +403,23 @@ void Player::SendTable(char str[]) const{
         sTmp = i.y * 5 + (i.x >> 1);
         str[sTmp] |= ((current -> get_ID()) << ((i.x % 2)?3:0));
     }
-    str[100] = 128;
     //str[100] last 3 bit => next
-    str[100] |= (next.front() -> get_ID());
+    str[100] = (next.front() -> get_ID());
     //str[100] first 3 bit => hold
     str[100] |= (hold?((hold -> get_ID())<<3):0);
     //str[101:103] level
     for(int i = 101;i < 103;i++){
-        str[i] = 128;
-        str[i] |= (tlevel & 127);
+        str[i] = (tlevel & 127);
         tlevel >>= 7;
     }
     //str[103:107] score
     for(int i = 103;i < 107;i++){
-        str[i] = 128;
-        str[i] |= (tScore & 127);
+        str[i] = (tScore & 127);
         tScore >>= 7;
     }
     //str[107:110] clearline
     for(int i = 107;i < 110;i++){
-        str[i] = 128;
-        str[i] |= (tLine & 127);
+        str[i] = (tLine & 127);
         tLine >>= 7;
     }
 }

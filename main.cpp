@@ -115,6 +115,8 @@ struct option2{ //option from multi-player
             pause();
             return;
         }
+        Menu mode_menu;
+
     	t = clock();
         try{multiPlayer(line, score);}
         catch(runtime_error e){ 
@@ -123,6 +125,12 @@ struct option2{ //option from multi-player
             if(pic_ava){
         		print_pic();
                	Sleep(1000);
+			}
+			if(conn){
+				if(server)
+					server_disconn();
+				else
+					client_disconn();
 			}
             SetFont();
             clrscr();
@@ -358,12 +366,6 @@ struct option4{ //settings
 };
 int option4::iTmp = 0;
 
-struct option5{ //exit game
-    void operator() (){
-        game_exit();
-    }
-};
-
 signed main(){
     //initialize the main menu
     DisableIME();
@@ -377,8 +379,7 @@ signed main(){
     option2 opt2;
     option3 opt3;
     option4 opt4;
-    option5 opt5;
-    Main.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(opt5, "Quit");
+    Main.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(game_exit, "Quit");
     Main.start();
     return 0;
 }

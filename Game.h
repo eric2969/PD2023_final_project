@@ -142,6 +142,71 @@ void multiPlayer(int& line, int& score){
     char BoardData[DataSize];
     bool status;
     clrscr();
+    set_color(7);
+    //chk join
+    std::cout << "Please wait for your opponent joining!\n";
+    if(server){
+        if(server_send("Ready"))
+            throw std::runtime_error("Opponent have exited");
+        if(server_recv(BoardData))
+            throw std::runtime_error("Opponent have exited");
+    }
+    else{
+        if(client_send("Ready"))
+            throw std::runtime_error("Opponent have exited");
+        if(client_recv(BoardData))
+            throw std::runtime_error("Opponent have exited");
+    }
+    //choose mode
+    if(server){
+        std::cout << "Please choose your mode!\n[1(Infinite Mode)/2(Line Mode)]:";
+        while(1){
+            cin >> mode;
+            if(mode == 1 || mode == 2){
+                mode--;
+                cout << "Mode choose : " << (mode?"Line Mode\n":"Infinite Mode\n");
+                if(!mode) break;
+                cout << "Please input your goal (line)? ";
+                while(1){
+                    cin >> goal;
+                    if(goal > 0)
+                        break;
+                    else{
+                        cin.clear();
+                        fflush(stdin); //flush the cin buffer to prevent it from reading it again
+                        cout << "Please input a number bigger than 0" << endl;
+                    }
+                } 
+                break;
+            }
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input 1 or 2: ";
+            }
+        }
+        BoardData[0] = mode;
+        for(int i = 1, tGoal = goal;i < 5;i++,tGoal>>=7)
+            BoardData[i] = (tGoal & 127);
+        if(server_send(BoardData))
+            throw std::runtime_error("Opponent have exited");
+    }
+    else{
+        std::cout << "Please wait for the host select mode...\n";
+        if(client_recv(BoardData))
+            throw std::runtime_error("Opponent have exited");
+        mode = BoardData[0];
+        goal = 0;
+        for(int i = 4;i >= 1;i--){
+            goal <<= 7;
+            goal |= BoardData[i];
+        }
+        std::cout << "Mode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
+        if(mode)
+            std::cout << "Goal set(line) : " << goal << std::endl;
+        Sleep(800);
+        pause();
+    }
     //initialize the game
     player.set_position(2, 2);
     opponent.set_position(35, 2);
@@ -149,8 +214,7 @@ void multiPlayer(int& line, int& score){
     opponent.init();
     player.new_block();
     set_color(7);
-    goto_xy(1, 1);
-    std::cout << "Please wait for your opponent!";
+    std::cout << "Please wait for your opponent starting!";
     if(server){
     	if(server_send("Start"))
     		throw std::runtime_error("Opponent have exited");
