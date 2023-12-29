@@ -94,7 +94,6 @@ void FullScreen() {ShowWindow(GetConsoleWindow(), SW_SHOWMAXIMIZED);}
 void SetConsoleSize(int x, int y, int cols, int lines){
     CONSOLE_FONT_INFO consoleCurrentFont;
     COORD bufferSize, fontSize;
-    HWND hWnd;
     //Set console buffer size
     GetCurrentConsoleFont(hConsole, false, &consoleCurrentFont);
     fontSize = GetConsoleFontSize(hConsole, consoleCurrentFont.nFont);
@@ -103,5 +102,14 @@ void SetConsoleSize(int x, int y, int cols, int lines){
     SetConsoleScreenBufferSize(hConsole, bufferSize);
     //Set console's size
     MoveWindow(GetConsoleWindow(),0,0,(cols+4)*fontSize.X,(lines+2)*fontSize.Y,true);
+}
+
+void DisableIME(){
+    HANDLE hstdin = GetStdHandle( STD_INPUT_HANDLE );
+    HWND hWnd = GetConsoleWindow();
+    PostMessage(hWnd, WM_INPUTLANGCHANGEREQUEST, 0, (LPARAM)0x04090409);
+    //HKL inputContext = GetKeyboardLayout(threadId);
+    HKL keyboard = LoadKeyboardLayout("0x0409", KLF_ACTIVATE);
+	ActivateKeyboardLayout(keyboard, 0);
 }
 

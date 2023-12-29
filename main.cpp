@@ -43,8 +43,8 @@ struct option1{ //option from single player mode
         			print_pic();
                 	Sleep(1000);
 				}
+				clrscr();
                 SetFont();
-                clrscr();
                 set_color(7);
                 cout << e.what() << endl << endl;
                 cout << "Used Time(s):  " << usedTime << endl;
@@ -376,6 +376,7 @@ struct option5{ //exit game
 
 signed main(){
     //initialize the main menu
+    DisableIME();
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     FullScreen();
     SetFont();
@@ -452,11 +453,7 @@ void print_pic(){
     SetFont(5, 1);
     goto_xy(0,0);
     set_color(7);
-    COORD buffersize;
-    buffersize.X = 600;
-    buffersize.Y = 600;
     HWND hwnd = GetConsoleWindow();
-    SetConsoleScreenBufferSize(hConsole, buffersize); //resize console buffer
     SetConsoleSize(600, 600, 600, 600); //resize console
     ifstream pic(PIC_PATH);
     string str;
