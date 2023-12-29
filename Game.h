@@ -187,19 +187,22 @@ void multiPlayer(int& line, int& score){
                 cout << "Please input 1 or 2: ";
             }
         }
-        BoardData[0] = mode;
-        for(int i = 1, tGoal = goal;i < 5;i++,tGoal>>=7)
+        strcpy(BoardData, "Mode set");
+        BoardData[10] = mode;
+        for(int i = 11, tGoal = goal;i < 15;i++,tGoal>>=7)
             BoardData[i] = (tGoal & 127);
         if(server_send(BoardData))
             throw std::runtime_error("Opponent have exited");
     }
     else{
         std::cout << "Please wait for the host select mode...\n";
-        if(client_recv(BoardData))
-            throw std::runtime_error("Opponent have exited");
-        mode = BoardData[0];
+        do{
+            if(client_recv(BoardData))
+                throw std::runtime_error("Opponent have exited");
+        }while(strcmp(BoardData, "Mode set"));
+        mode = BoardData[10];
         goal = 0;
-        for(int i = 4;i >= 1;i--){
+        for(int i = 14;i >= 11;i--){
             goal <<= 7;
             goal |= BoardData[i];
         }
