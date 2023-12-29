@@ -104,7 +104,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-5.1-brightgreen">](#20231229b-v51)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.2beta-blue">](#20231229c-v52beta)-->
+[<img src="https://img.shields.io/badge/Release-5.1-brightgreen">](#20231229b-v51)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v5.2beta-blue">](#20231229c-v52beta)
 - [Version 5](#20231229c-v52beta) Multi Player Mode
 > - [v5.2](#20231229c-v52beta) Complete Game status Transmit, comptete is available
 > - [v5.1](#20231229b-v51) Finished Table de/compression and Opponent display
