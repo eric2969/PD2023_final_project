@@ -531,7 +531,7 @@ void print_pic(){
     SetFont(1, 150, 150);
     goto_xy(0,0);
     set_color(7);
-    SetConsoleSize(300, 300); //resize console
+    SetConsoleSize(900, 900); //resize console
     ifstream pic(PIC_PATH);
     string str;
     while(getline(pic,str)) cout << str << endl; //print out the picture
