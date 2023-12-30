@@ -91,7 +91,7 @@ void FullScreen() {ShowWindow(GetConsoleWindow(), SW_SHOWMAXIMIZED);}
 
 //set the console size
 //*it won't actually change the windows size, but rather number of rows and columns
-void SetConsoleSize(int x, int y, int cols, int lines){
+void SetConsoleSize(int cols, int lines){
     CONSOLE_FONT_INFO consoleCurrentFont;
     COORD bufferSize, fontSize;
     //Set console buffer size
@@ -101,15 +101,14 @@ void SetConsoleSize(int x, int y, int cols, int lines){
     bufferSize.Y = lines;
     SetConsoleScreenBufferSize(hConsole, bufferSize);
     //Set console's size
-    MoveWindow(GetConsoleWindow(),0,0,(cols+4)*fontSize.X,(lines+2)*fontSize.Y,true);
+    MoveWindow(GetConsoleWindow(),0,0,(cols+4)*fontSize.X,(lines+2)*fontSize.Y, 1);
 }
 
 void DisableIME(){
-    HANDLE hstdin = GetStdHandle( STD_INPUT_HANDLE );
+    HANDLE hstdin = GetStdHandle(STD_INPUT_HANDLE);
     HWND hWnd = GetConsoleWindow();
     PostMessage(hWnd, WM_INPUTLANGCHANGEREQUEST, 0, (LPARAM)0x04090409);
     //HKL inputContext = GetKeyboardLayout(threadId);
     HKL keyboard = LoadKeyboardLayout("0x0409", KLF_ACTIVATE);
 	ActivateKeyboardLayout(keyboard, 0);
 }
-

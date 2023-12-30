@@ -12,7 +12,6 @@
 #define COLOR_Black_Cyan SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0b);
 #define COLOR_Yellow_Blue SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xe9);
 
-using std::ios_base;
 using std::ostream;
 using std::string;
 using std::vector;

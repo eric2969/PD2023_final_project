@@ -135,8 +135,8 @@ void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mo
 }
 
 void multiPlayer(int& line, int& score){
-    Player player;Opponent opponent; //create table for player and opponent
     int mode = 0, goal = 0, iTmp;
+    width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     char BoardData[DataSize];
@@ -228,6 +228,7 @@ void multiPlayer(int& line, int& score){
         }
     }
     //initialize the game
+    Player player;Opponent opponent; //create table for player and opponent
     player.set_position(2, 2);
     opponent.set_position(35, 2);
     player.init(clock());
@@ -422,13 +423,13 @@ int game_cycle(Player& player, int& line, int& score, bool single){
     if(clr && clock() - tClear >= 2 * fTick * speed){ 
         //clear the message box to the left
         set_color(0);
-        goto_xy(player.get_x() + 18, player.get_y() + 17);
+        goto_xy(player.get_x() + width + 8, player.get_y() + height - 3);
         std::cout << "           ";
-        goto_xy(player.get_x() + 18, player.get_y() + 18);
+        goto_xy(player.get_x() + width + 8, player.get_y() + height - 2);
         std::cout << "      ";
-        goto_xy(player.get_x() + 18, player.get_y() + 19);
+        goto_xy(player.get_x() + width + 8, player.get_y() + height - 1);
         std::cout << "      ";
-        goto_xy(player.get_x() + 18, player.get_y() + 20);
+        goto_xy(player.get_x() + width + 8, player.get_y() + height);
         std::cout << "      ";
         clr = 0;
     }

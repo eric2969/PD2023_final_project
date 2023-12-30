@@ -6,6 +6,7 @@ using namespace std;
 HANDLE hConsole;
 bool bright, pic_ava, conn, server;
 int das, arr, gravity, addrlen;
+int ResX, ResY;
 const short flush_tick = 2, port = 9487, DataSize = 130;
 
 #define SET_PATH "src/settings.txt"
@@ -30,6 +31,7 @@ void record_update(int& clr, int& score, const int& time);
 void print_pic();
 
 struct option1{ //option from single player mode
+    static Menu sub_menu;
     static int line, score, usedTime, gameMode, goal;
     static clock_t t;
     static void run(){ //execute the sub-menu
@@ -42,7 +44,7 @@ struct option1{ //option from single player mode
     			print_pic();
             	Sleep(1000);
 			}
-			clrscr();
+            clrscr();
             SetFont();
             set_color(7);
             cout << e.what() << endl << endl;
@@ -59,7 +61,7 @@ struct option1{ //option from single player mode
         run();
     }
     static void sub_option2(){ //line mode
-        cout << "Please input your goal (line)?" << endl;
+        cout << "Please input your goal (line)?: ";
         while(1){
             cin >> goal;
             if(goal > 0)
@@ -67,14 +69,14 @@ struct option1{ //option from single player mode
             else{
                 cin.clear();
                 fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number bigger than 0" << endl;
+                cout << "Please input a number bigger than 0: ";
             }
         }
         gameMode = 1;
         run();
     }
     static void sub_option3(){ //time mode
-        cout << "Please input your time (second)?" << endl;
+        cout << "Please input your time (second)?: " ;
         while(1){
             cin >> goal;
             if(goal > 0)
@@ -82,16 +84,52 @@ struct option1{ //option from single player mode
             else{
                 cin.clear();
                 fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number bigger than 0" << endl;
+                cout << "Please input a number bigger than 0: ";
             }
         }
         gameMode = 2;
         run();
     }
+    static void set_size(){
+        cout << "Please input Table width (1-50, default:10)?: ";
+        while(1){
+            cin >> width;
+            if(width > 0 && width <= 50)
+                break;
+            else{
+                cin.clear();
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
+                cout << "Please input a number between 1 and 50: ";
+            }
+        }
+        cout << "Please input Table height (1-40, default:20)?: ";
+        while(1){
+            cin >> height;
+            if(height > 0 && height <= 50)
+                break;
+            else{
+                cin.clear();
+                fflush(stdin); //flush the cin buffer to prevent it from reading it again
+                cout << "Please input a number between 1 and 50: ";
+            }
+        }
+        cout << "Configuration Set...\n";
+        Sleep(800);
+        pause();
+    }
     void operator() (){
-        Menu sub_menu; //create sub-menu
         clrscr();
-        sub_menu.settitle("Single Game\nChoose a Game Mode\nRight click for return to main menu").add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode");
+        char title[256], tmp[5];
+        sub_menu.init();
+        strcpy(title, "Single Game\nTable Width: ");
+        itoa(width, tmp, 10);
+        strcat(title, tmp);
+        strcat(title, ", Height: ");
+        itoa(height, tmp, 10);
+        strcat(title, tmp);
+        strcat(title, "\nChoose a Game Mode\nRight click for return to main menu");
+        sub_menu.settitle(title);
+        sub_menu.add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode").add(set_size, "Set Table Size");
         sub_menu.start();
     }
 };
@@ -100,6 +138,7 @@ int option1::goal = 0;
 int option1::usedTime = 0;
 int option1::line = 0;
 int option1::score = 0;
+Menu option1::sub_menu;
 clock_t option1::t = 0;
 
 //under socket application
@@ -411,6 +450,9 @@ signed main(){
 }
 
 void game_init(){
+	//load monitor resolution
+	ResX = GetSystemMetrics(SM_CXSCREEN);
+	ResY = GetSystemMetrics(SM_CYSCREEN);
     // read user preference
     ifstream setting(SET_PATH), record(RECORD_PATH), pic(PIC_PATH);
     if(setting.is_open())
@@ -483,8 +525,7 @@ void print_pic(){
     SetFont(5, 1);
     goto_xy(0,0);
     set_color(7);
-    HWND hwnd = GetConsoleWindow();
-    SetConsoleSize(600, 600, 600, 600); //resize console
+    SetConsoleSize(600, 600); //resize console
     ifstream pic(PIC_PATH);
     string str;
     while(getline(pic,str)) cout << str << endl; //print out the picture

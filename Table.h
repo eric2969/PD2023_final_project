@@ -1,6 +1,6 @@
 #define DEFAULT_COLOR 112
-#define d_x width/2 - 1
-#define d_y height-1
+#define d_x (width/2 - 1)
+#define d_y (height-1)
 
 std::string text_table[5] {"T-Spin","Single","Double","Triple","Tetris"};
 void qClear(std::queue<Block*>& q) {
@@ -10,8 +10,9 @@ void qClear(std::queue<Block*>& q) {
 	}
 }// give the table a empty queue
 
-const short height = 20, width = 10;
-const short color_table[8] = {DEFAULT_COLOR, 5*16, 0, 1*16, 2*16, 4*16, 3*16, 6*16}; //[0] for none
+//allow various playing mode
+short height = 20, width = 10;
+const short color_table[9] = {DEFAULT_COLOR, 5*16, 0, 1*16, 2*16, 4*16, 3*16, 6*16, 240}; //[0] for none [8] for garbage(112+128, overflow is intentional)
 
 //5-stage test for kick_table
 const Point Kick_Table(bool isI,short start, const short& drc, const short& test){
@@ -80,7 +81,7 @@ Block *id2block(const short& id){
 
 class Table{
 protected:
-	short x, y, board[height+2][width]; //game id table
+	short x, y, board[42][50]; //game id table, width range:(1,50) height range:(1,40)
     int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
 public:
 	Table() {}
@@ -226,7 +227,7 @@ void Player::rotate(const short direction){
 }
 //printing
 void Player::print_table(){
-    //hold
+    //hold width:5, height:6
     for(int i = 0; i < 4; ++i) {
         goto_xy(x, y + i + 1);
         set_color(color_table[0] + (bright?128:0));
@@ -244,23 +245,23 @@ void Player::print_table(){
         }
         (*hold) = Point(d_x, d_y);
     }
-    //board
     goto_xy(x, y); //row 0
     set_color(color_table[0] + (bright?128:0));
     std::cout << "-HOLD-";
     for(int i = 0;i < width; i++) std::cout << '-'; 
     std::cout << "-NEXT-";
+    //board width:W+2, height:H+2
     for(int i = 0; i < height; ++i) { //row 1-20
         goto_xy(x + 5, y + i + 1); //column 0
         std::cout << '|';
         for (int j = 0; j < width; ++j) { //column 1-10
-            set_color(color_table[ board[19-i][j] ] + (board[19-i][j]?0:((j % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
+            set_color(color_table[ board[height-1-i][j] ] + (board[height-1-i][j]?0:((j % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
             std::cout << ' ';
         }
         set_color(color_table[0] + (bright?128:0));
         std::cout << '|'; //column 11
     }
-    goto_xy(x + 5, y + 21);
+    goto_xy(x + 5, y+height+1);
     for(int i = 0;i < width + 2; i++) std::cout << '-';//row 21
     //next
     for(int i = 0; i < 4; ++i) {
@@ -299,14 +300,14 @@ void Player::print_block() {
     if(current -> is_same_position(before)) return;
     short c = current -> get_ID(); // Change here
     for (auto i: before -> block_position())
-        if(i.y < 20){
-            goto_xy(this->x + i.x + 6, this->y + 20 - i.y);
+        if(i.y < height){
+            goto_xy(this->x + i.x + 6, this->y + height - i.y);
             set_color(color_table[0] + ((i.x + bright)%2?128:0));
             std::cout << ' ';
         }
     for (auto i: current -> block_position())
-        if(i.y < 20){
-            goto_xy(this->x + i.x + 6, this->y + 20 - i.y);
+        if(i.y < height){
+            goto_xy(this->x + i.x + 6, this->y + height - i.y);
             set_color(color_table[c] + (bright?128:0));
             std::cout << ' ';
         }
@@ -331,9 +332,9 @@ bool Player::chk_clear(int& line, int& tscore){
     bool allExist;// see if the whole row is filled
     int cnt = 0, point = 5;
     double multiplier = 1.0;// the total line num cleared
-    for(int i=0; i<20; i++){
+    for(int i=0; i<height; i++){
         allExist = true;
-        for(int j=0; j<10; j++){
+        for(int j=0; j<width; j++){
             if(!this->board[i][j]){
                 allExist = false;
                 break;
@@ -341,8 +342,8 @@ bool Player::chk_clear(int& line, int& tscore){
         }
         if(allExist){
             cnt++;
-            for(int p=i;p<20; p++)
-                for(int q=0; q<10; q++)
+            for(int p=i;p<height; p++)
+                for(int q=0; q<width; q++)
                     this->board[p][q] = this->board[p+1][q];
             i--; //check the line that have cleared. because move down
         }
@@ -359,22 +360,22 @@ bool Player::chk_clear(int& line, int& tscore){
     this -> score += point * multiplier;
     set_color(14);
     if(cnt){
-        goto_xy(x+18, y+17);
+        goto_xy(x+width+8, y+height-3);
         std::cout << "+" << int(point * multiplier);
     }
-    goto_xy(x+18, y+18);
+    goto_xy(x+width+8, y+height-2);
     std::cout << (b2b?"b2b":"");
-    goto_xy(x+18, y+19);
+    goto_xy(x+width+8, y+height-1);
     std::cout << (tSpin?text_table[0]:"");
-    goto_xy(x+18, y+20);
+    goto_xy(x+width+8, y+height);
     std::cout << (cnt?text_table[cnt]:"");
     tSpin = 0;
     level = clear_line/10;
     if(level > 29) level = 29;
     line = this -> clear_line;
     tscore = this -> score;
-    for(int i = 0;i < 10;i++)
-        if(board[20][i]){
+    for(int i = 0;i < width;i++)
+        if(board[height][i]){
             if(conn){
                 if(server)
                     server_send("lose");
@@ -396,17 +397,17 @@ void Player::SendTable(char str[]) const{
         tmp = 0;
         tx = (i * 2) % 10, ty = (i * 2) / 10;
         for(int j = 0;j < 2;j++)
-            tmp |= (board[ty][tx + j] << (j * 3));
+            tmp |= (board[ty][tx + j] << (j * 4));
         str[i] = tmp;
     }
     for(auto i:current -> block_position()){
         sTmp = i.y * 5 + (i.x >> 1);
-        str[sTmp] |= ((current -> get_ID()) << ((i.x % 2)?3:0));
+        str[sTmp] |= ((current -> get_ID()) << ((i.x % 2)?4:0));
     }
     //str[100] last 3 bit => next
     str[100] = (next.front() -> get_ID());
     //str[100] first 3 bit => hold
-    str[100] |= (hold?((hold -> get_ID())<<3):0);
+    str[100] |= (hold?((hold -> get_ID())<<4):0);
     //str[101:103] level
     for(int i = 101;i < 103;i++){
         str[i] = (tlevel & 127);
@@ -499,13 +500,13 @@ void Opponent::RecvTable(const char str[]){
         tmp = str[i];
         tx = (i * 2) % 10, ty = (i * 2) / 10;
         for(int j = 0;j < 2;j++){
-            if(board[ty][tx + j] ^ (tmp & 7)){ //if different
+            if(board[ty][tx + j] ^ (tmp & 15)){ //if different
                 goto_xy(x + tx + j + 6, y + (19 - ty) + 1);
-                set_color(color_table[(tmp & 7)] + ((tmp & 7)?0:(((tx + j) % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
+                set_color(color_table[(tmp & 15)] + ((tmp & 15)?0:(((tx + j) % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
                 std::cout << ' ';
-                board[ty][tx + j] = (tmp & 7);
+                board[ty][tx + j] = (tmp & 15);
             }
-            tmp >>= 3;
+            tmp >>= 4;
         }
     }
     //next 100 last 3
