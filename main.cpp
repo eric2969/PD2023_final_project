@@ -456,7 +456,7 @@ void game_init(){
     // read user preference
     ifstream setting(SET_PATH), record(RECORD_PATH), pic(PIC_PATH);
     if(setting.is_open())
-        setting >> arr >> das >> gravity >> bright;
+        setting >> das >> arr >> gravity >> bright;
     else{
         set_color(7);
         cout << "Configuration data loaded fail, restore to default setting\nYou can modify it in the menu\n";
