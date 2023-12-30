@@ -1,10 +1,23 @@
 void goto_xy(short x, short y) {COORD pos = {x, y}; SetConsoleCursorPosition(hConsole, pos);}// move the cursor
 void set_color(const unsigned short textColor) {SetConsoleTextAttribute(hConsole, textColor);}
-//set the font size
-void SetFont(int size = 26, bool square = 0) {
+//set the font size depend on how much width and height do you need in screen
+void SetFont(bool square, int col, int line = 0) {
+    int size;
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof cfi;
     cfi.nFont = 0;
+    if(square){
+        if(line)
+            size = std::min(ResX/col, ResY/line);
+        else
+            size = ResX/col;
+    }
+    else{
+        if(line)
+            size = std::min(ResX*2/col, ResY/line);
+        else
+            size = ResX*2/col;
+    }
     cfi.dwFontSize.X = (square?size:0); //0 for the default ratio
     cfi.dwFontSize.Y = size; //set the size of the font
     cfi.FontFamily = FF_DONTCARE;

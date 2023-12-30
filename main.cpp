@@ -45,7 +45,7 @@ struct option1{ //option from single player mode
             	Sleep(1000);
 			}
             clrscr();
-            SetFont();
+            SetFont(0, 100);
             set_color(7);
             cout << e.what() << endl << endl;
             cout << "Used Time(s):  " << usedTime << endl;
@@ -91,29 +91,38 @@ struct option1{ //option from single player mode
         run();
     }
     static void set_size(){
-        cout << "Please input Table width (1-50, default:10)?: ";
+        cout << "Please input Table width (5-50, default:10)?: ";
         while(1){
             cin >> width;
-            if(width > 0 && width <= 50)
+            if(width >= 5 && width <= 50)
                 break;
             else{
                 cin.clear();
                 fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between 1 and 50: ";
+                cout << "Please input a number between 5 and 50: ";
             }
         }
-        cout << "Please input Table height (1-40, default:20)?: ";
+        cout << "Please input Table height (15-50, default:20)?: ";
         while(1){
             cin >> height;
-            if(height > 0 && height <= 50)
+            if(height >= 15 && height <= 50)
                 break;
             else{
                 cin.clear();
                 fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between 1 and 50: ";
+                cout << "Please input a number between 15 and 50: ";
             }
         }
         cout << "Configuration Set...\n";
+        char title[256], tmp[5];
+        strcpy(title, "Single Game\nTable Width: ");
+        itoa(width, tmp, 10);
+        strcat(title, tmp);
+        strcat(title, ", Height: ");
+        itoa(height, tmp, 10);
+        strcat(title, tmp);
+        strcat(title, "\nChoose a Game Mode\nRight click for return to main menu");
+        sub_menu.settitle(title);
         Sleep(800);
         pause();
     }
@@ -172,7 +181,7 @@ struct option2{ //option from multi-player
 					client_disconn();
 			}
             sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
-            SetFont();
+            SetFont(0, 100);
             clrscr();
             set_color(7);
             cout << e.what() << endl << endl;
@@ -185,7 +194,6 @@ struct option2{ //option from multi-player
         record_update(line, score, usedTime); //update record
 	}  
     static void sub_option1(){
-        SetFont();
         clrscr();
         set_color(7);
         if(conn)
@@ -209,7 +217,6 @@ struct option2{ //option from multi-player
         pause();
     }
     static void sub_option2(){
-        SetFont();
         clrscr();
         set_color(7);
         if(conn)
@@ -239,7 +246,6 @@ struct option2{ //option from multi-player
         pause();
     }
     static void sub_option3(){
-        SetFont();
         clrscr();
         set_color(7);
         if(conn){
@@ -436,9 +442,9 @@ signed main(){
     DisableIME();
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     FullScreen();
-    SetFont();
     game_init();
     socket_init();
+    SetFont(0, 100);
     Menu Main;
     option1 opt1;
     option2 opt2;
@@ -451,8 +457,8 @@ signed main(){
 
 void game_init(){
 	//load monitor resolution
-	ResX = GetSystemMetrics(SM_CXSCREEN);
-	ResY = GetSystemMetrics(SM_CYSCREEN);
+	ResX = GetSystemMetrics(SM_CXSCREEN) - 30;
+	ResY = GetSystemMetrics(SM_CYSCREEN) - 30;
     // read user preference
     ifstream setting(SET_PATH), record(RECORD_PATH), pic(PIC_PATH);
     if(setting.is_open())
@@ -522,10 +528,10 @@ void print_pic(){
 	if(!pic_ava)
 		return;
     clrscr();
-    SetFont(5, 1);
+    SetFont(1, 150, 150);
     goto_xy(0,0);
     set_color(7);
-    SetConsoleSize(600, 600); //resize console
+    SetConsoleSize(300, 300); //resize console
     ifstream pic(PIC_PATH);
     string str;
     while(getline(pic,str)) cout << str << endl; //print out the picture

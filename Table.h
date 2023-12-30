@@ -81,7 +81,7 @@ Block *id2block(const short& id){
 
 class Table{
 protected:
-	short x, y, board[42][50]; //game id table, width range:(1,50) height range:(1,40)
+	short x, y, board[52][50]; //game id table, width range:(1,50) height range:(1,40)
     int score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0;
 public:
 	Table() {}

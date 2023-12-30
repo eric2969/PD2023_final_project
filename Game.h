@@ -121,7 +121,7 @@ void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mo
     player.set_position(2,2);
     player.init(clock());
     player.new_block();
-    SetFont(26, 1);
+    SetFont(1, width + 30, height + 7);
     player.print_table();
     while (1) {
         //run the game
@@ -244,7 +244,7 @@ void multiPlayer(int& line, int& score){
         }while(strcmp(BoardData, "Start"));
     }
     clrscr();
-    SetFont(22, 1);
+    SetFont(1, 68, 30);
     player.print_table();
     opponent.print_table();
     while (1) {
@@ -388,12 +388,12 @@ int game_cycle(Player& player, int& line, int& score, bool single){
         if (KeyPressed[9]){
             if (!KeyState[9]){
                 clrscr();
-                SetFont(26);
+                SetFont(0, 100);
                 Menu PauseMenu; SettingMenu SM;//make the pause menu
                 PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(Quit, "Quit");
                 PauseMenu.start(); //execute the menu
                 clrscr();
-                SetFont(26, 1);
+                SetFont(1, width + 30, height + 7);
                 player.print_table();
                 return 1;
             }
@@ -406,12 +406,15 @@ int game_cycle(Player& player, int& line, int& score, bool single){
     if (KeyPressed[10]){
         if(!KeyState[10]){
             clrscr();
-            SetFont(26);
+            SetFont(0, 100);
             Menu QuitMenu;//make the quit menu
 			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(Quit, "Quit");
 			QuitMenu.start(); // execute the menu
             clrscr();
-            SetFont(26, 1);
+            if(single)
+            	SetFont(1, width + 20, height + 7);
+            else
+            	SetFont(1, 70, 30);
             player.print_table();
             return 1;
         }
