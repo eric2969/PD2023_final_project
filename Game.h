@@ -4,7 +4,7 @@ const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, 
 double speed;
 bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
 const short fTick = 1000, sLimit = 10;
-short fall_tick, stuck_wait, sCnt;
+short fall_tick, stuck_wait, sCnt, ClearCnt;
 //arrow:Left, Right
 clock_t before, tStuck, tClear, tStart, tArrow, tDas;
 
@@ -98,7 +98,7 @@ struct SettingMenu{
 int SettingMenu::iTmp = 0;
 
 static void Quit() {
-    if(conn){
+    if(multi){
         if(server)
             server_send("lose");
         else
@@ -110,7 +110,7 @@ static void Quit() {
 }
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
-int game_cycle(Player& player, int& line, int& score, bool single);
+int game_cycle(Player& player, int& line, int& score,const bool& single);
 
 void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Player player; //create new Table for player
@@ -260,7 +260,9 @@ void multiPlayer(int& line, int& score){
         		throw std::runtime_error("You win!");
         	}
         }
-        if(status) opponent.print_table();
+        if(status == -1) opponent.print_table();
+        else
+            BoardData[110] = status;
         player.SendTable(BoardData);
         if(server){
             if(server_send(BoardData))
@@ -280,11 +282,13 @@ void multiPlayer(int& line, int& score){
         	throw std::runtime_error("You lose!");
         else if(!strcmp(BoardData, "lose"))
         	throw std::runtime_error("You win!");
+        player.get_garbage(BoardData[110]);
         opponent.RecvTable(BoardData);
     }
 }
 
-int game_cycle(Player& player, int& line, int& score, bool single){
+int game_cycle(Player& player, int& line, int& score,const bool& single){
+    ClearCnt = 0;
     getKeyState(); //get which key is pressed
     //fall
     if (clock() - before > fall_tick){
@@ -300,7 +304,7 @@ int game_cycle(Player& player, int& line, int& score, bool single){
     if(stuck && clock() - tStuck > stuck_wait && !player.check_block(Point(0,-1))){
         //fix the block into place
         player.fix_block();
-        if(player.chk_clear(line, score)){
+        if(ClearCnt = player.chk_clear(line, score)){
             clr = 1;
             tClear = clock(); //reset timer
         }
@@ -371,7 +375,7 @@ int game_cycle(Player& player, int& line, int& score, bool single){
             player.hard_drop();
             stuck = 0; //reset stuck state
             player.fix_block();
-            if(player.chk_clear(line, score)){ //if clear any line
+            if(ClearCnt = player.chk_clear(line, score)){ //if clear any line
                 clr = 1;
                 tClear = clock();
             }
@@ -416,7 +420,7 @@ int game_cycle(Player& player, int& line, int& score, bool single){
             else
             	SetFont(1, 70, 30);
             player.print_table();
-            return 1;
+            return -1;
         }
         KeyState[10] = 1;
     }
@@ -437,5 +441,5 @@ int game_cycle(Player& player, int& line, int& score, bool single){
         clr = 0;
     }
     speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
-    return 0;
+    return ClearCnt;
 }

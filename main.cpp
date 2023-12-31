@@ -4,7 +4,7 @@
 using namespace std;
 
 HANDLE hConsole;
-bool bright, pic_ava, conn, server;
+bool bright, pic_ava, conn, server, multi;
 int das, arr, gravity, addrlen;
 int ResX, ResY;
 const short flush_tick = 2, port = 9487, DataSize = 130;
@@ -35,6 +35,7 @@ struct option1{ //option from single player mode
     static int line, score, usedTime, gameMode, goal;
     static clock_t t;
     static void run(){ //execute the sub-menu
+        multi = 0;
         t = clock();
         try{singlePlayer(line, score, gameMode, goal);}
         catch(runtime_error e){ 
@@ -165,6 +166,7 @@ struct option2{ //option from multi-player
             pause();
             return;
         }
+        multi = 1;
     	t = clock();
         try{multiPlayer(line, score);}
         catch(runtime_error e){ 

@@ -12,7 +12,7 @@ void qClear(std::queue<Block*>& q) {
 
 //allow various playing mode
 short height = 20, width = 10;
-const short color_table[9] = {DEFAULT_COLOR, 5*16, 0, 1*16, 2*16, 4*16, 3*16, 6*16, 240}; //[0] for none [8] for garbage(112+128, overflow is intentional)
+const short color_table[10] = {DEFAULT_COLOR, 5*16, 0, 1*16, 2*16, 4*16, 3*16, 6*16, 112, 240}; //[0] for none [8/9] for cleavege/garbage(112+128, overflow is intentional)
 
 //5-stage test for kick_table
 const Point Kick_Table(bool isI,short start, const short& drc, const short& test){
@@ -95,9 +95,6 @@ public:
     inline int get_score() const {return this -> score;}
     inline int get_line() const {return this -> clear_line;}
     inline int get_level() const {return this -> level;}
-    //multi playing
-    void send_garbage(); //part of the code depending on socket can wait
-    void get_garbage();  //part of the code depending on socket can wait
 };
 
 class Player:public Table{
@@ -139,6 +136,13 @@ public:
     bool chk_clear(int& line, int& score);
     //multi playing
     void SendTable(char str[]) const; //convert table into cstring (compression)
+    void get_garbage(const short& cnt) { //get garbage;
+        if(!cnt) return;
+        garbage += cnt;
+        set_color(14);
+        goto_xy(x + 1, y + height);
+        std::cout << "+ " << setw(2) << garbage;
+    }  
 };
 //block existence
 void Player::new_block(){
@@ -335,7 +339,7 @@ bool Player::chk_clear(int& line, int& tscore){
     for(int i=0; i<height; i++){
         allExist = true;
         for(int j=0; j<width; j++){
-            if(!this->board[i][j]){
+            if(!(this->board[i][j] & 7)){
                 allExist = false;
                 break;
             }
@@ -347,6 +351,19 @@ bool Player::chk_clear(int& line, int& tscore){
                     this->board[p][q] = this->board[p+1][q];
             i--; //check the line that have cleared. because move down
         }
+    }
+    if(garbage){
+        int cleavage = rand() % 10;
+        for(int i = height-garbage-1;i >= garbage;i--)
+            for(int j = 0;j < width;j++)
+                board[i][j] = board[i-garbage][j];
+        for(int i = 0;i < garbage;i++)
+            for(int j = 0;j < width;j++)
+                board[i][j] = ((cleavage==j)?8:9);
+        garbage = 0;
+        set_color(0);
+        goto_xy(x + 1, y + height);
+        std::cout << "    ";
     }
     // update the current condition
     tSpin = (tSpin && cnt);
@@ -376,7 +393,7 @@ bool Player::chk_clear(int& line, int& tscore){
     tscore = this -> score;
     for(int i = 0;i < width;i++)
         if(board[height][i]){
-            if(conn){
+            if(multi){
                 if(server)
                     server_send("lose");
                 else
