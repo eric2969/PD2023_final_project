@@ -8,18 +8,17 @@ short fall_tick, stuck_wait, sCnt, ClearCnt;
 //arrow:Left, Right
 clock_t before, tStuck, tClear, tStart, tArrow, tDas;
 
-struct SettingMenu{
-    static int iTmp;
-    static void sub_option1(){ //set ARR
-        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n[1(slow)-500(fast)]: ";
+struct SettingMenu{ //settings
+    static void sub_option1(){
+        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n1(slow)-500(fast): ";
         while(1){
             cin >> arr;
-            if(arr > 0 && arr <= 500){ //valid value
+            if(arr > 0 && arr <= 500){  
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause(); // press any key to continue
+                pause();
                 break;
             }
             else{
@@ -30,15 +29,15 @@ struct SettingMenu{
         }
     }
     static void sub_option2(){
-        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n[1(slow)-1000(fast)]: ";
-        while(1){ //set DAS
+        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n1(slow)-1000(fast): ";
+        while(1){
             cin >> das;
-            if(das > 0 && das <= 1000){ //valid value
+            if(das > 0 && das <= 1000){
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause(); //press any key to continue
+                pause();
                 break;
             }
             else{
@@ -49,53 +48,77 @@ struct SettingMenu{
         }
 
     }
-    static void sub_option3(){ //set gravity
-         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n[1(slow)-50(fast)]: ";
+    static void sub_option3(){
+         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n1(slow)-50(fast): ";
          while(1){
-            cin >> gravity; 
-            if(gravity > 0 && gravity <= 50){ //valid value
+            cin >> gravity;
+            if(gravity > 0 && gravity <= 50){
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause(); //press any key to continue
+                pause();
                 break;
             }
             else{
                 cin.clear();
-                fflush(stdin); //flush the cin buffer to prevent it from reading it again
+                fflush(stdin);//flush the cin buffer to prevent it from reading it again
                 cout << "Please input a number between than 1 and 50: ";
             }
          }
     }
-    static void sub_option4(){ //switch between light and dark mode
-        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n[1(Dark)/2(Bright)]: ";
+    static void sub_option4(){
+    	int iTmp;
+        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n1(Dark)/2(Bright): ";
         while(1){
             cin >> iTmp;
-            if(iTmp == 1 || iTmp == 2){ //valid value
+            if(iTmp == 1 || iTmp == 2){
                 bright = iTmp - 1;
                 clrscr();
                 set_color(7);
                 cout << "Configuration Set\n\n";
                 Sleep(800);
-                pause(); //press any key to continue
+                pause();
                 break;
             }
             else{
                 cin.clear();
-                fflush(stdin); //flush the cin buffer to prevent it from reading it again
+                fflush(stdin);
                 cout << "Please input 1 or 2: ";
             }
         }
     }
+    static void sub_option5() {
+    	int iTmp;
+        cout << "Are you sure you want to reset the settings? 1(No)/2(Yes): ";
+        while(1){
+            cin >> iTmp;
+            if(iTmp == 1)
+                break;
+            else if(iTmp == 2){
+            	das = 700; arr = 450; gravity = 45; bright = 1;
+            	cout << "Reset Completed\n";
+            	Sleep(800);
+            	pause();
+            	break;
+			}
+            else{
+                cin.clear();
+                fflush(stdin);
+                cout << "Please input 1 or 2: ";
+            }
+        }
+	}
     void operator() (){
-        Menu sub_menu; //create sub-menu
+        Menu sub_menu;
         clrscr();
-        sub_menu.settitle("Game Setting\nRight click for return to menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
-        sub_menu.start(); //execute sub-menu
+        sub_menu.settitle("Game Setting\nRight click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright").add(sub_option5, "Reset");
+        sub_menu.start();
+        ofstream setting(SET_PATH);
+        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
+        setting.close();
     }
 };
-int SettingMenu::iTmp = 0;
 
 static void Quit() {
     if(multi){

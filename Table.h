@@ -353,17 +353,32 @@ bool Player::chk_clear(int& line, int& tscore){
         }
     }
     if(garbage){
-        int cleavage = rand() % 10;
-        for(int i = height-garbage-1;i >= garbage;i--)
-            for(int j = 0;j < width;j++)
-                board[i][j] = board[i-garbage][j];
-        for(int i = 0;i < garbage;i++)
-            for(int j = 0;j < width;j++)
-                board[i][j] = ((cleavage==j)?8:9);
-        garbage = 0;
-        set_color(0);
-        goto_xy(x + 1, y + height);
-        std::cout << "    ";
+        if(cnt){
+            garbage = std::max(0, garbage - cnt);
+            if(garbage){
+                set_color(14);
+                goto_xy(x + 1, y + height);
+                std::cout << "+ " << setw(2) << garbage;
+            }
+            else{
+                set_color(0);
+                goto_xy(x + 1, y + height);
+                std::cout << "    ";
+            }
+        }
+        else{
+            int cleavage = rand() % 10;
+            for(int i = height-garbage-1;i >= garbage;i--)
+                for(int j = 0;j < width;j++)
+                    board[i][j] = board[i-garbage][j];
+            for(int i = 0;i < garbage;i++)
+                for(int j = 0;j < width;j++)
+                    board[i][j] = ((cleavage==j)?8:9);
+            garbage = 0;
+            set_color(0);
+            goto_xy(x + 1, y + height);
+            std::cout << "    ";
+        }
     }
     // update the current condition
     tSpin = (tSpin && cnt);

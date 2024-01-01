@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v5.3.2-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v5.3.2>)    [<img src="https://img.shields.io/badge/Download-v5.3.2-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.3.2.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v6.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v6.1beta>) [<img src="https://img.shields.io/badge/Download-v6.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v6.1beta.zip>) <br>
+<br>[<img src="https://img.shields.io/badge/Beta-v6.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v6.2beta>) [<img src="https://img.shields.io/badge/Download-v6.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v6.2beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -104,8 +104,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v6.1beta-blue">](#20240101a-v61beta)
-- [Version 6](#20240101a-v61beta) Responsive Software Font Design/garbage throw(multi)
+[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v6.2beta-blue">](#20240102a-v62beta)
+- [Version 6](#20240102a-v62beta) Responsive Software Font Design/garbage throw(multi)
+> - [v6.2](#20240102a-v62beta) Conf reset feature
 > - [v6.1](#20240101a-v61beta) Garbage throwing(multi)
 > - [v6.0](#20231231b-v60beta) Add responsive font size based on screen resolution
 - [Version 5](#20231231a-v54beta) Multi Player Mode
@@ -127,6 +128,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/02.a (v6.2beta)
+> Add conf reset feature <br>
+> Trying to fix bugs in garbage
+
 > ### 2024/01/01.a (v6.1beta)
 > Add garbage throwing feature <br>
 > Fix some bug in multi player mode checking

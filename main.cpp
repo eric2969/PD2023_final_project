@@ -298,7 +298,6 @@ char option2::ip[16];
 clock_t option2::t = 0;
 
 struct option3{ //record option
-    static int iTmp;
     static void sub_option1(){ //show record
         clrscr();
         set_color(7);
@@ -313,6 +312,7 @@ struct option3{ //record option
         pause(); //press any key to continue
     }
     static void sub_option2(){ //reset record
+        int iTmp;
         cout << "Are you sure you want to reset your record?\n[1(No)/2(Yes)]: ";
         while(1){
             cin >> iTmp;
@@ -345,99 +345,6 @@ struct option3{ //record option
         sub_menu.start();
     }
 };
-int option3::iTmp = 0;
-
-struct option4{ //settings
-    static int iTmp;
-    static void sub_option1(){
-        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n[1(slow)-500(fast)]: ";
-        while(1){
-            cin >> arr;
-            if(arr > 0 && arr <= 500){  
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between than 1 and 500: ";
-            }
-        }
-    }
-    static void sub_option2(){
-        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n[1(slow)-1000(fast)]: ";
-        while(1){
-            cin >> das;
-            if(das > 0 && das <= 1000){
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between than 1 and 1000: ";
-            }
-        }
-
-    }
-    static void sub_option3(){
-         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n[1(slow)-50(fast)]: ";
-         while(1){
-            cin >> gravity;
-            if(gravity > 0 && gravity <= 50){
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin);//flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between than 1 and 50: ";
-            }
-         }
-    }
-    static void sub_option4(){
-        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n[1(Dark)/2(Bright)]: ";
-        while(1){
-            cin >> iTmp;
-            if(iTmp == 1 || iTmp == 2){
-                bright = iTmp - 1;
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin);
-                cout << "Please input 1 or 2: ";
-            }
-        }
-    }
-    void operator() (){
-        Menu sub_menu;
-        clrscr();
-        sub_menu.settitle("Game Setting\nRight click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright");
-        sub_menu.start();
-        ofstream setting(SET_PATH);
-        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
-        setting.close();
-    }
-};
-int option4::iTmp = 0;
 
 signed main(){
     //initialize the main menu
@@ -451,7 +358,7 @@ signed main(){
     option1 opt1;
     option2 opt2;
     option3 opt3;
-    option4 opt4;
+    SettingMenu opt4;
     Main.settitle("Tetris").add(opt1, "Single Player").add(opt2, "Multi Player").add(opt3, "Records").add(opt4, "Settings").add(game_exit, "Quit");
     Main.start();
     return 0;
@@ -468,7 +375,7 @@ void game_init(){
     else{
         set_color(7);
         cout << "Configuration data loaded fail, restore to default setting\nYou can modify it in the menu\n";
-        arr = 430, das = 700, gravity = 47, bright = 1;
+        das = 700; arr = 450; gravity = 45; bright = 1;
         ofstream set(SET_PATH);
         set << das << ' ' << arr << ' ' << gravity << ' ' << bright;
         set.close();
