@@ -158,12 +158,11 @@ void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mo
 }
 
 void multiPlayer(int& line, int& score){
-    int mode = 0, goal = 0, iTmp;
+    int mode = 0, goal = 0, iTmp, status;
     width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     char BoardData[DataSize];
-    bool status;
     clrscr();
     set_color(7);
     //chk join
@@ -283,7 +282,8 @@ void multiPlayer(int& line, int& score){
         		throw std::runtime_error("You win!");
         	}
         }
-        if(status == -1) opponent.print_table();
+        if(status == -1)
+			opponent.print_table();
         else
             BoardData[110] = status;
         player.SendTable(BoardData);
@@ -305,7 +305,7 @@ void multiPlayer(int& line, int& score){
         	throw std::runtime_error("You lose!");
         else if(!strcmp(BoardData, "lose"))
         	throw std::runtime_error("You win!");
-        player.get_garbage(BoardData[110]);
+        player.get_garbage(short(BoardData[110]));
         opponent.RecvTable(BoardData);
     }
 }
@@ -327,7 +327,8 @@ int game_cycle(Player& player, int& line, int& score,const bool& single){
     if(stuck && clock() - tStuck > stuck_wait && !player.check_block(Point(0,-1))){
         //fix the block into place
         player.fix_block();
-        if(ClearCnt = player.chk_clear(line, score)){
+        ClearCnt = player.chk_clear(line, score);
+        if(ClearCnt){
             clr = 1;
             tClear = clock(); //reset timer
         }
@@ -398,10 +399,11 @@ int game_cycle(Player& player, int& line, int& score,const bool& single){
             player.hard_drop();
             stuck = 0; //reset stuck state
             player.fix_block();
-            if(ClearCnt = player.chk_clear(line, score)){ //if clear any line
-                clr = 1;
-                tClear = clock();
-            }
+            ClearCnt = player.chk_clear(line, score);
+	        if(ClearCnt){
+	            clr = 1;
+	            tClear = clock(); //reset timer
+	        }
             player.new_block();
             player.print_table();
             KeyState[7] = 0; //reset hold state
@@ -422,7 +424,7 @@ int game_cycle(Player& player, int& line, int& score,const bool& single){
                 clrscr();
                 SetFont(1, width + 30, height + 7);
                 player.print_table();
-                return 1;
+                return -1;
             }
             KeyState[9] = 1;
         }

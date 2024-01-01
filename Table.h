@@ -130,13 +130,13 @@ public:
     void print_table() override; //print table on windows.h (x,y) is the origin of the table
     void print_block();
     //checking
-    bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || board[i.y][i.x]) return 0; return 1;}
+    bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || (board[i.y][i.x]&7) ) return 0; return 1;}
     bool check_block(const Point &p) const;
     //filled check
     bool chk_clear(int& line, int& score);
     //multi playing
     void SendTable(char str[]) const; //convert table into cstring (compression)
-    void get_garbage(const short& cnt) { //get garbage;
+    void get_garbage(const short cnt) { //get garbage;
         if(!cnt) return;
         garbage += cnt;
         set_color(14);
