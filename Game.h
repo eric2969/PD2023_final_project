@@ -3,7 +3,7 @@
 const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q};
 double speed;
 bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
-const short fTick = 2000, sLimit = 10;
+const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt, ClearCnt;
 //arrow:Left, Right
 clock_t before, tStuck, tClear, tStart, tArrow, tDas;
