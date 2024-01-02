@@ -133,7 +133,7 @@ static void Quit() {
 }
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
-int game_cycle(Player& player, int& line, int& score,const bool& single);
+short game_cycle(Player& player, int& line, int& score,const bool& single);
 
 void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Player player; //create new Table for player
@@ -310,7 +310,7 @@ void multiPlayer(int& line, int& score){
     }
 }
 
-short game_cycle(Player& player, int& line, int& score,const bool& single){
+short game_cycle(Player& player, int& line, int& score, const bool& single){
     ClearCnt = 0;
     getKeyState(); //get which key is pressed
     //fall
