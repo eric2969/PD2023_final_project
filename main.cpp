@@ -7,7 +7,7 @@ HANDLE hConsole;
 bool bright, pic_ava, conn, server, multi;
 int das, arr, gravity, addrlen;
 int ResX, ResY;
-const short flush_tick = 2, port = 9487, DataSize = 122;
+const short flush_tick = 2, port = 9487, DataSize = 130;
 
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
