@@ -133,7 +133,7 @@ public:
     bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || (board[i.y][i.x]&7) ) return 0; return 1;}
     bool check_block(const Point &p) const;
     //filled check
-    bool chk_clear(int& line, int& score);
+    short chk_clear(int& line, int& score);
     //multi playing
     void SendTable(char str[]) const; //convert table into cstring (compression)
     void get_garbage(const short cnt) { //get garbage;
@@ -332,7 +332,7 @@ bool Player::check_block(const Point &p) const{
     return result;
 }
 //line clear
-bool Player::chk_clear(int& line, int& tscore){
+short Player::chk_clear(int& line, int& tscore){
     bool allExist;// see if the whole row is filled
     int cnt = 0, point = 5;
     double multiplier = 1.0;// the total line num cleared
@@ -433,6 +433,7 @@ void Player::SendTable(char str[]) const{
         str[i] = tmp;
     }
     for(auto i:current -> block_position()){
+        if(i.y >= 20) continue;
         sTmp = i.y * 5 + (i.x >> 1);
         str[sTmp] |= ((current -> get_ID()) << ((i.x % 2)?4:0));
     }

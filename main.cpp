@@ -7,7 +7,7 @@ HANDLE hConsole;
 bool bright, pic_ava, conn, server, multi;
 int das, arr, gravity, addrlen;
 int ResX, ResY;
-const short flush_tick = 2, port = 9487, DataSize = 130;
+const short flush_tick = 2, port = 9487, DataSize = 122;
 
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
@@ -38,7 +38,7 @@ struct option1{ //option from single player mode
         multi = 0;
         t = clock();
         try{singlePlayer(line, score, gameMode, goal);}
-        catch(runtime_error e){ 
+        catch(exception &e){ 
             //game over
     		usedTime = (clock() - t) / 1000;
     		if(pic_ava){
@@ -169,7 +169,7 @@ struct option2{ //option from multi-player
         multi = 1;
     	t = clock();
         try{multiPlayer(line, score);}
-        catch(runtime_error e){ 
+        catch(exception &e){ 
             //game over
         	usedTime = (clock() - t) / 1000;
             if(pic_ava){

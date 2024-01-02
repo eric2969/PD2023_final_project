@@ -3,7 +3,7 @@
 const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q};
 double speed;
 bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
-const short fTick = 1000, sLimit = 10;
+const short fTick = 2000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt, ClearCnt;
 //arrow:Left, Right
 clock_t before, tStuck, tClear, tStart, tArrow, tDas;
@@ -305,12 +305,12 @@ void multiPlayer(int& line, int& score){
         	throw std::runtime_error("You lose!");
         else if(!strcmp(BoardData, "lose"))
         	throw std::runtime_error("You win!");
-        player.get_garbage(short(BoardData[110]));
+        player.get_garbage(BoardData[110]);
         opponent.RecvTable(BoardData);
     }
 }
 
-int game_cycle(Player& player, int& line, int& score,const bool& single){
+short game_cycle(Player& player, int& line, int& score,const bool& single){
     ClearCnt = 0;
     getKeyState(); //get which key is pressed
     //fall
@@ -384,7 +384,7 @@ int game_cycle(Player& player, int& line, int& score,const bool& single){
     }
     //C(7), Shift(8)
     for(int i = 0;i < 2;i++){
-        if (KeyPressed[i + 7]) {
+        if(KeyPressed[i + 7]) {
             if(!KeyState[7]){ //if not hold before
                 player.hold_block(); //hold
                 stuck = 0, sCnt = 0; //reset t-spin criteria and stuck state

@@ -104,9 +104,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v6.2beta-blue">](#20240102a-v62beta)
-- [Version 6](#20240102a-v62beta) Responsive Software Font Design/garbage throw(multi)
-> - [v6.2](#20240102a-v62beta) Conf reset feature
+[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v6.2beta-blue">](#20240103a-v62beta)
+- [Version 6](#20240103a-v62beta) Responsive Software Font Design/garbage throw(multi)
+> - [v6.2](#20240103a-v62beta) Conf reset feature
 > - [v6.1](#20240101a-v61beta) Garbage throwing(multi)
 > - [v6.0](#20231231b-v60beta) Add responsive font size based on screen resolution
 - [Version 5](#20231231a-v54beta) Multi Player Mode
@@ -128,7 +128,11 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
-> ### 2024/01/02.a (v6.2beta)
+> ### 2024/01/03.a (v6.2beta)
+> Fixed garbage throwing issue <br>
+> Preventing out of table data transmission
+
+> ### 2024/01/02.a
 > Add conf reset feature <br>
 > Trying to fix bugs in garbage
 
