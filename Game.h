@@ -290,14 +290,16 @@ void multiPlayer(int& line, int& score){
         if(server){
             if(server_send(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            server_recv(BoardData);
+            if(server_recv(BoardData))
+                throw std::runtime_error("Opponent Exit, you win!");
             if(!strcmp(BoardData, "chk"))
                 continue;
         }
         else{
             if(client_send(BoardData))
                 throw std::runtime_error("Opponent Exit, you win!");
-            client_recv(BoardData);
+            if(client_recv(BoardData))
+                throw std::runtime_error("Opponent Exit, you win!");
             if(!strcmp(BoardData, "chk"))
                 continue;
         }
