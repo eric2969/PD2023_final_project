@@ -81,6 +81,7 @@ void pause(){
 
     /* Set to no line-buffering, no echo, no special-key-processing */
     SetConsoleMode(hstdin, 0 );
+    SetConsoleMode(hstdin, ENABLE_MOUSE_INPUT );
 
     std::cout << "Press Any Key to Continue\n";
     // Flush the buffer to make sure that it won't be affected by the loads of key presses we did while playing the game
@@ -93,7 +94,7 @@ void pause(){
             /* Get the input event */
             ReadConsoleInput( hstdin, &event, 1, &count );
             /* Only respond to key release events */
-            if ((event.EventType == KEY_EVENT) &&  !event.Event.KeyEvent.bKeyDown)
+            if ((event.EventType == KEY_EVENT &&  !event.Event.KeyEvent.bKeyDown) || event.Event.MouseEvent.dwEventFlags == 0x0)
                 done = true;
         }
     }

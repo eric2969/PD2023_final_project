@@ -128,6 +128,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/03.b (v6.2.1beta)
+> The Any Key in "Press Any Key to Continue" now applies to the ones on the Mouse
+>
 > ### 2024/01/03.a (v6.2beta)
 > Fixed garbage throwing issue <br>
 > Preventing out of table data transmission
