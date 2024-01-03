@@ -227,10 +227,10 @@ void multiPlayer(int& line, int& score){
             goal <<= 7;
             goal |= BoardData[i];
         }
-        std::cout << "Mode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
+        std::cout << "==============\nMode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
         if(mode)
-            std::cout << "Goal set(line) : " << goal << "\n\n";
-        std::cout << "If you want to start, please input 1\nIf you want quit, please input 2\n";
+            std::cout << "Goal set(line) : " << goal;
+        std::cout << "==============\nIf you want to start, please input 1\nIf you want quit, please input 2\n";
         while(1){
             cin >> iTmp;
             if(iTmp == 1){
@@ -284,8 +284,8 @@ void multiPlayer(int& line, int& score){
         }
         if(status == -1)
 			opponent.print_table();
-        else
-            BoardData[110] = status;
+        //else
+        //    BoardData[110] = status;
         player.SendTable(BoardData);
         if(server){
             if(server_send(BoardData))
@@ -307,7 +307,7 @@ void multiPlayer(int& line, int& score){
         	throw std::runtime_error("You lose!");
         else if(!strcmp(BoardData, "lose"))
         	throw std::runtime_error("You win!");
-        player.get_garbage(BoardData[110]);
+        //player.get_garbage(BoardData[110]);
         opponent.RecvTable(BoardData);
     }
 }
