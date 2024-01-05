@@ -5,17 +5,16 @@ using namespace std;
 
 HANDLE hConsole;
 bool bright, pic_ava, conn, server, multi;
-int das, arr, gravity, addrlen;
+int das, arr, gravity;
 int ResX, ResY;
-const short flush_tick = 5, port = 9487, DataSize = 250;
+const short flush_tick = 5, DataSize = 130;
 
 #define SET_PATH "src/settings.txt"
 #define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
 
 #include "VK.h"
-#include "Server.h"
-#include "Client.h"
+#include "Socket.h"
 #include "Console.h"
 #include "Block.h"
 #include "Table.h"
@@ -205,7 +204,7 @@ struct option2{ //option from multi-player
             cout << "Please input your ip(in setting)\n";
             cin >> ip;
             cout << "Waiting for connection...\n";
-            status = server_connect(ip, port);
+            status = server_connect(ip);
             if(status)
                 cout << "Connect Error, error code : " << status << endl;
             else{
@@ -229,7 +228,7 @@ struct option2{ //option from multi-player
             cout << "Please input opponent's ip\n";
             cin >> ip;
             cout << "Waiting for connection...\n";
-            status = client_connect(ip, port);
+            status = client_connect(ip);
             if(status)
                 cout << "Connect Error, error code : " << status << endl;
             else if(client_send("test"))

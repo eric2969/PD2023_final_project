@@ -368,7 +368,8 @@ short Player::chk_clear(int& line, int& tscore){
         }
         else{
             int cleavage = rand() % 10;
-            for(int i = height-garbage-1;i >= garbage;i--)
+            garbage = min(20, garbage);
+            for(int i = height;i >= garbage;i--)
                 for(int j = 0;j < width;j++)
                     board[i][j] = board[i-garbage][j];
             for(int i = 0;i < garbage;i++)
@@ -407,17 +408,8 @@ short Player::chk_clear(int& line, int& tscore){
     line = this -> clear_line;
     tscore = this -> score;
     for(int i = 0;i < width;i++)
-        if(board[height][i]){
-            if(multi){
-                if(server)
-                    server_send("lose");
-                else
-                    client_send("lose");
-                throw std::runtime_error("You lose!");
-            }
-            else
-                throw std::runtime_error("Game over");
-        }
+        if(board[height][i])
+            return -1; //game over token
     return cnt;
 }
 //multi playing

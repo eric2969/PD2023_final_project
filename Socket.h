@@ -1,19 +1,17 @@
 //declare server address and client address
-SOCKADDR_IN Server_addr;
+SOCKADDR_IN Server_addr, Ser_addr;;
 //declare socket for listen and connection
-SOCKET sListen, sConnection;
-
+SOCKET sListen, sConnection, sConnect;
 //for initializing win-socket api
 void socket_init(){
     WSADATA wsaData;
     WORD    DLLVersion;
     DLLVersion = MAKEWORD(2,1);//winsocket-dll version
     WSAStartup(DLLVersion,&wsaData);
-    addrlen = sizeof(Server_addr);
 }
 
 //let this server connect to input ip and input port
-int server_connect(const char ip[], const int& port){
+int server_connect(const char ip[], const int& port = 9487){
     //set server address (localhost:port)
     Server_addr.sin_addr.s_addr    = inet_addr(ip);
     Server_addr.sin_family         = AF_INET;
@@ -85,4 +83,55 @@ int server_recv(char mes[]){
     }
     else
         return 0; //if success, return 0
+}
+
+//client
+//let the client connect to server by ip and port
+int client_connect(const char ip[], const int& port = 9487){
+    //set server address
+    Ser_addr.sin_addr.s_addr = inet_addr(ip);
+    Ser_addr.sin_family      = AF_INET;
+    Ser_addr.sin_port        = htons(port);
+    //set up connecting socket
+    sConnect = socket(AF_INET, SOCK_STREAM, 0);
+    //trying connect to server
+    if(connect(sConnect, (SOCKADDR*)&Ser_addr, sizeof(Ser_addr)) == SOCKET_ERROR)
+        return -1; //if fail, return -1
+    else
+        return 0; //if success return 0
+}
+
+void client_quit(){
+    conn = 0;
+    closesocket(sConnect);
+    WSACleanup();
+}
+
+void client_disconn(){
+    conn = 0;
+    closesocket(sConnect);
+}
+
+//sending cstring via socket
+int client_send(const char mes[]){
+    //trying to send data
+    if(send(sConnect, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
+        conn = 0;
+        closesocket(sConnect);
+        return -1; //if fail, return -1
+    } 
+    else
+        return 0; //if success return 0
+}
+
+//receive cstring from socket
+int client_recv(char mes[]){
+    //try to receiving data
+    if(recv(sConnect, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
+        conn = 0;
+        closesocket(sConnect);
+        return -1; //if fail, return -1
+    }
+    else
+        return 0; //if success return 0
 }

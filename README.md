@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v5.3.2-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v5.3.2>)    [<img src="https://img.shields.io/badge/Download-v5.3.2-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.3.2.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v6.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v6.2beta>) [<img src="https://img.shields.io/badge/Download-v6.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v6.2beta.zip>) <br>
+<br>[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v7.0beta>) [<img src="https://img.shields.io/badge/Download-v7.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.0beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -104,7 +104,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v6.2beta-blue">](#20240103a-v62beta)
+[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](#20240106a-v70beta)
+- [Version 7](#20240106a-v70beta) Multi Playing UX
+> - [v7.0](#20240106a-v70beta) Table transmission via socket on thread
 - [Version 6](#20240103a-v62beta) Responsive Software Font Design/garbage throw(multi)
 > - [v6.2](#20240103a-v62beta) Conf reset feature
 > - [v6.1](#20240101a-v61beta) Garbage throwing(multi)
@@ -128,9 +130,13 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/06.a (v7.0beta)
+> Fixed bug in garbage into table <br>
+> Thread used in table sending
+
 > ### 2024/01/03.b (v6.2.1beta)
 > The Any Key in "Press Any Key to Continue" now applies to the ones on the Mouse
->
+
 > ### 2024/01/03.a (v6.2beta)
 > Fixed garbage throwing issue <br>
 > Preventing out of table data transmission

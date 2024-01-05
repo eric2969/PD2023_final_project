@@ -4,9 +4,13 @@ const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, 
 double speed;
 bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
 const short fTick = 1000, sLimit = 10;
-short fall_tick, stuck_wait, sCnt, ClearCnt;
+short fall_tick, stuck_wait, sCnt, ClearCnt, status;
 //arrow:Left, Right
 clock_t before, tStuck, tClear, tStart, tArrow, tDas;
+//thread lock
+mutex Thrd_lock;
+//thread para and return value
+int thrd_token, ret_thrd_val;
 
 struct SettingMenu{ //settings
     static void sub_option1(){
@@ -126,18 +130,19 @@ static void Quit() {
             server_send("lose");
         else
             client_send("lose");
-        throw std::runtime_error("Quit, you lose!");
+        throw runtime_error("Quit, you lose!");
     }
     else
-    	throw std::runtime_error("Quit");
+    	throw runtime_error("Quit");
 }
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
+void Table_Trans(char Snd[], char Rec[]);
 short game_cycle(Player& player, int& line, int& score,const bool& single);
 
 void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Player player; //create new Table for player
-    speed = 1.0, stuck = 0, line = 0, score = 0;
+    speed = 1.0, stuck = 0, line = 0, score = 0, status = 0;
     tStart = before = clock();
     clrscr();
     //initialize the game
@@ -149,10 +154,12 @@ void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mo
     while (1) {
         //run the game
         if(mode == 1 && line >= goal)
-            throw std::runtime_error("Goal Achieved");
+            throw runtime_error("Goal Achieved");
         else if(mode == 2 && clock() - tStart >= goal * 1000)
-            throw std::runtime_error("Goal Achieved");
-        game_cycle(player, line, score, 1);
+            throw runtime_error("Goal Achieved");
+        status = game_cycle(player, line, score, 1);
+        if(status < 0)
+            throw runtime_error("Game over!");
         Sleep(flush_tick);
     }
 }
@@ -162,26 +169,26 @@ void multiPlayer(int& line, int& score){
     width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
-    char BoardData[DataSize];
+    char BoardData[DataSize], RecvBoard[DataSize];
     clrscr();
     set_color(7);
     //chk join
-    std::cout << "Please wait for your opponent joining!\n";
+    cout << "Please wait for your opponent joining!\n";
     do{
         if(server){
             if(server_send("Ready"))
-                throw std::runtime_error("Opponent have exited");
+                throw runtime_error("Opponent have exited");
             server_recv(BoardData);
         }
         else{
             if(client_send("Ready"))
-                throw std::runtime_error("Opponent have exited");
+                throw runtime_error("Opponent have exited");
             client_recv(BoardData);
         }
     }while(strcmp(BoardData, "Ready"));
     //choose mode
     if(server){
-        std::cout << "Please choose your mode!\n1(Infinite Mode)/2(Line Mode):";
+        cout << "Please choose your mode!\n1(Infinite Mode)/2(Line Mode):";
         while(1){
             cin >> mode;
             if(mode == 1 || mode == 2){
@@ -212,14 +219,14 @@ void multiPlayer(int& line, int& score){
         for(int i = 11, tGoal = goal;i < 15;i++,tGoal>>=7)
             BoardData[i] = (tGoal & 127);
         if(server_send(BoardData))
-            throw std::runtime_error("Opponent have exited");
+            throw runtime_error("Opponent have exited");
     }
     else{
-        std::cout << "Please wait for the host select mode...\n";
+        cout << "Please wait for the host select mode...\n";
         do{
             client_recv(BoardData);
             if(client_send("chk"))
-                throw std::runtime_error("Opponent have exited");
+                throw runtime_error("Opponent have exited");
         }while(strcmp(BoardData, "Mode set"));
         mode = BoardData[10];
         goal = 0;
@@ -227,10 +234,10 @@ void multiPlayer(int& line, int& score){
             goal <<= 7;
             goal |= BoardData[i];
         }
-        std::cout << "==============\nMode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
+        cout << "========================\nMode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
         if(mode)
-            std::cout << "Goal set(line) : " << goal;
-        std::cout << "==============\nIf you want to start, please input 1\nIf you want quit, please input 2\n";
+            cout << "Goal set(line) : " << goal;
+        cout << "========================\nIf you want to start, please input 1\nIf you want quit, please input 2\n";
         while(1){
             cin >> iTmp;
             if(iTmp == 1){
@@ -240,7 +247,7 @@ void multiPlayer(int& line, int& score){
             else if(iTmp ==2){
                 client_send("quit");
                 client_disconn();
-                throw std::runtime_error("Quit");
+                throw runtime_error("Quit");
             }
             else{
                 cin.clear();
@@ -256,59 +263,113 @@ void multiPlayer(int& line, int& score){
     player.init(clock());
     opponent.init();
     player.new_block();
+    thrd_token = 0, ret_thrd_val = 0;
     set_color(7);
     if(server){
-        std::cout << "Please wait for your opponent starting!";
+        cout << "Please wait for your opponent starting!";
         do{
             server_recv(BoardData);
         	if(server_send("chk"))
-        		throw std::runtime_error("Opponent have exited");
+        		throw runtime_error("Opponent have exited");
         }while(strcmp(BoardData, "Start"));
     }
     clrscr();
     SetFont(1, 68, 30);
     player.print_table();
     opponent.print_table();
+    memset(BoardData, 0, sizeof(BoardData));
+    memset(RecvBoard, 0, sizeof(RecvBoard));
+    thread Socket_thrd(Table_Trans, ref(BoardData), ref(RecvBoard));
     while (1) {
         //run the multi-player game
         status = game_cycle(player, line, score, 0);
         if(mode == 1 && line >= goal){
-        	if(server){
+        	if(server)
         		server_send("win");
-        		throw std::runtime_error("You win!");
-        	}
-        	else{
+        	else
         		client_send("win");
-        		throw std::runtime_error("You win!");
-        	}
+        	thrd_token = -1;
+            Socket_thrd.join();
+            throw runtime_error("You win!");
         }
-        if(status == -1)
+        set_color(7);
+        goto_xy(1, 1);
+        cout << status;
+        if(status == -10)
 			opponent.print_table();
-        //else
-        //    BoardData[110] = status;
+        else if(status == -1){
+            thrd_token = -1;
+            if(server)
+                server_send("lose");
+            else
+                client_send("lose");
+            Socket_thrd.join();
+            throw runtime_error("You lose!");
+        }
+        Thrd_lock.lock();
+        if(status > 0)
+            BoardData[110] += status;
         player.SendTable(BoardData);
+        Thrd_lock.unlock();
+        if(ret_thrd_val == 1){
+            Thrd_lock.lock();
+            if(!strcmp(RecvBoard, "win")){
+                thrd_token = -1;
+                Socket_thrd.join();
+            	throw runtime_error("You lose!");
+            }
+            else if(!strcmp(RecvBoard, "lose")){
+                thrd_token = -1;
+                Socket_thrd.join();
+            	throw runtime_error("You win!");
+            }
+            player.get_garbage(RecvBoard[110]);
+            opponent.RecvTable(RecvBoard);
+            ret_thrd_val = 0;
+            Thrd_lock.unlock();
+        }
+        else if(ret_thrd_val < 0){
+            Socket_thrd.join();
+            throw runtime_error("Opponent Exit, you win!");
+        }
+        thrd_token = 1;
+    }
+}
+
+void Table_Trans(char Snd[], char Rec[]){
+    while(thrd_token != 1) {Sleep(flush_tick);}
+    char tmp[DataSize];
+    while(thrd_token > 0){
+        Thrd_lock.lock();
+        for(int i = 0;i < DataSize;i++) tmp[i] = Snd[i];
+        Snd[110] = 0;
+        Thrd_lock.unlock();
         if(server){
-            if(server_send(BoardData))
-                throw std::runtime_error("Opponent Exit, you win!");
-            if(server_recv(BoardData))
-                throw std::runtime_error("Opponent Exit, you win!");
-            if(!strcmp(BoardData, "chk"))
-                continue;
+            if(server_send(tmp)){
+                ret_thrd_val = -1;
+                break;
+            }
+            if(server_recv(tmp)){
+                ret_thrd_val = -1;
+                break;
+            }
         }
         else{
-            if(client_send(BoardData))
-                throw std::runtime_error("Opponent Exit, you win!");
-            if(client_recv(BoardData))
-                throw std::runtime_error("Opponent Exit, you win!");
-            if(!strcmp(BoardData, "chk"))
-                continue;
+            if(client_send(tmp)){
+                ret_thrd_val = -1;
+                break;
+            }
+            if(client_recv(tmp)){
+                ret_thrd_val = -1;
+                break;
+            }
         }
-        if(!strcmp(BoardData, "win"))
-        	throw std::runtime_error("You lose!");
-        else if(!strcmp(BoardData, "lose"))
-        	throw std::runtime_error("You win!");
-        //player.get_garbage(BoardData[110]);
-        opponent.RecvTable(BoardData);
+        if(!strcmp(tmp, "chk"))
+            continue;
+        Thrd_lock.lock();
+        for(int i = 0;i < DataSize;i++) Rec[i] = tmp[i];
+        ret_thrd_val = 1;
+        Thrd_lock.unlock();
     }
 }
 
@@ -426,7 +487,6 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
                 clrscr();
                 SetFont(1, width + 30, height + 7);
                 player.print_table();
-                return -1;
             }
             KeyState[9] = 1;
         }
@@ -447,7 +507,7 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
             else
             	SetFont(1, 70, 30);
             player.print_table();
-            return -1;
+            return -10;
         }
         KeyState[10] = 1;
     }
@@ -458,13 +518,13 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
         //clear the message box to the left
         set_color(0);
         goto_xy(player.get_x() + width + 8, player.get_y() + height - 3);
-        std::cout << "           ";
+        cout << "           ";
         goto_xy(player.get_x() + width + 8, player.get_y() + height - 2);
-        std::cout << "      ";
+        cout << "      ";
         goto_xy(player.get_x() + width + 8, player.get_y() + height - 1);
-        std::cout << "      ";
+        cout << "      ";
         goto_xy(player.get_x() + width + 8, player.get_y() + height);
-        std::cout << "      ";
+        cout << "      ";
         clr = 0;
     }
     speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
