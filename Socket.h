@@ -135,3 +135,21 @@ int client_recv(char mes[]){
     else
         return 0; //if success return 0
 }
+//get user's IP address
+string getIP()
+{
+	WSADATA WSAData;
+	char hostName[256];
+	if (!WSAStartup(MAKEWORD(2, 0),&WSAData))
+	{  
+		if(!gethostname(hostName,sizeof(hostName)))
+		{
+			hostent *host=gethostbyname(hostName);
+			if(host!=NULL)
+			{
+				return inet_ntoa(*(struct in_addr*)*host->h_addr_list);
+			}
+		}
+	}  	
+	return "Get IP failed.";  
+}
