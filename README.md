@@ -130,6 +130,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/06.b (v7.1beta)
+> Added the getIP() function
+
 > ### 2024/01/06.a (v7.0beta)
 > Fixed bug in garbage into table <br>
 > Thread used in table sending

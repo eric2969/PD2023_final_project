@@ -198,11 +198,23 @@ struct option2{ //option from multi-player
         clrscr();
         set_color(7);
         if(conn)
-            cout << "You have connected\n";
+            cout << "You are connected\n";
         else{
             int status;
-            cout << "Please input your ip(in setting)\n";
-            cin >> ip;
+            strcpy(ip,getIP().c_str());
+            HWND hwnd = GetConsoleWindow();
+            char content[28] = "Is Your IP:\n";
+            strcat(content,ip);
+            int msgboxID = MessageBox(
+                hwnd,
+                content,
+                "IP Address",
+                MB_ICONQUESTION | MB_YESNO | MB_DEFBUTTON1
+            );
+            if(msgboxID == IDNO){
+                cout << "Please input your ip(in setting)\n";
+                cin >> ip;
+            }   
             cout << "Waiting for connection...\n";
             status = server_connect(ip);
             if(status)
