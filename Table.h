@@ -155,12 +155,9 @@ void Player::new_block(){
         for (int i = 0; i < 7; i++)
         	next.push(id2block(shuffle_block[i]));
     }
-    delete before;
-    before = nullptr;
     delete current;
     current = nullptr;
     current = next.front();
-    before = current->clone();
     next.pop();
 }
 // hold the block
@@ -303,12 +300,14 @@ void Player::print_table(){
 void Player::print_block() {
     if(current -> is_same_position(before)) return;
     short c = current -> get_ID(); // Change here
+    if(before){
     for (auto i: before -> block_position())
         if(i.y < height){
             goto_xy(this->x + i.x + 6, this->y + height - i.y);
             set_color(color_table[0] + ((i.x + bright)%2?128:0));
             std::cout << ' ';
         }
+    }
     for (auto i: current -> block_position())
         if(i.y < height){
             goto_xy(this->x + i.x + 6, this->y + height - i.y);
@@ -545,15 +544,17 @@ void Opponent::RecvTable(const char str[]){
             set_color(color_table[0] + (bright?128:0));
             for(int j = 0;j < 4;j++) std::cout << ' ';
         }
-        pTmp = id2block(tNext);
-        (*pTmp) = Point(0, 0);
-        for(auto i:pTmp -> block_position()){
-            goto_xy(x + 9 + width + i.x, y + 2 - i.y);
-            set_color(color_table[(pTmp -> get_ID())] + (bright?128:0));
-            std::cout << ' ';
+        if(tNext){
+            pTmp = id2block(tNext);
+            (*pTmp) = Point(0, 0);
+            for(auto i:pTmp -> block_position()){
+                goto_xy(x + 9 + width + i.x, y + 2 - i.y);
+                set_color(color_table[(pTmp -> get_ID())] + (bright?128:0));
+                std::cout << ' ';
+            }
+            next = tNext;
+            delete pTmp;
         }
-        next = tNext;
-        delete pTmp;
     }
     if(tHold ^ hold){ //if diff
         for(int i = 0; i < 4; ++i) {
@@ -569,9 +570,9 @@ void Opponent::RecvTable(const char str[]){
                 set_color(color_table[(pTmp -> get_ID())] + (bright?128:0));
                 std::cout << ' ';
             }
+            hold = tHold;
+            delete pTmp;
         }
-        hold = tHold;
-        delete pTmp;
     }
     //print status
     set_color(color_table[0] + (bright?128:0));

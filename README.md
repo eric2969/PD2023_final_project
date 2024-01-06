@@ -130,6 +130,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/07.a
+> Trying to fixed issue in multi playing <br>
+> Preparation of sfml
+
 > ### 2024/01/06.b (v7.1beta)
 > Added the getIP() function
 

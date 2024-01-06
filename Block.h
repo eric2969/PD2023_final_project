@@ -79,7 +79,7 @@ public:
     //a virtual function that return whether this block is I (will be override by Block_I)
     virtual bool isI() {return 0;}
     //check the block whether is at the same place as itself
-    bool is_same_position(Block *right){return (ID == right -> ID && location == right -> location && direction == right -> direction);}
+    bool is_same_position(Block *right){if(!right) return 0; return (ID == right -> ID && location == right -> location && direction == right -> direction);}
 };
 
 class Block_T : public Block{

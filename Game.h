@@ -292,9 +292,6 @@ void multiPlayer(int& line, int& score){
             Socket_thrd.join();
             throw runtime_error("You win!");
         }
-        set_color(7);
-        goto_xy(1, 1);
-        cout << status;
         if(status == -10)
 			opponent.print_table();
         else if(status == -1){
