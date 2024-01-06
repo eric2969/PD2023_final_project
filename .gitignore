@@ -1,6 +1,6 @@
 .*
 *.save-failed
-*.h.gch
+header/*.h.gch
 *.o
 tmp
 src/records.txt

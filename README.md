@@ -105,6 +105,8 @@ And we divided our game architecture into several parts, listed at the below. <b
 ## Version History
 ---
 [<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](#20240106a-v70beta)
+- [Version 8]() SFML cross-platform
+> - [v8.0] Under Construction
 - [Version 7](#20240106a-v70beta) Multi Playing UX
 > - [v7.0](#20240106a-v70beta) Table transmission via socket on thread
 - [Version 6](#20240103a-v62beta) Responsive Software Font Design/garbage throw(multi)
@@ -130,6 +132,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/07.b
+> SFML construction
+
 > ### 2024/01/07.a
 > Trying to fixed issue in multi playing <br>
 > Preparation of sfml
