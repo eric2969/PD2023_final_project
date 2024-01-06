@@ -164,16 +164,17 @@ void Player::new_block(){
 }
 // hold the block
 void Player::hold_block(){
+    Block *tHold = id2block(current -> get_ID());
+    (*tHold) = Point(0, 0);
+    delete current;
+    current = nullptr;
     if(hold){// see if there is already one block hold
-        std::swap(current, hold);
-        (*hold) = Point(d_x, d_y);
+        current = hold;
+        (*current) = Point(d_x, d_y);
     }
-    else{
-        hold = current;
-        (*hold) = Point(d_x, d_y);
-        current = nullptr;
+    else
         this -> new_block();
-    }
+    hold = tHold;
 }
 //block move
 void Player::hard_drop(){
@@ -240,13 +241,11 @@ void Player::print_table(){
     goto_xy(x, y + 5);
     for(int i = 0;i < 5;i++) std::cout << '-';
     if(hold){
-        (*hold) = Point(0, 0);
         for(auto i:hold -> block_position()){
             goto_xy(x + 3 + i.x, y + 2 - i.y);
             set_color(color_table[(hold -> get_ID())] + (bright?128:0));
             std::cout << ' ';
         }
-        (*hold) = Point(d_x, d_y);
     }
     goto_xy(x, y); //row 0
     set_color(color_table[0] + (bright?128:0));
