@@ -119,7 +119,7 @@ public:
     }
     void new_block();
     // to fix the block
-    void fix_block() {for (auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
+    void fix_block() {for(auto i : current -> block_position()) board[i.y][i.x] = current -> get_ID();}
     // to hold the block
     void hold_block();
     //block move
@@ -156,6 +156,8 @@ void Player::new_block(){
         	next.push(id2block(shuffle_block[i]));
     }
     delete current;
+    delete before;
+    before = nullptr;
     current = nullptr;
     current = next.front();
     next.pop();
@@ -301,12 +303,12 @@ void Player::print_block() {
     if(current -> is_same_position(before)) return;
     short c = current -> get_ID(); // Change here
     if(before){
-    for (auto i: before -> block_position())
-        if(i.y < height){
-            goto_xy(this->x + i.x + 6, this->y + height - i.y);
-            set_color(color_table[0] + ((i.x + bright)%2?128:0));
-            std::cout << ' ';
-        }
+        for(auto i: before -> block_position())
+            if(i.y < height){
+                goto_xy(this->x + i.x + 6, this->y + height - i.y);
+                set_color(color_table[0] + ((i.x + bright)%2?128:0));
+                std::cout << ' ';
+            }
     }
     for (auto i: current -> block_position())
         if(i.y < height){
