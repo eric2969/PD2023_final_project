@@ -1,5 +1,16 @@
-#include <bits/stdc++.h>
-#include <windows.h> 
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <random>
+#include <algorithm>
+#include <functional>
+#include <mutex>
+#include <thread>
+#include <ctime>
+#include <cstring>
+#include <vector>
+#include <queue>
+#include <windows.h>
 
 using namespace std;
 

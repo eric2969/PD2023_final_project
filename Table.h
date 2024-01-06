@@ -335,7 +335,7 @@ bool Player::check_block(const Point &p) const{
 //line clear
 short Player::chk_clear(int& line, int& tscore){
     bool allExist;// see if the whole row is filled
-    int cnt = 0, point = 5;
+    int cnt = 0, point = 5, tGarbage = garbage;
     double multiplier = 1.0;// the total line num cleared
     for(int i=0; i<height; i++){
         allExist = true;
@@ -411,7 +411,7 @@ short Player::chk_clear(int& line, int& tscore){
     for(int i = 0;i < width;i++)
         if(board[height][i])
             return -1; //game over token
-    return cnt;
+    return (max(0, cnt-tGarbage));
 }
 //multi playing
 void Player::SendTable(char str[]) const{
