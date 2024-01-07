@@ -1,8 +1,8 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-v5.3.2-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v5.3.2>)    [<img src="https://img.shields.io/badge/Download-v5.3.2-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v5.3.2.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v7.0beta>) [<img src="https://img.shields.io/badge/Download-v7.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.0beta.zip>) <br>
+[<img src="https://img.shields.io/badge/Release-v7.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v7.1>)    [<img src="https://img.shields.io/badge/Download-v7.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.1.zip>)
+<!--br>[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v7.0beta>) [<img src="https://img.shields.io/badge/Download-v7.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.0beta.zip>) <br-->
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -95,17 +95,18 @@ And we divided our game architecture into several parts, listed at the below. <b
 >> This establish a class that can control and display the whole player game board <br>It will scan the keyboard state and does cooresponding operation such that move or rotate the block and verify the validation of this operation <br>Block operations are provided and maintained by Block.h
 >> ### Block.h
 >> This contain struct Point(for coordinate) and class Block(abstract class) <br>Class Block save some general data of each block, <br>and provide some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J, K, O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
->> ### Socket (abstract)
+>> ### Socket.h
 >> This is for transmit data of opponent and player
->>> ### Server.h
+>>> ### Server Side
 >>> This contain a function that establish socket connection. <br> And provide functions that can transmit and receive data from and to client side.
->>> ### Client.h
+>>> ### Client Side
 >>> This contain a function that can establish a socket connected to server side. <br> And provide functions that can trasmit and receive data from and to server side.
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-5.3.2-brightgreen">](#20231230b-v532)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](#20240106a-v70beta)
-- [Version 7](#20240106a-v70beta) Multi Playing UX
+[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](#20240106a-v70beta)-->
+- [Version 7](#20240107a-v71) Multi Playing UX Improved
+> - [v7.1](#20240107a-v71) Add get local ip function
 > - [v7.0](#20240106a-v70beta) Table transmission via socket on thread
 - [Version 6](#20240103a-v62beta) Responsive Software Font Design/garbage throw(multi)
 > - [v6.2](#20240103a-v62beta) Conf reset feature
@@ -130,7 +131,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
-> ### 2024/01/07.a
+> ### 2024/01/07.a (v7.1)
 > Trying to fixed issue in multi playing <br>
 > Preparation of sfml
 
