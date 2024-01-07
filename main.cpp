@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <iomanip>
 #include <random>
 #include <algorithm>
 #include <functional>
@@ -10,27 +9,27 @@
 #include <cstring>
 #include <vector>
 #include <queue>
-#include <windows.h>
+#include <SFML/System.hpp>
+#include <SFML/Network.hpp>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
+using namespace sf;
 
-HANDLE hConsole;
-bool bright, pic_ava, conn, server, multi;
-int das, arr, gravity;
-int ResX, ResY;
+bool bright, conn, server, multi;
+short das, arr, gravity, ResX, ResY, width, height, unit;
 const short flush_tick = 5, DataSize = 130;
+RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!");
+Font font;
 
+#define FONT_PATH "src/Arial.ttf";
 #define SET_PATH "src/settings.txt"
-#define PIC_PATH "src/pic.txt"
 #define RECORD_PATH "src/records.txt"
 
-#include "VK.h"
-#include "Socket.h"
-#include "Console.h"
-#include "Block.h"
-#include "Table.h"
-#include "Menu.h"
-#include "Game.h"
+#include "header/Socket.h"#include "header/Block.h"
+#include "header/Table.h"
+#include "header/Menu.h"
+#include "header/Game.h"
 
 int playCnt, TimeCnt, clearCnt, scoreCnt, highClear, highScore;
 
@@ -38,7 +37,6 @@ void game_init();
 void game_exit();
 void record_reset() {playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score, const int& time);
-void print_pic();
 
 struct option1{ //option from single player mode
     static Menu sub_menu;
@@ -125,30 +123,14 @@ struct option1{ //option from single player mode
             }
         }
         cout << "Configuration Set...\n";
-        char title[256], tmp[5];
-        strcpy(title, "Single Game\nTable Width: ");
-        itoa(width, tmp, 10);
-        strcat(title, tmp);
-        strcat(title, ", Height: ");
-        itoa(height, tmp, 10);
-        strcat(title, tmp);
-        strcat(title, "\nChoose a Game Mode\nRight click for return to main menu");
-        sub_menu.settitle(title);
+        sub_menu.settitle("Single Game\nTable Width: " + to_string(width) + ", Height: " + to_string(height) + "\nChoose a Game Mode\nRight click for return to main menu");
         Sleep(800);
         pause();
     }
     void operator() (){
         clrscr();
-        char title[256], tmp[5];
         sub_menu.init();
-        strcpy(title, "Single Game\nTable Width: ");
-        itoa(width, tmp, 10);
-        strcat(title, tmp);
-        strcat(title, ", Height: ");
-        itoa(height, tmp, 10);
-        strcat(title, tmp);
-        strcat(title, "\nChoose a Game Mode\nRight click for return to main menu");
-        sub_menu.settitle(title);
+        sub_menu.settitle("Single Game\nTable Width: " + to_string(width) + ", Height: " + to_string(height) + "\nChoose a Game Mode\nRight click for return to main menu");
         sub_menu.add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode").add(set_size, "Set Table Size");
         sub_menu.start();
     }
@@ -370,12 +352,8 @@ struct option3{ //record option
 
 signed main(){
     //initialize the main menu
-    DisableIME();
-    hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    FullScreen();
     game_init();
     socket_init();
-    SetFont(0, 100);
     Menu Main;
     option1 opt1;
     option2 opt2;
@@ -387,11 +365,16 @@ signed main(){
 }
 
 void game_init(){
-	//load monitor resolution
-	ResX = GetSystemMetrics(SM_CXSCREEN) - 30;
-	ResY = GetSystemMetrics(SM_CYSCREEN) - 30;
+	srand(time(NULL));
+	RexX = VideoMode::getDesktopMode().width;
+	ResY = VideoMode::getDesktopMode().height;
+    if(!font.loadFromFile(FONT_PATH)){
+        cout << "Unable to load the font data\nPlease fixed it and open again!";
+        pause();
+        exit(1);
+    }
     // read user preference
-    ifstream setting(SET_PATH), record(RECORD_PATH), pic(PIC_PATH);
+    ifstream setting(SET_PATH), record(RECORD_PATH);
     if(setting.is_open())
         setting >> das >> arr >> gravity >> bright;
     else{
@@ -416,15 +399,6 @@ void game_init(){
         pause();
         clrscr();
     }
-    if(!(pic_ava = pic.is_open())){
-    	pic_ava = 0;
-    	set_color(7);
-    	cout << "Picture file loaded fail, picture function disabled\n";
-    	cout << "To restore, please download data from Github to src/pic.txt\n";
-    	pause();
-        clrscr();
-	}
-	pic.close();
     setting.close();
     record.close();
 }
@@ -453,19 +427,5 @@ void record_update(int& clr, int& score,const int& time){
     scoreCnt += score;
     highClear = max(highClear, clr);
     highScore = max(highScore, score);
-}
-
-void print_pic(){
-	if(!pic_ava)
-		return;
-    clrscr();
-    SetFont(1, 150, 150);
-    goto_xy(0,0);
-    set_color(7);
-    SetConsoleSize(900, 900); //resize console
-    ifstream pic(PIC_PATH);
-    string str;
-    while(getline(pic,str)) cout << str << endl; //print out the picture
-    pic.close();
 }
 
