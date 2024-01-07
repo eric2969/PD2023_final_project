@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v7.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v7.1>)    [<img src="https://img.shields.io/badge/Download-v7.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.1.zip>)
-<!--br>[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v7.0beta>) [<img src="https://img.shields.io/badge/Download-v7.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.0beta.zip>) <br-->
+<br>[<img src="https://img.shields.io/badge/Beta-v8.0beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.0beta>) [<img src="https://img.shields.io/badge/Download-v8.0beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.0beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -13,7 +13,7 @@
 
 ## What
 ---
-Our project is to build a tetris game by "windows.h", allowing playing in single player or multi player mode(under construction).
+Our project is to build a tetris powered by SFML, allowing playing in single player or multi player mode.
 ## Team Member
 ---
 | Name | Department | Student ID | Position|
@@ -24,16 +24,17 @@ Our project is to build a tetris game by "windows.h", allowing playing in single
 | 吳秉哲 | IM Freshman | B12705049 | Block Programmer, Presentation, Report |
 ## Requirement
 ---
-This application is required to be running on windows 10 or newer. <br>
+This application is required to be running on OS supporting SFML. <br>
 ## How To Play
 ---
 > ### Preparation
-> [Windows 10](#windows-10) <br>
-> [Windows 11](#windows-11) <br>
->> ### Windows 10
+> [Windows](#windows) <br>
+> [Mac OS](#mac-os) <br>
+> [Linux](#linux) <br>
+>> ### Windows
 >> 1. Just click the main.exe in the repo, Enjoy <br>
 >> ![execute](assets/execution.png)
->> ### Windows 11
+>> ### Mac OS
 >> 1. Open the settings in your computer, it may be in the Start Menu <br>
 >> ![setting](assets/win11-setting.png)
 >> 2. Click the search bar and type "terminal" or "終端機", and click the first one. <br>
@@ -41,6 +42,9 @@ This application is required to be running on windows 10 or newer. <br>
 >> 3. Click the terminal, and select the second one. <br>
 >> ![console](assets/win11-console.png)
 >> 4. Go to the repo folder, and click the main.exe, Enjoy <br>
+>> ![execute](assets/execution.png)
+>> ### Linux
+>> 1. Just click the main.exe in the repo, Enjoy <br>
 >> ![execute](assets/execution.png)
 <br>
 
@@ -51,10 +55,10 @@ This application is required to be running on windows 10 or newer. <br>
 <br>
 
 > Configurations Setting
-> | Configuration Name | DAS | ARR | Gravity | Bright Mode |
+> | Configuration Name | DAS | ARR | Gravity |
 > | :--: | :--: | :--: | :--: | :--: |
-> | Function | Delay auto shift | Auto repeat rate | Dropping rate(down arrow) | Display mode |
-> | Adjust Range | 1(slow)-1000(fast) | 1(slow)-500(fast) | 1(slow)-50(fast) | 1(dark)/2(bright) |
+> | Function | Delay auto shift | Auto repeat rate | Dropping rate(down arrow) |
+> | Adjust Range | 1(slow)-1000(fast) | 1(slow)-500(fast) | 1(slow)-50(fast) |
 
 ## Architecture
 ---
@@ -69,9 +73,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 > 4. [Console.h](#consoleh) <br>
 > 5. [Table.h](#tableh) <br>
 > 6. [Block.h](#blockh) <br>
-> 7. [Socket (abstract)](#socket-abstract) <br>
->>- [Server.h](#serverh) <br>
->>- [Client.h](#clienth) <br>
+> 7. [Socket.h](#socketh) <br>
+>>- [Server Side](#server-side) <br>
+>>- [Client Side](#client-side) <br>
 >> ### Main.cpp
 >> This contain game initailize and exit function that can input and output the data in the src <br>
 >> And establish main menu based on Menu.h, providing below functions<br>
@@ -104,7 +108,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v7.0beta-blue">](#20240106a-v70beta)-->
+[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.0beta-blue">](#20240107b-v80beta)
+- [Version 8](#20240107b-v80beta) SFML cross-platform
+> - [v8.0](#20240107b-v80beta) Under Construction
 - [Version 7](#20240107a-v71) Multi Playing UX Improved
 > - [v7.1](#20240107a-v71) Add get local ip function
 > - [v7.0](#20240106a-v70beta) Table transmission via socket on thread
@@ -131,6 +137,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/07.b (v8.0beta)
+> SFML construction
+
 > ### 2024/01/07.a (v7.1)
 > Trying to fixed issue in multi playing <br>
 > Preparation of sfml
