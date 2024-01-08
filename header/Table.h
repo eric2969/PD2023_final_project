@@ -138,13 +138,7 @@ public:
     short chk_clear(int& line, int& score);
     //multi playing
     void SendTable(char str[]) const; //convert table into cstring (compression)
-    void get_garbage(const short cnt) { /*get garbage;
-        if(!cnt) return;
-        garbage += cnt;
-        set_color(14);
-        goto_xy(x + 1, y + height);
-        std::cout << "+ " << setw(2) << garbage;*/
-    }  
+    void get_garbage(const short cnt) {garbage += cnt;}  
 };
 //block existence
 void Player::new_block(){
@@ -242,10 +236,10 @@ void Player::print_table(){
     Side.setOutlineColor(color_tBorder); b_table.setOutlineColor(color_tBorder); Garbage_can.setOutlineColor(color_tBorder); GarRect.setOutlineColor(Color(0, 0, 0));
     Side.setFillColor(Color(0, 0, 0, 0)); b_table.setFillColor(Color(0, 0, 0, 0)); Garbage_can.setFillColor(Color(0, 0, 0)); GarRect.setFillColor(Color(195, 0, 0));
     //Draw table and side block table
-    Side.setPosition(x + unit * 4, y + unit * 24); window.draw(Side); //hold
-    Side.setPosition(x + unit * (111 + width * 20), y + unit * 24); window.draw(Side); //next
-    Garbage_can.setPosition(x + unit * 94, y + unit * 6); window.draw(Garbage_can); //garbage
-    b_table.setPosition(x + unit * 101, y + unit * 6); window.draw(b_table); //table
+    Side.setPosition(x + unit * 4, y + unit * 22); window.draw(Side); //hold
+    Side.setPosition(x + unit * (111 + width * 20), y + unit * 22); window.draw(Side); //next
+    Garbage_can.setPosition(x + unit * 92, y + unit * 4); window.draw(Garbage_can); //garbage
+    b_table.setPosition(x + unit * 101, y + unit * 4); window.draw(b_table); //table
     //hold label
     text.setColor(Color(255, 255, 255)); //white
     text.setCharacterSize(unit * 20);
@@ -261,12 +255,12 @@ void Player::print_table(){
 	BlockRect.setOutlineColor(color_border[0]);
     for(int i = 0;i < 4;i++) //hold board
     	for(int j = 0;j < 4;j++){
-    		BlockRect.setPosition(x + unit * (5 + j * 20), y + unit * (25 + i * 20));
+    		BlockRect.setPosition(x + unit * (5 + j * 20), y + unit * (23 + i * 20));
             window.draw(BlockRect);
 		}
 	for(int i = 0;i < 4;i++) //next board
     	for(int j = 0;j < 4;j++){
-    		BlockRect.setPosition(x + unit * (112 + (j + width) * 20), y + unit * (25 + i * 20));
+    		BlockRect.setPosition(x + unit * (112 + (j + width) * 20), y + unit * (23 + i * 20));
             window.draw(BlockRect);
 		}
     if(hold){ //hold block
@@ -274,7 +268,7 @@ void Player::print_table(){
         BlockRect.setFillColor(color_table[tmp]);
         BlockRect.setOutlineColor(color_border[tmp]);
         for(auto i:hold -> block_position()){
-            BlockRect.setPosition(x + unit * (45 + i.x * 20), y + unit * (45 - i.y * 20));
+            BlockRect.setPosition(x + unit * (45 + i.x * 20), y + unit * (43 - i.y * 20));
             window.draw(BlockRect);
         }
     }
@@ -284,7 +278,7 @@ void Player::print_table(){
         BlockRect.setFillColor(color_table[tmp]);
         BlockRect.setOutlineColor(color_border[tmp]);
         for(auto i:next.front() -> block_position()){
-            BlockRect.setPosition(x + unit * (152 + (width + i.x) * 20), y + unit * (45 - i.y * 20));
+            BlockRect.setPosition(x + unit * (152 + (width + i.x) * 20), y + unit * (43 - i.y * 20));
             window.draw(BlockRect);
         }
         (*next.front()) = Point(d_x, d_y);
@@ -294,7 +288,7 @@ void Player::print_table(){
         for (int j = 0; j < width; ++j) { //column 1-10
             BlockRect.setFillColor(color_table[board[i][j]]);
         	BlockRect.setOutlineColor(color_border[board[i][j]]);
-        	BlockRect.setPosition(x + unit * (102 + j * 20), y + unit * ((height - i - 1) * 20 + 7));
+        	BlockRect.setPosition(x + unit * (102 + j * 20), y + unit * ((height - i - 1) * 20 + 5));
         	window.draw(BlockRect);
         }
     }
@@ -304,7 +298,7 @@ void Player::print_table(){
 	        	tmp = current -> get_ID();
 	            BlockRect.setFillColor(color_table[tmp]);
 	        	BlockRect.setOutlineColor(color_border[tmp]);
-	        	BlockRect.setPosition(x + unit * (102 + i.x * 20), y + unit * ((height - i.y - 1) * 20 + 7));
+	        	BlockRect.setPosition(x + unit * (102 + i.x * 20), y + unit * ((height - i.y - 1) * 20 + 5));
 	        	window.draw(BlockRect);
 	        }
 	//set status

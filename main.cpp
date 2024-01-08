@@ -37,12 +37,14 @@ int playCnt, TimeCnt, clearCnt, scoreCnt, highClear, highScore;
 
 void game_init();
 void game_exit();
+void set_unit(int cols, int lns){unit = min(ResX/cols,ResY/lns); return;}
 void record_reset() {playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score, const int& time);
 
 signed main(){
     //initialize the main menu
     game_init();
+    set_unit(400, 500);
     Player player;
     player.set_position(20, 20);
     player.init(clock());
