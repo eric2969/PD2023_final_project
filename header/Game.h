@@ -1,3 +1,5 @@
+#pragma once
+
 #define KeyCnt 11
 //Up, Down, Left, Right, Space, Z, X, C, Shift, P(pause), Q(quit)
 const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q};

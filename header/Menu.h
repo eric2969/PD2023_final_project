@@ -1,3 +1,4 @@
+#pragma once
 //dwButtonState for the mouse
 #define L_BUTTON 0x1
 #define R_BUTTON 0x2

@@ -1,3 +1,4 @@
+#pragma once
 //struct for saving coordinate data
 struct Point{
     //for saving data for x and y coordinate
@@ -18,9 +19,7 @@ struct Point{
     const Point& operator=(const Point& tmp){ this -> x = tmp.x, this -> y = tmp.y; return *this;}
 };
 //for output a Point in format
-ostream &operator<< (ostream &out,Point right){
-    out << '(' << right.x << ',' << right.y << ')';
-}
+ostream &operator<< (ostream &out,Point right){ out << '(' << right.x << ',' << right.y << ')';}
 
 //Use for create a container for save block data on x-y plane
 class Block{

@@ -1,3 +1,4 @@
+#pragma once
 //declare server address and client address
 SOCKADDR_IN Server_addr, Ser_addr;;
 //declare socket for listen and connection

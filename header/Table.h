@@ -1,3 +1,5 @@
+#pragma once
+
 #define d_x (width/2 - 1)
 #define d_y (height-1)
 
@@ -9,9 +11,10 @@ void qClear(std::queue<Block*>& q) {
 	}
 }// give the table a empty queue
 
-//allow various playing mode
+//color table
 const Color color_table[9] = {Color(0, 0, 0), Color(15, 155, 215), Color(34, 65, 197), Color(215, 16, 55), Color(227, 91, 2), Color(90, 177, 3), Color(227, 159, 0), Color(175, 41, 137), Color(187, 187, 187)};
-const Color border = Color(30, 30, 30);
+const Color color_border[9] = {Color(80, 80, 80), Color(15, 155, 215), Color(34, 65, 197), Color(215, 16, 55), Color(227, 91, 2), Color(90, 177, 3), Color(227, 159, 0), Color(175, 41, 137), Color(187, 187, 187)};
+const Color color_tBorder = Color(50, 50, 50);
 
 
 //5-stage test for kick_table
@@ -128,7 +131,6 @@ public:
     void rotate(const short direction);
     //printing
     void print_table() override; //print table on windows.h (x,y) is the origin of the table
-    void print_block();
     //checking
     bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || (board[i.y][i.x]&7) ) return 0; return 1;}
     bool check_block(const Point &p) const;
@@ -136,12 +138,12 @@ public:
     short chk_clear(int& line, int& score);
     //multi playing
     void SendTable(char str[]) const; //convert table into cstring (compression)
-    void get_garbage(const short cnt) { //get garbage;
+    void get_garbage(const short cnt) { /*get garbage;
         if(!cnt) return;
         garbage += cnt;
         set_color(14);
         goto_xy(x + 1, y + height);
-        std::cout << "+ " << setw(2) << garbage;
+        std::cout << "+ " << setw(2) << garbage;*/
     }  
 };
 //block existence
@@ -230,109 +232,104 @@ void Player::rotate(const short direction){
 }
 //printing
 void Player::print_table(){
+    int tmp;
+    //border:1 unit, side border: 4 unit, table border:6 unit, text&block:20 unit, empty block:18*18color, 1unit border
     Text text;
     text.setFont(font);
-    text.setCharacterSize(unit * 10);
-    text.setFillColor(Color(0, 0, 0));
-    //hold and next label
-    //hold
+    RectangleShape BlockRect(Vector2f(unit * 18, unit * 18)), Side(Vector2f(unit * 80, unit * 80)), b_table(Vector2f(unit * width * 20, unit * height * 20));
+    RectangleShape GarRect(Vector2f(unit * 4, unit * 19)), Garbage_can(Vector2f(unit * 5, unit * height * 20));
+    BlockRect.setOutlineThickness(unit >> 1); Side.setOutlineThickness(unit * 2); b_table.setOutlineThickness(unit * 4); Garbage_can.setOutlineThickness(unit * 4); GarRect.setOutlineThickness(unit >> 1);
+    Side.setOutlineColor(color_tBorder); b_table.setOutlineColor(color_tBorder); Garbage_can.setOutlineColor(color_tBorder); GarRect.setOutlineColor(Color(0, 0, 0));
+    Side.setFillColor(Color(0, 0, 0, 0)); b_table.setFillColor(Color(0, 0, 0, 0)); Garbage_can.setFillColor(Color(0, 0, 0)); GarRect.setFillColor(Color(195, 0, 0));
+    //Draw table and side block table
+    Side.setPosition(x + unit * 4, y + unit * 24); window.draw(Side); //hold
+    Side.setPosition(x + unit * (111 + width * 20), y + unit * 24); window.draw(Side); //next
+    Garbage_can.setPosition(x + unit * 94, y + unit * 6); window.draw(Garbage_can); //garbage
+    b_table.setPosition(x + unit * 101, y + unit * 6); window.draw(b_table); //table
+    //hold label
+    text.setColor(Color(255, 255, 255)); //white
+    text.setCharacterSize(unit * 20);
     text.setString("HOLD");
-    text.setPosition(x + unit, y);
+    text.setOrigin(text.getGlobalBounds().left + round(text.getGlobalBounds().width / 2), text.getGlobalBounds().top + round(text.getGlobalBounds().height / 2)); //align center(4 word)
+    text.setPosition(x + unit * 44, y + unit * 10);
     window.draw(text);
+    //next label
     text.setString("NEXT");
-    text.setPosition(x + unit * (45 + width * 10), y);
+    text.setPosition(x + unit * (151 + width * 20), y + unit * 10);
     window.draw(text);
-    //hold width:5, height:6
-    for(int i = 0; i < 4; ++i) {
-        goto_xy(x, y + i + 1);
-        set_color(color_table[0] + (bright?128:0));
-        std::cout << '|';
-        for(int j = 0;j < 4;j++) std::cout << ' ';
-    }
-    goto_xy(x, y + 5);
-    for(int i = 0;i < 5;i++) std::cout << '-';
-    if(hold){
+    BlockRect.setFillColor(color_table[0]);
+	BlockRect.setOutlineColor(color_border[0]);
+    for(int i = 0;i < 4;i++) //hold board
+    	for(int j = 0;j < 4;j++){
+    		BlockRect.setPosition(x + unit * (5 + j * 20), y + unit * (25 + i * 20));
+            window.draw(BlockRect);
+		}
+	for(int i = 0;i < 4;i++) //next board
+    	for(int j = 0;j < 4;j++){
+    		BlockRect.setPosition(x + unit * (112 + (j + width) * 20), y + unit * (25 + i * 20));
+            window.draw(BlockRect);
+		}
+    if(hold){ //hold block
+        tmp = hold -> get_ID();
+        BlockRect.setFillColor(color_table[tmp]);
+        BlockRect.setOutlineColor(color_border[tmp]);
         for(auto i:hold -> block_position()){
-            goto_xy(x + 3 + i.x, y + 2 - i.y);
-            set_color(color_table[(hold -> get_ID())] + (bright?128:0));
-            std::cout << ' ';
+            BlockRect.setPosition(x + unit * (45 + i.x * 20), y + unit * (45 - i.y * 20));
+            window.draw(BlockRect);
         }
     }
-    goto_xy(x, y); //row 0
-    set_color(color_table[0] + (bright?128:0));
-    std::cout << "-HOLD-";
-    for(int i = 0;i < width; i++) std::cout << '-'; 
-    std::cout << "-NEXT-";
+    if(!next.empty()){ //hold block
+        tmp = next.front() -> get_ID();
+        (*next.front()) = Point(0, 0);
+        BlockRect.setFillColor(color_table[tmp]);
+        BlockRect.setOutlineColor(color_border[tmp]);
+        for(auto i:next.front() -> block_position()){
+            BlockRect.setPosition(x + unit * (152 + (width + i.x) * 20), y + unit * (45 - i.y * 20));
+            window.draw(BlockRect);
+        }
+        (*next.front()) = Point(d_x, d_y);
+    }
     //board width:W+2, height:H+2
     for(int i = 0; i < height; ++i) { //row 1-20
-        goto_xy(x + 5, y + i + 1); //column 0
-        std::cout << '|';
         for (int j = 0; j < width; ++j) { //column 1-10
-            set_color(color_table[ board[height-1-i][j] ] + (board[height-1-i][j]?0:((j % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
-            std::cout << ' ';
+            BlockRect.setFillColor(color_table[board[i][j]]);
+        	BlockRect.setOutlineColor(color_border[board[i][j]]);
+        	BlockRect.setPosition(x + unit * (102 + j * 20), y + unit * ((height - i - 1) * 20 + 7));
+        	window.draw(BlockRect);
         }
-        set_color(color_table[0] + (bright?128:0));
-        std::cout << '|'; //column 11
     }
-    goto_xy(x + 5, y+height+1);
-    for(int i = 0;i < width + 2; i++) std::cout << '-';//row 21
-    //next
-    for(int i = 0; i < 4; ++i) {
-        goto_xy(x + width + 7, y + i + 1);
-        set_color(color_table[0] + (bright?128:0));
-        for(int j = 0;j < 4;j++) std::cout << ' ';
-        std::cout << '|';
-    }
-    goto_xy(x + width + 7, y + 5);
-    for(int i = 0;i < 5;i++) std::cout << '-';
-    (*(next.front())) = Point(0, 0);
-    for(auto i:next.front() -> block_position()){
-        goto_xy(x + 9 + width + i.x, y + 2 - i.y);
-        set_color(color_table[(next.front() -> get_ID())] + (bright?128:0));
-        std::cout << ' ';
-    }
-    (*(next.front())) = Point(d_x, d_y);
-    //set status
-    set_color(color_table[0] + (bright?128:0));
-    goto_xy(x + width + 7, y + 7);
-    std::cout << "Level:     " << level;
-    goto_xy(x + width + 7, y + 8);
-    std::cout << "Score:     " << score;
-    goto_xy(x + width + 7, y + 9);
-    std::cout << "Clear Line:" << clear_line;
-    goto_xy(x + width + 7, y + 10);
-    set_color(0);
-    std::cout << "               ";
-    goto_xy(x + width + 7, y + 10);
-    set_color(color_table[0] + (bright?128:0));
-    std::cout << "Combo:     " << combo;
+    if(current)
+	    for (auto i: current -> block_position())
+	        if(i.y < height){
+	        	tmp = current -> get_ID();
+	            BlockRect.setFillColor(color_table[tmp]);
+	        	BlockRect.setOutlineColor(color_border[tmp]);
+	        	BlockRect.setPosition(x + unit * (102 + i.x * 20), y + unit * ((height - i.y - 1) * 20 + 7));
+	        	window.draw(BlockRect);
+	        }
+	//set status
+	text.setCharacterSize(unit * 15);
+	text.setOrigin(0, 0);
+	text.setString("Time:          " + to_string((clock() - tStart) / 1000));
+	text.setPosition(x + unit * (111 + width * 20), y + unit * 108);
+	window.draw(text);
+	text.setString("Level:         " + to_string(level));
+	text.setPosition(x + unit * (111 + width * 20), y + unit * 123);
+	window.draw(text);
+	text.setString("Score:        " + to_string(score));
+	text.setPosition(x + unit * (111 + width * 20), y + unit * 138);
+	window.draw(text);
+	text.setString("Clear Line: " + to_string(clear_line));
+	text.setPosition(x + unit * (111 + width * 20), y + unit * 153);
+	window.draw(text);
+	text.setString("Combo:      " + to_string(combo));
+	text.setPosition(x + unit * (111 + width * 20), y + unit * 168);
+	window.draw(text);
+	//garbage
+	
     return;
 }
 
-void Player::print_block() {
-    if(current -> is_same_position(before)) return;
-    short c = current -> get_ID(); // Change here
-    if(before){
-        for(auto i: before -> block_position())
-            if(i.y < height){
-                goto_xy(this->x + i.x + 6, this->y + height - i.y);
-                set_color(color_table[0] + ((i.x + bright)%2?128:0));
-                std::cout << ' ';
-            }
-    }
-    for (auto i: current -> block_position())
-        if(i.y < height){
-            goto_xy(this->x + i.x + 6, this->y + height - i.y);
-            set_color(color_table[c] + (bright?128:0));
-            std::cout << ' ';
-        }
-    set_color(color_table[0] + (bright?128:0));
-    goto_xy(x + width + 7, y + 6);
-    std::cout << "Time:      " << (clock() - tStart) / 1000;
-    delete before;
-    before = nullptr;
-    before = current->clone();
-}
 //checking
 bool Player::check_block(const Point &p) const{
     Block *bTmp = current -> clone();
@@ -364,19 +361,8 @@ short Player::chk_clear(int& line, int& tscore){
         }
     }
     if(garbage){
-        if(cnt){
+        if(cnt)
             garbage = std::max(0, garbage - cnt);
-            if(garbage){
-                set_color(14);
-                goto_xy(x + 1, y + height);
-                std::cout << "+ " << setw(2) << garbage;
-            }
-            else{
-                set_color(0);
-                goto_xy(x + 1, y + height);
-                std::cout << "    ";
-            }
-        }
         else{
             int cleavage = rand() % 10;
             garbage = min(20, garbage);
@@ -387,9 +373,6 @@ short Player::chk_clear(int& line, int& tscore){
                 for(int j = 0;j < width;j++)
                     board[i][j] = ((cleavage==j)?8:9);
             garbage = 0;
-            set_color(0);
-            goto_xy(x + 1, y + height);
-            std::cout << "    ";
         }
     }
     // update the current condition
@@ -401,6 +384,7 @@ short Player::chk_clear(int& line, int& tscore){
     point = ((cnt?(point<<cnt):0));
     multiplier *= pow(2,(tSpin + b2b * 3));
     multiplier *= combo?pow(1.1, combo-1):0;
+    /*
     this -> score += point * multiplier;
     set_color(14);
     if(cnt){
@@ -412,7 +396,7 @@ short Player::chk_clear(int& line, int& tscore){
     goto_xy(x+width+8, y+height-1);
     std::cout << (tSpin?text_table[0]:"");
     goto_xy(x+width+8, y+height);
-    std::cout << (cnt?text_table[cnt]:"");
+    std::cout << (cnt?text_table[cnt]:"");*/
     tSpin = 0;
     level = clear_line/10;
     if(level > 29) level = 29;
@@ -477,145 +461,117 @@ public:
 };
 //printing
 void Opponent::print_table(){
-    //reset Board
-    memset(board, 0, sizeof(board)); hold = 0, next = 0;
-    //hold
-    for(int i = 0; i < 4; ++i) {
-        goto_xy(x, y + i + 1);
-        set_color(color_table[0] + (bright?128:0));
-        std::cout << '|';
-        for(int j = 0;j < 4;j++) std::cout << ' ';
-    }
-    goto_xy(x, y + 5);
-    for(int i = 0;i < 5;i++) std::cout << '-';
-    //board
-    goto_xy(x, y); //row 0
-    set_color(color_table[0] + (bright?128:0));
-    std::cout << "-HOLD-";
-    for(int i = 0;i < width; i++) std::cout << '-'; 
-    std::cout << "-NEXT-";
-    for(int i = 0; i < height; ++i) { //row 1-20
-        goto_xy(x + 5, y + i + 1); //column 0
-        std::cout << '|';
-        for (int j = 0; j < width; ++j) { //column 1-10
-            set_color(color_table[0] + (j % 2?128:0) + (bright?128:0)); //inverse y-axis(19-i)
-            std::cout << ' ';
+    int tmp; Block *pTmp;
+    //border:1 unit, side border: 4 unit, table border:6 unit, text&block:20 unit, empty block:18*18color, 1unit border
+    Text text;
+    text.setFont(font);
+    RectangleShape BlockRect(Vector2f(unit * 18, unit * 18)), Side(Vector2f(unit * 80, unit * 80)), b_table(Vector2f(unit * width * 20, unit * height * 20));
+    BlockRect.setOutlineThickness(unit); Side.setOutlineThickness(unit * 4); b_table.setOutlineThickness(unit * 6);
+    Side.setOutlineColor(color_tBorder); b_table.setOutlineColor(color_tBorder);
+    Side.setFillColor(Color(0, 0, 0, 0)); b_table.setFillColor(Color(0, 0, 0, 0));
+    //Draw table and side block table
+    Side.setPosition(x + unit * 4, y + unit * 24); window.draw(Side); //hold
+    Side.setPosition(x + unit * (104 + width * 20), y + unit * 24); window.draw(Side); //next
+    b_table.setPosition(x + unit * 94, y + unit * 6); window.draw(b_table); //table
+    //hold label
+    text.setColor(Color(255, 255, 255)); //white
+    text.setCharacterSize(unit * 20);
+    text.setString("HOLD");
+    text.setOrigin(text.getGlobalBounds().left + round(text.getGlobalBounds().width / 2), text.getGlobalBounds().top + round(text.getGlobalBounds().height / 2)); //align center(4 word)
+    text.setPosition(x + unit * 44, y + unit * 10);
+    window.draw(text);
+    //next label
+    text.setString("NEXT");
+    text.setPosition(x + unit * (144 + width * 20), y + unit * 10);
+    window.draw(text);
+    BlockRect.setFillColor(color_table[0]);
+	BlockRect.setOutlineColor(color_border[0]);
+    for(int i = 0;i < 4;i++) //hold board
+    	for(int j = 0;j < 4;j++){
+    		BlockRect.setPosition(x + unit * (5 + j * 20), y + unit * (25 + i * 20));
+            window.draw(BlockRect);
+		}
+	for(int i = 0;i < 4;i++) //next board
+    	for(int j = 0;j < 4;j++){
+    		BlockRect.setPosition(x + unit * (105 + (j + width) * 20), y + unit * (25 + i * 20));
+            window.draw(BlockRect);
+		}
+    if(hold){ //hold block
+    	pTmp = id2block(hold);
+        (*pTmp) = Point(0, 0);
+        BlockRect.setFillColor(color_table[hold]);
+        BlockRect.setOutlineColor(color_border[hold]);
+        for(auto i:pTmp -> block_position()){
+            BlockRect.setPosition(x + unit * (45 + i.x * 20), y + unit * (45 - i.y * 20));
+            window.draw(BlockRect);
         }
-        set_color(color_table[0] + (bright?128:0));
-        std::cout << '|'; //column 11
+        delete pTmp;
     }
-    goto_xy(x + 5, y + 21);
-    for(int i = 0;i < width + 2; i++) std::cout << '-';//row 21
-    //next
-    for(int i = 0; i < 4; ++i) {
-        goto_xy(x + width + 7, y + i + 1);
-        set_color(color_table[0] + (bright?128:0));
-        for(int j = 0;j < 4;j++) std::cout << ' ';
-        std::cout << '|';
+    if(next){
+        pTmp = id2block(next);
+        (*pTmp) = Point(0, 0);
+        BlockRect.setFillColor(color_table[next]);
+        BlockRect.setOutlineColor(color_border[next]);
+        for(auto i:pTmp -> block_position()){
+            BlockRect.setPosition(x + unit * (145 + (width + i.x) * 20), y + unit * (45 - i.y * 20));
+            window.draw(BlockRect);
+        }
+        delete pTmp;
     }
-    goto_xy(x + width + 7, y + 5);
-    for(int i = 0;i < 5;i++) std::cout << '-';
-    set_color(color_table[0] + (bright?128:0));
-    goto_xy(x + width + 7, y + 6);
-    std::cout << "Level:     " << level;
-    goto_xy(x + width + 7, y + 7);
-    std::cout << "Score:     " << score;
-    goto_xy(x + width + 7, y + 8);
-    std::cout << "Clear Line:" << clear_line;
+    //board width:W+2, height:H+2
+    for(int i = 0; i < height; ++i) { //row 1-20
+        for (int j = 0; j < width; ++j) { //column 1-10
+            BlockRect.setFillColor(color_table[board[i][j]]);
+        	BlockRect.setOutlineColor(color_border[board[i][j]]);
+        	BlockRect.setPosition(x + unit * (95 + j * 20), y + unit * ((height - i - 1) * 20 + 7));
+        	window.draw(BlockRect);
+        }
+    }
+	//set status
+	text.setCharacterSize(unit * 15);
+	text.setOrigin(0, 0);
+	text.setString("Level:         " + to_string(level));
+	text.setPosition(x + unit * (104 + width * 20), y + unit * 108);
+	window.draw(text);
+	text.setString("Score:        " + to_string(score));
+	text.setPosition(x + unit * (104 + width * 20), y + unit * 123);
+	window.draw(text);
+	text.setString("Clear Line: " + to_string(clear_line));
+	text.setPosition(x + unit * (104 + width * 20), y + unit * 138);
+	window.draw(text);
     return;
 }
 //multi playing
 void Opponent::RecvTable(const char str[]){
-    int tLevel = 0, tScore = 0, tLine = 0;
     short tx, ty;
-    char tmp, tNext, tHold;
-    Block *pTmp;
+    char tmp;
     //decompreesion
     //board
     for(int i = 0;i < 100;i++){
         tmp = str[i];
         tx = (i * 2) % 10, ty = (i * 2) / 10;
         for(int j = 0;j < 2;j++){
-            if(board[ty][tx + j] ^ (tmp & 15)){ //if different
-                goto_xy(x + tx + j + 6, y + (19 - ty) + 1);
-                set_color(color_table[(tmp & 15)] + ((tmp & 15)?0:(((tx + j) % 2)?128:0)) + (bright?128:0)); //inverse y-axis(19-i)
-                std::cout << ' ';
-                board[ty][tx + j] = (tmp & 15);
-            }
+            board[ty][tx + j] = (tmp & 15);
             tmp >>= 4;
         }
     }
     //next 100 last 3
-    tNext = (str[100] & 7);
+    next = (str[100] & 7);
     //hold 100 first 3
-    tHold = ((str[100] >> 3) & 7);
-    if(tNext ^ next){ //if diff
-        //reset board
-        for(int i = 0; i < 4; ++i) {
-            goto_xy(x + width + 7, y + i + 1);
-            set_color(color_table[0] + (bright?128:0));
-            for(int j = 0;j < 4;j++) std::cout << ' ';
-        }
-        if(tNext){
-            pTmp = id2block(tNext);
-            (*pTmp) = Point(0, 0);
-            for(auto i:pTmp -> block_position()){
-                goto_xy(x + 9 + width + i.x, y + 2 - i.y);
-                set_color(color_table[(pTmp -> get_ID())] + (bright?128:0));
-                std::cout << ' ';
-            }
-            next = tNext;
-            delete pTmp;
-        }
-    }
-    if(tHold ^ hold){ //if diff
-        for(int i = 0; i < 4; ++i) {
-            goto_xy(x + 1, y + i + 1);
-            set_color(color_table[0] + (bright?128:0));
-            for(int j = 0;j < 4;j++) std::cout << ' ';
-        }
-        if(tHold){ //prevent from access nullptr
-            pTmp = id2block(tHold);
-            (*pTmp) = Point(0, 0);
-            for(auto i:pTmp -> block_position()){
-                goto_xy(x + 3 + i.x, y + 2 - i.y);
-                set_color(color_table[(pTmp -> get_ID())] + (bright?128:0));
-                std::cout << ' ';
-            }
-            hold = tHold;
-            delete pTmp;
-        }
-    }
-    //print status
-    set_color(color_table[0] + (bright?128:0));
+    hold = ((str[100] >> 3) & 7);
     //level [101,103)
     for(int i = 102;i >= 101;i--){
-        tLevel <<= 7;
-        tLevel |= (str[i] & 127);
-    }
-    if(tLevel ^ level){ //if diff
-        goto_xy(x + width + 7, y + 6);
-        std::cout << "Level:     " << tLevel;
-        level = tLevel;
+        level <<= 7;
+        level |= (str[i] & 127);
     }
     //score [103,107)
     for(int i = 106;i >= 103;i--){
-        tScore <<= 7;
-        tScore |= (str[i] & 127);
-    }
-    if(tScore ^ score){ //if diff
-        goto_xy(x + width + 7, y + 7);
-        std::cout << "Score:     " << tScore;
-        score = tScore;
+        score <<= 7;
+    	score |= (str[i] & 127);
     }
     //line [107,110)
     for(int i = 109;i >= 107;i--){
-        tLine <<= 7;
-        tLine |= (str[i] & 127);
-    }
-    if(tLine ^ clear_line){ //if diff
-        goto_xy(x + width + 7, y + 8);
-        std::cout << "Clear Line:" << tLine;
-        clear_line = tLine;
+        clear_line <<= 7;
+        clear_line |= (str[i] & 127);
     }
 }
