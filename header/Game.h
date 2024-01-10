@@ -2,158 +2,36 @@
 
 #define KeyCnt 11
 //Up, Down, Left, Right, Space, Z, X, C, Shift, P(pause), Q(quit)
-const int KeyCode[KeyCnt] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_SPACE, VK_Z, VK_X, VK_C, VK_SHIFT, VK_P, VK_Q};
+const Keyboard::Key KeyCode[KeyCnt] = {Keyboard::Up, Keyboard::Down, Keyboard::Left, Keyboard::Right, Keyboard::Space, Keyboard::Z, Keyboard::X, Keyboard::C, Keyboard::LShift, Keyboard::P, Keyboard::Q};
 double speed;
-bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr;
+bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr, f_exit; //exit flag
 const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt, ClearCnt, status;
 //arrow:Left, Right
-clock_t before, tStuck, tClear, tStart, tArrow, tDas;
+clock_t before, tStuck, tArrow, tDas, tStart;
 //thread lock
 mutex Thrd_lock;
 //thread para and return value
 int thrd_token, ret_thrd_val;
 
-struct SettingMenu{ //settings
-    static void sub_option1(){
-        cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n1(slow)-500(fast): ";
-        while(1){
-            cin >> arr;
-            if(arr > 0 && arr <= 500){  
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between than 1 and 500: ";
-            }
-        }
-    }
-    static void sub_option2(){
-        cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n1(slow)-1000(fast): ";
-        while(1){
-            cin >> das;
-            if(das > 0 && das <= 1000){
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between than 1 and 1000: ";
-            }
-        }
-
-    }
-    static void sub_option3(){
-         cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n1(slow)-50(fast): ";
-         while(1){
-            cin >> gravity;
-            if(gravity > 0 && gravity <= 50){
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin);//flush the cin buffer to prevent it from reading it again
-                cout << "Please input a number between than 1 and 50: ";
-            }
-         }
-    }
-    static void sub_option4(){
-    	int iTmp;
-        cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n1(Dark)/2(Bright): ";
-        while(1){
-            cin >> iTmp;
-            if(iTmp == 1 || iTmp == 2){
-                bright = iTmp - 1;
-                clrscr();
-                set_color(7);
-                cout << "Configuration Set\n\n";
-                Sleep(800);
-                pause();
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin);
-                cout << "Please input 1 or 2: ";
-            }
-        }
-    }
-    static void sub_option5() {
-    	int iTmp;
-        cout << "Are you sure you want to reset the settings? 1(No)/2(Yes): ";
-        while(1){
-            cin >> iTmp;
-            if(iTmp == 1)
-                break;
-            else if(iTmp == 2){
-            	das = 700; arr = 450; gravity = 45; bright = 1;
-            	cout << "Reset Completed\n";
-            	Sleep(800);
-            	pause();
-            	break;
-			}
-            else{
-                cin.clear();
-                fflush(stdin);
-                cout << "Please input 1 or 2: ";
-            }
-        }
-	}
-    void operator() (){
-        Menu sub_menu;
-        clrscr();
-        sub_menu.settitle("Game Setting\nRight click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright").add(sub_option5, "Reset");
-        sub_menu.start();
-        ofstream setting(SET_PATH);
-        setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
-        setting.close();
-    }
-};
-
-static void Quit() {
-    if(multi){
-        if(server)
-            server_send("lose");
-        else
-            client_send("lose");
-        throw runtime_error("Quit, you lose!");
-    }
-    else
-    	throw runtime_error("Quit");
-}
-
-void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}
+void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = Keyboard::isKeyPressed(KeyCode[i]);}
 void Table_Trans(char Snd[], char Rec[]);
 short game_cycle(Player& player, int& line, int& score,const bool& single);
 
-void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mode:0(infinite), 1 (line, line), 2(time, second)
+void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 60){ //mode:0(infinite), 1 (line, line), 2(time, second)
     Player player; //create new Table for player
-    speed = 1.0, stuck = 0, line = 0, score = 0, status = 0;
-    tStart = before = clock();
-    clrscr();
+    speed = 1.0, stuck = 0, line = 0, score = 0, status = 0, tStart = clock();
     //initialize the game
     player.set_position(2,2);
-    player.init(clock());
+    player.init(clock(), 0);
     player.new_block();
-    SetFont(1, width + 30, height + 7);
     player.print_table();
     while (1) {
+    	while (window.pollEvent(event)){
+            if(event.type == Event::Closed)
+                throw runtime_error("Quit");
+        }
+    	window.clear();
         //run the game
         if(mode == 1 && line >= goal)
             throw runtime_error("Goal Achieved");
@@ -162,10 +40,11 @@ void singlePlayer(int& line, int& score, const int& mode, const int& goal){ //mo
         status = game_cycle(player, line, score, 1);
         if(status < 0)
             throw runtime_error("Game over!");
-        Sleep(flush_tick);
+        window.display();
+        sleep(milliseconds(flush_tick));
     }
 }
-
+/*
 void multiPlayer(int& line, int& score){
     int mode = 0, goal = 0, iTmp, status;
     width = 10, height = 20; //reset table size
@@ -333,8 +212,8 @@ void multiPlayer(int& line, int& score){
         }
         thrd_token = 1;
     }
-}
-
+}*/
+/*
 void Table_Trans(char Snd[], char Rec[]){
     while(thrd_token != 1) {Sleep(flush_tick);}
     char tmp[DataSize];
@@ -371,7 +250,7 @@ void Table_Trans(char Snd[], char Rec[]){
         Thrd_lock.unlock();
     }
 }
-
+*/
 short game_cycle(Player& player, int& line, int& score, const bool& single){
     ClearCnt = 0;
     getKeyState(); //get which key is pressed
@@ -390,13 +269,8 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
         //fix the block into place
         player.fix_block();
         ClearCnt = player.chk_clear(line, score);
-        if(ClearCnt){
-            clr = 1;
-            tClear = clock(); //reset timer
-        }
         stuck = 0, sCnt = 0;
         player.new_block();
-        player.print_table();
         KeyState[7] = 0; //reset the key state
     }
     //down arrow
@@ -451,7 +325,6 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
                 player.hold_block(); //hold
                 stuck = 0, sCnt = 0; //reset t-spin criteria and stuck state
                 KeyState[7] = 1; //change the key state to prevent it being hold for multiple times
-                player.print_table();
             }
         }
     }
@@ -462,19 +335,14 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
             stuck = 0; //reset stuck state
             player.fix_block();
             ClearCnt = player.chk_clear(line, score);
-	        if(ClearCnt){
-	            clr = 1;
-	            tClear = clock(); //reset timer
-	        }
             player.new_block();
-            player.print_table();
             KeyState[7] = 0; //reset hold state
         }
         KeyState[4] = 1; //change the key state to prevent multiple hard drop
     }
     else
         KeyState[4] = 0; //change the key state back
-    //p:pause (9)
+    /*p:pause (9)
     if(single){
         if (KeyPressed[9]){
             if (!KeyState[9]){
@@ -511,21 +379,8 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
         KeyState[10] = 1;
     }
     else
-        KeyState[10] = 0;
-    player.print_block(); //print out the block
-    if(clr && clock() - tClear >= 2 * fTick * speed){ 
-        //clear the message box to the left
-        set_color(0);
-        goto_xy(player.get_x() + width + 8, player.get_y() + height - 3);
-        cout << "           ";
-        goto_xy(player.get_x() + width + 8, player.get_y() + height - 2);
-        cout << "      ";
-        goto_xy(player.get_x() + width + 8, player.get_y() + height - 1);
-        cout << "      ";
-        goto_xy(player.get_x() + width + 8, player.get_y() + height);
-        cout << "      ";
-        clr = 0;
-    }
+        KeyState[10] = 0;*/
+    player.print_table(); //print out the block
     speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
     return ClearCnt;
 }

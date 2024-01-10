@@ -1,9 +1,9 @@
 #pragma once
 
 #define d_x (width/2 - 1)
-#define d_y (height-1)
+#define d_y (height)
 
-std::string text_table[5] {"T-Spin","Single","Double","Triple","Tetris"};
+std::string text_table[4] {"Single","Double","Triple","Tetris"};
 void qClear(std::queue<Block*>& q) {
 	while(!q.empty()){
 		delete q.front();
@@ -90,7 +90,7 @@ public:
 	Table() {}
 	~Table() {}
 	//move the table
-	void set_position(const short x, const short y){this -> x = x, this -> y = y;}
+	void set_position(const short& x, const short& y){this -> x = x, this -> y = y;}
 	virtual void print_table() = 0; //print table on windows.h (x,y) is the origin of the table
 	//return table data
     inline short get_x() const {return this -> x;}
@@ -104,8 +104,9 @@ class Player:public Table{
 private:
 	Block *current = nullptr, *before = nullptr, *hold = nullptr;
     std::queue<Block*> next;
-    bool tSpin = 0, pb2b = 0, b2b = 0;
-    clock_t tStart;
+    bool tSpin = 0, pb2b = 0, b2b = 0, multi = 0, dis_clear = 0;
+    int t_line, t_score;
+    clock_t tStart, tClear;
 public:
 	Player() {}
 	~Player() {
@@ -113,12 +114,11 @@ public:
         qClear(next);
     }
     // the initializer used to count the time passed
-    void init(clock_t time){
+    void init(const clock_t& time, const bool& mut){
         std::queue<Block*> empty; std::swap(empty, next);
-        tStart = time;
-        pb2b = 0, b2b = 0, tSpin = 0;
+        tStart = time; multi = mut;
+        pb2b = 0, b2b = 0, tSpin = 0, dis_clear = 0;
         score = 0, clear_line = 0, level = 0, garbage = 0, combo = 0; memset(board, 0, sizeof(board));
-        current = nullptr, before = nullptr, hold = nullptr;
     }
     void new_block();
     // to fix the block
@@ -231,14 +231,14 @@ void Player::print_table(){
     Text text;
     text.setFont(font);
     RectangleShape BlockRect(Vector2f(unit * 18, unit * 18)), Side(Vector2f(unit * 80, unit * 80)), b_table(Vector2f(unit * width * 20, unit * height * 20));
-    RectangleShape GarRect(Vector2f(unit * 4, unit * 19)), Garbage_can(Vector2f(unit * 5, unit * height * 20));
-    BlockRect.setOutlineThickness(unit >> 1); Side.setOutlineThickness(unit * 2); b_table.setOutlineThickness(unit * 4); Garbage_can.setOutlineThickness(unit * 4); GarRect.setOutlineThickness(unit >> 1);
+    RectangleShape GarRect(Vector2f(unit * 3, unit * 19)), Garbage_can(Vector2f(unit * 5, unit * height * 20));
+    BlockRect.setOutlineThickness(unit / 2.f); Side.setOutlineThickness(unit << 1); b_table.setOutlineThickness(unit << 2); Garbage_can.setOutlineThickness(unit << 2); GarRect.setOutlineThickness(unit);
     Side.setOutlineColor(color_tBorder); b_table.setOutlineColor(color_tBorder); Garbage_can.setOutlineColor(color_tBorder); GarRect.setOutlineColor(Color(0, 0, 0));
     Side.setFillColor(Color(0, 0, 0, 0)); b_table.setFillColor(Color(0, 0, 0, 0)); Garbage_can.setFillColor(Color(0, 0, 0)); GarRect.setFillColor(Color(195, 0, 0));
     //Draw table and side block table
     Side.setPosition(x + unit * 4, y + unit * 22); window.draw(Side); //hold
     Side.setPosition(x + unit * (111 + width * 20), y + unit * 22); window.draw(Side); //next
-    Garbage_can.setPosition(x + unit * 92, y + unit * 4); window.draw(Garbage_can); //garbage
+    if(multi) {Garbage_can.setPosition(x + unit * 92, y + unit * 4); window.draw(Garbage_can);} //garbage
     b_table.setPosition(x + unit * 101, y + unit * 4); window.draw(b_table); //table
     //hold label
     text.setColor(Color(255, 255, 255)); //white
@@ -320,7 +320,30 @@ void Player::print_table(){
 	text.setPosition(x + unit * (111 + width * 20), y + unit * 168);
 	window.draw(text);
 	//garbage
-	
+	if(multi){
+        for(int i = 0;i < garbage;i++){
+            GarRect.setPosition(x + unit * 93, y + unit * ((height - i - 1) * 20 + 5));
+            window.draw(GarRect);
+        }
+    }
+    if(dis_clear){
+        string msg = "+\n";
+        if(b2b)
+            msg += "b2b\n";
+        else
+            msg += "\n";
+        if(tSpin)
+            msg += "T-Spin\n";
+        else
+            msg += "\n";
+        msg += text_table[t_line-1];
+        text.setString(msg);
+        text.setPosition(x + unit * (111 + width * 20), y + unit * ((height - 4) * 20 + 15));
+        text.setColor(Color(248, 247, 52)); //light yellow
+        window.draw(text);
+        if(clock() - tClear > 2000)
+            dis_clear = 0;
+    }
     return;
 }
 
@@ -378,24 +401,17 @@ short Player::chk_clear(int& line, int& tscore){
     point = ((cnt?(point<<cnt):0));
     multiplier *= pow(2,(tSpin + b2b * 3));
     multiplier *= combo?pow(1.1, combo-1):0;
-    /*
-    this -> score += point * multiplier;
-    set_color(14);
     if(cnt){
-        goto_xy(x+width+8, y+height-3);
-        std::cout << "+" << int(point * multiplier);
+        t_score += point * multiplier;
+        t_line = cnt;
+        dis_clear = 1;
+        tClear = clock();
+        this -> score += t_score;
+        line = this -> clear_line;
+        tscore = this -> score;
+        level = min(29, clear_line/10);
     }
-    goto_xy(x+width+8, y+height-2);
-    std::cout << (b2b?"b2b":"");
-    goto_xy(x+width+8, y+height-1);
-    std::cout << (tSpin?text_table[0]:"");
-    goto_xy(x+width+8, y+height);
-    std::cout << (cnt?text_table[cnt]:"");*/
     tSpin = 0;
-    level = clear_line/10;
-    if(level > 29) level = 29;
-    line = this -> clear_line;
-    tscore = this -> score;
     for(int i = 0;i < width;i++)
         if(board[height][i])
             return -1; //game over token
@@ -460,7 +476,7 @@ void Opponent::print_table(){
     Text text;
     text.setFont(font);
     RectangleShape BlockRect(Vector2f(unit * 18, unit * 18)), Side(Vector2f(unit * 80, unit * 80)), b_table(Vector2f(unit * width * 20, unit * height * 20));
-    BlockRect.setOutlineThickness(unit); Side.setOutlineThickness(unit * 4); b_table.setOutlineThickness(unit * 6);
+    BlockRect.setOutlineThickness(unit / 2.f); Side.setOutlineThickness(unit << 1); b_table.setOutlineThickness(unit << 2);
     Side.setOutlineColor(color_tBorder); b_table.setOutlineColor(color_tBorder);
     Side.setFillColor(Color(0, 0, 0, 0)); b_table.setFillColor(Color(0, 0, 0, 0));
     //Draw table and side block table
@@ -517,7 +533,7 @@ void Opponent::print_table(){
         for (int j = 0; j < width; ++j) { //column 1-10
             BlockRect.setFillColor(color_table[board[i][j]]);
         	BlockRect.setOutlineColor(color_border[board[i][j]]);
-        	BlockRect.setPosition(x + unit * (95 + j * 20), y + unit * ((height - i - 1) * 20 + 7));
+        	BlockRect.setPosition(x + unit * (95 + j * 20), y + unit * ((height - i - 1) * 20 + 5));
         	window.draw(BlockRect);
         }
     }
