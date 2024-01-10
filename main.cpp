@@ -20,9 +20,10 @@
 using namespace std;
 using namespace sf;
 
-bool bright, conn, server, multi;
+bool bright, server;
 short das, arr, gravity, ResX, ResY, width, height, unit;
 const short flush_tick = 5, DataSize = 130;
+Mutex Thrd_lock;
 RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!");
 Event event;
 Font font;
@@ -32,7 +33,7 @@ Font font;
 #define RECORD_PATH "src/records.txt"
 
 
-//#include "header/Socket.h"
+#include "header/Socket.h"
 #include "header/Block.h"
 #include "header/Table.h"
 //#include "header/Menu.h"
@@ -50,11 +51,11 @@ void DisableIME(){
     HANDLE hstdin = GetStdHandle(STD_INPUT_HANDLE);
     HWND hWnd = GetConsoleWindow();
     PostMessage(hWnd, WM_INPUTLANGCHANGEREQUEST, 0, (LPARAM)0x04090409);
-    //HKL inputContext = GetKeyboardLayout(threadId);
     HKL keyboard = LoadKeyboardLayout("0x0409", KLF_ACTIVATE);
 	ActivateKeyboardLayout(keyboard, 0);
 }
 #endif
+
 void fetch(int &ret, int &tmp){
     while(1){
         cout << "input 1 to restart, 2 for quit: ";
@@ -65,6 +66,7 @@ void fetch(int &ret, int &tmp){
         }
     }
 }
+
 signed main(){
     //initialize the main menu
     int tLine, tScore, iTmp = 1;

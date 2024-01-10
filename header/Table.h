@@ -327,15 +327,11 @@ void Player::print_table(){
         }
     }
     if(dis_clear){
-        string msg = "+\n";
+        string msg = '+' + to_string(t_score) + '\n';
         if(b2b)
             msg += "b2b\n";
-        else
-            msg += "\n";
         if(tSpin)
             msg += "T-Spin\n";
-        else
-            msg += "\n";
         msg += text_table[t_line-1];
         text.setString(msg);
         text.setPosition(x + unit * (111 + width * 20), y + unit * ((height - 4) * 20 + 15));
@@ -402,7 +398,7 @@ short Player::chk_clear(int& line, int& tscore){
     multiplier *= pow(2,(tSpin + b2b * 3));
     multiplier *= combo?pow(1.1, combo-1):0;
     if(cnt){
-        t_score += point * multiplier;
+        t_score = point * multiplier;
         t_line = cnt;
         dis_clear = 1;
         tClear = clock();

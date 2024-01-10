@@ -1,154 +1,88 @@
 #pragma once
-//declare server address and client address
-SOCKADDR_IN Server_addr, Ser_addr;;
-//declare socket for listen and connection
-SOCKET sListen, sConnection, sConnect;
-//for initializing win-socket api
-void socket_init(){
-    WSADATA wsaData;
-    WORD    DLLVersion;
-    DLLVersion = MAKEWORD(2,1);//winsocket-dll version
-    WSAStartup(DLLVersion,&wsaData);
-}
+//declare litstener
+TcpListener listener;
+// accept a new connection
+TcpSocket sock;
 
 //let this server connect to input ip and input port
-int server_connect(const char ip[], const int& port = 9487){
-    //set server address (localhost:port)
-    Server_addr.sin_addr.s_addr    = inet_addr(ip);
-    Server_addr.sin_family         = AF_INET;
-    Server_addr.sin_port           = htons(port);
-    //create listening socket and check return value
-    sListen = socket(AF_INET,SOCK_STREAM,0);
-    //if fail, return -1 and clean up connection data
-    if (sListen == INVALID_SOCKET){
+int server_connect(const int& port = 9487){
+    // bind the listener to a port
+    if (listener.listen(port) != Socket::Done)
         return -1;
-    }
-    // Bind the socket and check return value
-    int iResult = bind(sListen, (SOCKADDR*)&Server_addr, sizeof(Server_addr));
-    //if fail, return -2, terminate socket and clean up connection data
-    if (iResult == SOCKET_ERROR){
-        closesocket(sListen);
+    if (listener.accept(sock) != Socket::Done){
         return -2;
     }
-    //if error occur when listening, return -3, terminate socket and clean up connection data
-    if(listen(sListen, 5) == SOCKET_ERROR){
-        closesocket(sListen);
-        return -3;
-    }
-    //try to connect to destination ip
-    if(sConnection = accept(sListen, NULL, NULL))
-        return 0; //if success, return 0
-    else{
-        //if fail, return 1, terminate socket and clean up connection data
-        closesocket(sListen);
-        return 1;
-    }
+    return 0; //suceed
 }
 
-void server_quit(){
-	conn = 0;
-	closesocket(sListen);
-    closesocket(sConnection);
-    WSACleanup();
-}
-
-void server_disconn(){
-	conn = 0;
-	closesocket(sListen);
-    closesocket(sConnection);
-}
-
-//sending cstring via socket
-int server_send(const char mes[]){
-    //trying to send data
-    if(send(sConnection, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
-        //if fail, return -1, terminate socket and clean up connection data
-        conn = 0;
-        closesocket(sListen);
-        closesocket(sConnection);
-        return -1;
-    }
-    else
-        return 0; //if success, return 0
-}
-
-//receive cstring from socket
-int server_recv(char mes[]){
-    //try to receiving data
-    if(recv(sConnection, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
-        //if fail, return -1, terminate socket and clean up connection data
-        conn = 0;
-        closesocket(sListen);
-        closesocket(sConnection);
-        return -1;
-    }
-    else
-        return 0; //if success, return 0
-}
-
-//client
 //let the client connect to server by ip and port
 int client_connect(const char ip[], const int& port = 9487){
-    //set server address
-    Ser_addr.sin_addr.s_addr = inet_addr(ip);
-    Ser_addr.sin_family      = AF_INET;
-    Ser_addr.sin_port        = htons(port);
-    //set up connecting socket
-    sConnect = socket(AF_INET, SOCK_STREAM, 0);
     //trying connect to server
-    if(connect(sConnect, (SOCKADDR*)&Ser_addr, sizeof(Ser_addr)) == SOCKET_ERROR)
-        return -1; //if fail, return -1
-    else
-        return 0; //if success return 0
+    if (sock.connect(ip, port) != Socket::Done)
+        return -1;
+    return 0;
 }
 
-void client_quit(){
-    conn = 0;
-    closesocket(sConnect);
-    WSACleanup();
-}
-
-void client_disconn(){
-    conn = 0;
-    closesocket(sConnect);
+void socket_disconnect(){
+	listener.close();
+    sock.disconnect();
 }
 
 //sending cstring via socket
-int client_send(const char mes[]){
+int socket_send(const char mes[]){
     //trying to send data
-    if(send(sConnect, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
-        conn = 0;
-        closesocket(sConnect);
-        return -1; //if fail, return -1
-    } 
-    else
-        return 0; //if success return 0
+    if (sock.send(mes, DataSize) != Socket::Done)
+        return -1;
+    return 0;
 }
 
 //receive cstring from socket
-int client_recv(char mes[]){
+int socket_recv(char mes[]){
     //try to receiving data
-    if(recv(sConnect, mes, sizeof(char) * DataSize, 0) == SOCKET_ERROR){
-        conn = 0;
-        closesocket(sConnect);
-        return -1; //if fail, return -1
-    }
-    else
-        return 0; //if success return 0
+    size_t received;
+    if(sock.receive(mes, DataSize, received) != Socket::Done)
+        return -1;
+    return 0;
 }
 
-//get user's IP address
-string getIP()
-{
-	char hostName[256];
-	if(!gethostname(hostName,sizeof(hostName)))
-	{
-		hostent *host=gethostbyname(hostName);
-		if(host!=NULL)
-		{
-			return inet_ntoa(*(struct in_addr*)*host->h_addr_list);
-		}
-	
-	}  	
-	return "Get IP failed.";  
+void chk_conn(int& ret, int& token, const int& chk_rate = 500){
+    while(1){
+        Thrd_lock.lock();
+        if(token != 1){
+            Thrd_lock.unlock();
+            break;
+        }
+        if(socket_send("chk")){
+            Thrd_lock.lock();
+            ret = -1;
+            Thrd_lock.unlock();
+            break;
+        }
+        sleep(milliseconds(chk_rate));
+    }
+}
+
+void Table_Trans(int& ret, int& token, char Snd[], char Rec[]){
+    while(token != 1) {Sleep(flush_tick);}
+    char tmp[DataSize];
+    while(token > 0){
+        Thrd_lock.lock();
+        for(int i = 0;i < DataSize;i++) tmp[i] = Snd[i];
+        Snd[110] = 0; //[110] for garbage
+        Thrd_lock.unlock();
+        if(socket_send(tmp)){
+            ret = -1;
+            break;
+        }
+        if(socket_recv(tmp)){
+            ret = -1;
+            break;
+        }
+        if(!strcmp(tmp, "chk"))
+            continue;
+        Thrd_lock.lock();
+        for(int i = 0;i < DataSize;i++) Rec[i] = tmp[i];
+        ret = 1;
+        Thrd_lock.unlock();
+    }
 }

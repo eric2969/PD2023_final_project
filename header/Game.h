@@ -9,8 +9,6 @@ const short fTick = 1000, sLimit = 10;
 short fall_tick, stuck_wait, sCnt, ClearCnt, status;
 //arrow:Left, Right
 clock_t before, tStuck, tArrow, tDas, tStart;
-//thread lock
-mutex Thrd_lock;
 //thread para and return value
 int thrd_token, ret_thrd_val;
 
@@ -51,8 +49,6 @@ void multiPlayer(int& line, int& score){
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     char BoardData[DataSize], RecvBoard[DataSize];
-    clrscr();
-    set_color(7);
     //chk join
     cout << "Please wait for your opponent joining!\n";
     do{
@@ -213,44 +209,7 @@ void multiPlayer(int& line, int& score){
         thrd_token = 1;
     }
 }*/
-/*
-void Table_Trans(char Snd[], char Rec[]){
-    while(thrd_token != 1) {Sleep(flush_tick);}
-    char tmp[DataSize];
-    while(thrd_token > 0){
-        Thrd_lock.lock();
-        for(int i = 0;i < DataSize;i++) tmp[i] = Snd[i];
-        Snd[110] = 0;
-        Thrd_lock.unlock();
-        if(server){
-            if(server_send(tmp)){
-                ret_thrd_val = -1;
-                break;
-            }
-            if(server_recv(tmp)){
-                ret_thrd_val = -1;
-                break;
-            }
-        }
-        else{
-            if(client_send(tmp)){
-                ret_thrd_val = -1;
-                break;
-            }
-            if(client_recv(tmp)){
-                ret_thrd_val = -1;
-                break;
-            }
-        }
-        if(!strcmp(tmp, "chk"))
-            continue;
-        Thrd_lock.lock();
-        for(int i = 0;i < DataSize;i++) Rec[i] = tmp[i];
-        ret_thrd_val = 1;
-        Thrd_lock.unlock();
-    }
-}
-*/
+
 short game_cycle(Player& player, int& line, int& score, const bool& single){
     ClearCnt = 0;
     getKeyState(); //get which key is pressed
