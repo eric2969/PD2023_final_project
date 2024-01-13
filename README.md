@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white"> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v7.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v7.1>)    [<img src="https://img.shields.io/badge/Download-v7.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.1.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v8.2beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.2beta>) [<img src="https://img.shields.io/badge/Download-v8.2beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.2beta.zip>) <br>
+<br>[<img src="https://img.shields.io/badge/Beta-v8.3beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.3beta>) [<img src="https://img.shields.io/badge/Download-v8.3beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.3beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -108,8 +108,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.2beta-blue">](#20240111a-v82beta)
-- [Version 8](#20240111a-v82beta) SFML cross-platform
+[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.3beta-blue">](#20240114a-v83beta)
+- [Version 8](#20240114a-v83beta) SFML cross-platform
+> - [v8.3](#20240114a-v83beta) Menu/BGM Application
 > - [v8.2](#20240111a-v82beta) Socket Application
 > - [v8.1](#20240110a-v81beta) Single Playing available
 > - [v8.0](#20240109a-v801beta) Under Construction
@@ -139,6 +140,11 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/14.a (v8.3beta)
+> Menu Object has created and ready to use <br>
+> Some menu have completed (main/record/setting) <br>
+> Applied BGM
+
 > ### 2024/01/11.a (v8.2beta)
 > Socket modified <br>
 > DisableIME is enable (when in WinOS)

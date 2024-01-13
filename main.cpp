@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <random>
 #include <algorithm>
@@ -11,6 +12,7 @@
 #include <queue>
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
+#include <SFML/audio.hpp>
 #include <SFML/Graphics.hpp>
 
 #if defined (__WIN32)
@@ -20,32 +22,31 @@
 using namespace std;
 using namespace sf;
 
-bool bright, server;
-short das, arr, gravity, ResX, ResY, width, height, unit;
 const short flush_tick = 5, DataSize = 130;
+short ResX, ResY, width, height, conf[4]; //0:das, 1:arr, 2:gravity
+double unit;
+int RecData[6]; //0: playcnt, 1:time, 2:line, 3:score, 4:h_line, 5:h_score
 Mutex Thrd_lock;
-RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!");
+RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!", Style::Fullscreen);
+Music music;
 Event event;
 Font font;
 
-#define FONT_PATH "src/Arial.ttf"
+#define BGM_PATH "src/bgm.flac"
+#define FONT_PATH "src/font.ttf"
 #define SET_PATH "src/settings.txt"
 #define RECORD_PATH "src/records.txt"
 
 
-#include "header/Socket.h"
-#include "header/Block.h"
-#include "header/Table.h"
-//#include "header/Menu.h"
-#include "header/Game.h"
-
-int playCnt, TimeCnt, clearCnt, scoreCnt, highClear, highScore;
+#include "header/Socket.hpp"
+#include "header/Block.hpp"
+#include "header/Table.hpp"
+#include "header/Object.hpp"
+#include "header/Menu_instance.hpp"
+#include "header/Game.hpp"
 
 void game_init();
 void game_exit();
-void set_unit(int cols, int lns){unit = min(ResX/cols,ResY/lns); return;}
-void record_reset() {playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
-void record_update(int& clr, int& score, const int& time);
 #if defined (__WIN32)
 void DisableIME(){
     HANDLE hstdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -56,49 +57,11 @@ void DisableIME(){
 }
 #endif
 
-void fetch(int &ret, int &tmp){
-    while(1){
-        cout << "input 1 to restart, 2 for quit: ";
-        cin >> tmp;
-        if(tmp == 1 || tmp == 2){
-            ret = 0;
-            break;
-        }
-    }
-}
-
 signed main(){
-    //initialize the main menu
-    int tLine, tScore, iTmp = 1;
-    int ret;
-    clock_t interval;
+    //game initialization
     game_init();
-    set_unit(400, 500);
-    Player player;
-    player.set_position(20, 20);
-    player.init(clock(), 0);
-    while(window.isOpen()){
-        interval = clock();
-        try{singlePlayer(tLine, tScore);}
-        catch(exception &e){
-            record_update(tLine, tScore, (clock() - interval)/1000);
-            cout << e.what() << endl;
-            ret = 1;
-            thread t1(fetch, ref(ret), ref(iTmp));
-            while(ret){
-                while (window.pollEvent(event)){
-                    if(event.type == Event::Closed){
-                        window.close();
-                        game_exit();
-                    }
-                }
-            }
-            t1.join();
-        }
-        if(iTmp == 2)
-			game_exit(); 
-    }
-    //socket_init();
+    main_menu();
+    game_exit();
     return 0;
 }
 
@@ -109,58 +72,57 @@ void game_init(){
 	srand(time(NULL));
 	ResX = VideoMode::getDesktopMode().width;
 	ResY = VideoMode::getDesktopMode().height;
-	unit = 5; width = 10; height = 20;
+	width = 10; height = 20;
     if(!font.loadFromFile(FONT_PATH)){
-        cout << "Unable to load the font data\nPlease fixed it and open again!";
+        if(window.isOpen()) window.close();
+        char m;
+        cout << "Unable to load the font data\nPlease fixed it and open again!\nPress Enter to Quit the game!";
+        gets(&m);
         exit(1);
     }
     // read user preference
     ifstream setting(SET_PATH), record(RECORD_PATH);
     if(setting.is_open())
-        setting >> das >> arr >> gravity >> bright;
+        for(int i = 0;i < 3;i++) setting >> conf[i];
     else{
-        cout << "Configuration data loaded fail, restore to default setting\nYou can modify it in the menu\n";
-        das = 700; arr = 450; gravity = 45; bright = 1;
+        conf[0] = 700, conf[1] = 450, conf[2] = 45;
         ofstream set(SET_PATH);
-        set << das << ' ' << arr << ' ' << gravity << ' ' << bright;
+        set << conf[0];
+        for(int i = 1;i < 3;i++) set << ' ' << conf[i];
         set.close();
     }
     if(record.is_open())
-        record >> playCnt >> TimeCnt >> clearCnt >> scoreCnt >> highClear >> highScore;
+        for(int i = 0;i < 6;i++) record >> RecData[i];
     else{
-        cout << "Recode data loaded fail, record has reset\n";
-        playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;
+        for(int i = 0;i < 6;i++) RecData[i] = 0;
         ofstream rec(RECORD_PATH);
-        rec << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
+        rec << RecData[0];
+        for(int i = 1;i < 6;i++) rec << ' ' << RecData[i];
         rec.close();
     }
     setting.close();
     record.close();
+    if (music.openFromFile(BGM_PATH)){
+        music.setVolume(50.f);
+        music.play();
+        music.setLoop(true);
+    }
 }
 
 void game_exit(){
 	//close socket
-	/*if(conn){
-		if(server)
-			server_quit();
-		else
-			client_quit();
-	}*/
+	socket_disconnect();
     //save user preference
-    ofstream setting(SET_PATH), record(RECORD_PATH);
-    setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
-    record << playCnt << ' ' << TimeCnt << ' ' << clearCnt << ' ' << scoreCnt << ' ' << highClear << ' ' << highScore;
-    setting.close();
-    record.close();
+    ofstream set(SET_PATH), rec(RECORD_PATH);
+    set << conf[0];
+    for(int i = 1;i < 3;i++) set << ' ' << conf[i];
+    rec << RecData[0];
+    for(int i = 1;i < 6;i++) rec << ' ' << RecData[i];
+    set.close();
+    rec.close();
+    if(window.isOpen()) window.close();
     exit(0);
 }
 
-void record_update(int& clr, int& score,const int& time){
-    playCnt++;
-    TimeCnt += time;
-    clearCnt += clr;
-    scoreCnt += score;
-    highClear = max(highClear, clr);
-    highScore = max(highScore, score);
-}
+
 
