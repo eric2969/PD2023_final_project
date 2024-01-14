@@ -31,9 +31,9 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
         }
     	window.clear();
         //run the game
-        if(mode == 1 && line >= goal)
+        if(mode == 1 && clock() - tStart >= goal * 1000)
             throw runtime_error("Goal Achieved");
-        else if(mode == 2 && clock() - tStart >= goal * 1000)
+        else if(mode == 2 && line >= goal)
             throw runtime_error("Goal Achieved");
         status = game_cycle(player, line, score, 1);
         if(status < 0)

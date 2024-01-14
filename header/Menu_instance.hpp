@@ -44,24 +44,61 @@ void record_update(const int& clr, const int& score, const int& time);
 void set_unit(double cols, double lns){unit = min(ResX/(double)cols,ResY/(double)lns); return;}
 
 void single(){ //to be finished
-    const short opt = 5;
+    int tLine, tScore, goal;
+    short sel = 0;
+    const short opt = 6;
     set_unit(1, 700);
-    TextBox title(unit * 50, 13);
+    TextBox title(unit * 50, 13), sub_title[3], input[4];
     title.setText("Single Player");
     title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
-    Button buttons[opt] = {Button("Set", unit * 20), Button("Infinite Mode", unit * 20), Button("Time Mode", unit * 20), Button("Clear Line Mode", unit * 20), Button("Return", unit * 20)};
-    buttons[0].setLeftPosition(Vector2f(ResX / 2.f + unit * 100, unit * 280));
-    for(int i = 1;i < opt;i++) buttons[i].setMidPosition(Vector2f(ResX / 2.f, unit * 70 * (i + 4)));
+    for(int i = 0;i < 3;i++){
+        sub_title[i].setFontSize(unit * 20);
+        sub_title[i].setLimit(25);
+        sub_title[i].setMidPosition(Vector2f(ResX / 2.f, unit * (80 * (i + bool(i)) + 220)));
+    }
+    sub_title[0].setText("Width (5-50)  Height (15-40)");
+    sub_title[1].setText("Goal: (Seconds)");
+    sub_title[2].setText("Goal: (Lines)");
+    for(int i = 0;i < 4;i++){
+        input[i].setFontSize(unit * 17);
+        input[i].setLimit(8);
+        input[i].setColor(Color(255, 255, 255), Color(100, 100, 100));
+        input[i].setLeftPosition(Vector2f(ResX / 2.f - unit * (120 - (i==1?140:0)), unit * (80 * (i - (i==1)) + 250)));
+    }
+    input[0].setText(to_string(width)); input[0].setRange(5, 50);
+    input[1].setText(to_string(height)); input[1].setRange(15, 40);
+    input[2].setText("60"); input[2].setRange(1, 99999999);
+    input[3].setText("40"); input[3].setRange(1, 99999999);
+    Button buttons[opt] = {Button("Set", unit * 20), Button("Infinite Mode", unit * 20), Button("Time Mode", unit * 20), Button("Clear Line Mode", unit * 20), Button("Return", unit * 20), Button("Reset", unit * 20)};
+    buttons[0].setLeftPosition(Vector2f(ResX / 2.f + unit * 220, unit * 250));
+    buttons[1].setMidPosition(Vector2f(ResX / 2.f, unit * 330));
+    for(int i = 2;i < 4;i++)
+        buttons[i].setLeftPosition(Vector2f(ResX / 2.f + unit * 70, unit * (80 * i + 250)));
+    buttons[4].setMidPosition(Vector2f(ResX / 2.f, unit * 570));
+    buttons[5].setLeftPosition(Vector2f(ResX / 2.f + unit * 150, unit * 250));
     chk_hover(buttons, opt);
     while(window.isOpen()){
         while(window.pollEvent(event)){
             switch (event.type){
-                case Event::TextEntered:{
-                    if(event.text.unicode == VK_ESC)
-                        return;
-                }
                 case Event::Closed:{
                     window.close();
+                    break;
+                }
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ENTER){
+                        if(sel == 1 || sel == 2){
+                            input[0].setFontColor(Color(255, 255, 255));
+                            width = ston(input[0].getText());
+                            input[1].setFontColor(Color(255, 255, 255));
+                            height = ston(input[1].getText());
+                            input[0].setText(to_string(width));
+                            input[1].setText(to_string(height));
+                        }
+                    }
+                    else if(event.text.unicode == VK_ESC)
+                        return;
+                    else if(sel)
+                        input[sel - 1].typedOn();
                     break;
                 }
                 case Event::MouseMoved:{
@@ -69,9 +106,60 @@ void single(){ //to be finished
                     break;
                 }
                 case Event::MouseButtonPressed:{
-                    switch (chk_over(buttons, opt)){
-                        case 1: {single(); break;}
-                        case 5: {return;}
+                    sel = chk_over(buttons, opt);
+                    if(sel == 1){
+                        width = ston(input[0].getText());
+                        height = ston(input[1].getText());
+                        input[0].setFontColor(Color(255, 255, 255));
+                        input[1].setFontColor(Color(255, 255, 255));
+                        input[0].setText(to_string(width));
+                        input[1].setText(to_string(height));
+                    }
+                    else if(sel == 2){
+                        try{singlePlayer(tLine, tScore);}
+                        catch(exception &e){
+                            title.setText(e.what());
+                            window.clear();
+                            title.Draw();
+                            window.display();
+                            sleep(milliseconds(1000));
+                            title.setText("Single Player");
+                        }
+                    }
+                    else if(sel == 3 || sel == 4){ //to be finished(time)
+                        input[sel-1].setFontColor(Color(255, 255, 255));
+                        goal = ston(input[sel-1].getText());
+                        try{singlePlayer(tLine, tScore, sel - 2, goal);}
+                        catch(exception &e){
+                            title.setText(e.what());
+                            window.clear();
+                            title.Draw();
+                            window.display();
+                            sleep(milliseconds(1000));
+                            title.setText("Single Player");
+                        }
+                    }
+                    else if(sel == 5)
+                        return;
+                    else if(sel == 6){
+                        width = 10, height = 20;
+                        input[0].setFontColor(Color(255, 255, 255));
+                        input[1].setFontColor(Color(255, 255, 255));
+                        input[0].setText(to_string(width));
+                        input[1].setText(to_string(height));
+                    }
+                    sel = 0;
+                    for(int i = 1;i <= 4;i++){
+                        if(input[i-1].isMouseOver()){
+                            sel = i;
+                            input[i-1].setSelected(1);
+                        }
+                        else{
+                            input[i-1].setSelected(0);
+                            input[i-1].verifyRange();
+                            if(i == 3 || i == 4)
+                                input[i - 1].setFontColor(Color(255, 255, 255));
+                        }
                     }
                     chk_hover(buttons, opt);
                     break;
@@ -80,6 +168,8 @@ void single(){ //to be finished
         }
         window.clear();
         title.Draw();
+        for(int i = 0;i < 3;i++) sub_title[i].Draw();
+        for(int i = 0;i < 4;i++) input[i].Draw();
         for(int i = 0;i < opt;i++) buttons[i].Draw();
         window.display();
         sleep(milliseconds(flush_tick));
