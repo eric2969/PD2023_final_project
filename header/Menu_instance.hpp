@@ -56,6 +56,10 @@ void single(){ //to be finished
     while(window.isOpen()){
         while(window.pollEvent(event)){
             switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC)
+                        return;
+                }
                 case Event::Closed:{
                     window.close();
                     break;
@@ -105,6 +109,10 @@ void record(){
     while(window.isOpen()){
         while(window.pollEvent(event)){
             switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC)
+                        return;
+                }
                 case Event::Closed:{
                     window.close();
                     break;
@@ -171,8 +179,11 @@ void setting(){
                         if(sel){
                             input[sel-1].setFontColor(Color(255, 255, 255));
                             conf[sel-1] = ston(input[sel-1].getText());
+                            input[sel-1].setText(to_string(conf[sel-1]));
                         }
                     }
+                    else if(event.text.unicode == VK_ESC)
+                        return;
                     else if(sel)
                         input[sel - 1].typedOn();
                     break;
@@ -188,6 +199,7 @@ void setting(){
                     if(sel){
                         input[sel-1].setFontColor(Color(255, 255, 255));
                         conf[sel-1] = ston(input[sel-1].getText());
+                        input[sel-1].setText(to_string(conf[sel-1]));
                     }
                     sel = 0;
                     for(int i = 1;i <= 3;i++){
@@ -195,8 +207,10 @@ void setting(){
                             sel = i;
                             input[i-1].setSelected(1);
                         }
-                        else
+                        else{
                             input[i-1].setSelected(0);
+                            input[i-1].verifyRange();
+                        }
                     }
                     chk_hover(buttons, opt);
                     break;
@@ -227,9 +241,12 @@ void main_menu(){ //700 row
     while(window.isOpen()){
         while(window.pollEvent(event)){
             switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC)
+                        return;
+                }
                 case Event::Closed:{
-                    window.close();
-                    break;
+                    return;
                 }
                 case Event::MouseMoved:{
                     chk_hover(buttons, opt);

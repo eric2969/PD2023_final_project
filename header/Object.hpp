@@ -64,7 +64,26 @@ public:
 		float btnX1 = btnX0 + bg.getGlobalBounds().width, btnY1 = btnY0 + bg.getGlobalBounds().height;
 		return (btnX0 <= MX && btnX1 >= MX && btnY0 <= MY && btnY1 >= MY); 
 	}
-	string getText() {return text.str();}
+	void verifyRange(){
+		if(Range){
+			sstmp.str(""); sstmp.clear(); sstmp << text.str();
+			sstmp >> iTmp;
+			iTmp = max(Minimum, iTmp);
+			iTmp = min(Maximum, iTmp);
+			text.str(""); text << iTmp;
+			textbox.setString(text.str() + (isSel?"_":""));
+		}
+	}
+	string getText() {
+		if(Range){
+			sstmp.str(""); sstmp.clear(); sstmp << text.str();
+			sstmp >> iTmp;
+			iTmp = max(Minimum, iTmp);
+			iTmp = min(Maximum, iTmp);
+			text.str(""); text << iTmp;
+		}
+		return text.str();
+	}
 private:
 	Text textbox;
 	RectangleShape bg;
@@ -79,7 +98,6 @@ private:
 				sstmp.str(""); sstmp.clear(); sstmp << text.str();
 				sstmp >> iTmp;
 				iTmp = min(Maximum, iTmp);
-				iTmp = max(Minimum, iTmp);
 				text.str(""); text << iTmp;
 				textbox.setColor(Color(170, 170, 170));
 			}
@@ -94,20 +112,7 @@ private:
 		}
 		textbox.setString(text.str() + "_");
 	}
-	void delChar(){
-		string t = text.str(), tmp = ""; text.str("");
-		for(int i = 0;i < t.length() - 1;i++)
-			tmp += t[i];
-		if(Range){
-			sstmp.str(""); sstmp.clear(); sstmp << tmp;
-			sstmp >> iTmp;
-			iTmp = min(Maximum, iTmp);
-			iTmp = max(Minimum, iTmp);
-			text << iTmp;
-		}
-		else
-			text << tmp;
-	}
+	void delChar(){string t = text.str(), tmp = ""; text.str(""); for(int i = 0;i < t.length() - 1;i++) tmp += t[i]; text << tmp;}
 };
 
 class Button{
