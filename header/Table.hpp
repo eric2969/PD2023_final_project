@@ -355,6 +355,7 @@ bool Player::check_block(const Point &p) const{
 }
 //line clear
 short Player::chk_clear(int& line, int& tscore){
+    fx.play();
     bool allExist;// see if the whole row is filled
     int cnt = 0, point = 5, tGarbage = garbage;
     double multiplier = 1.0;// the total line num cleared

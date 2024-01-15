@@ -28,11 +28,12 @@ double unit;
 int RecData[6]; //0: playcnt, 1:time, 2:line, 3:score, 4:h_line, 5:h_score
 Mutex Thrd_lock;
 RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!", Style::Fullscreen);
-Music music;
+Music music, fx;
 Event event;
 Font font;
 void set_unit(double cols, double lns){unit = min(ResX/(double)cols,ResY/(double)lns); return;}
 
+#define FX_PATH "src/fx.flac"
 #define BGM_PATH "src/bgm.flac"
 #define FONT_PATH "src/font.ttf"
 #define SET_PATH "src/settings.txt"
@@ -104,9 +105,13 @@ void game_init(){
     setting.close();
     record.close();
     if (music.openFromFile(BGM_PATH)){
-        music.setVolume(50.f);
+        music.setVolume(10.f);
         music.play();
         music.setLoop(true);
+    }
+    if (fx.openFromFile(FX_PATH)){
+        fx.setVolume(100.f);
+        fx.setLoop(false);
     }
 }
 

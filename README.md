@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/sfml-%238CC445.svg?&style=for-the-badge&logo=sfml&logoColor=black" /> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 [<img src="https://img.shields.io/badge/Release-v7.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v7.1>)    [<img src="https://img.shields.io/badge/Download-v7.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.1.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v8.5beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.5beta>) [<img src="https://img.shields.io/badge/Download-v8.5beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.5beta.zip>) <br>
+<br>[<img src="https://img.shields.io/badge/Beta-v8.5.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.5.1beta>) [<img src="https://img.shields.io/badge/Download-v8.5.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.5.1beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -68,12 +68,12 @@ We about to use some techniques like File I/O, Polymorphism, Operator Overloadin
 And we divided our game architecture into several parts, listed at the below. <br>
 > ![mind-set](assets/architecture.png) 
 > 1. [Main.cpp](#maincpp) <br>
-> 2. [Game.h](#gameh) <br>
-> 3. [Menu.h](#menuh) <br>
-> 4. [Console.h](#consoleh) <br>
-> 5. [Table.h](#tableh) <br>
-> 6. [Block.h](#blockh) <br>
-> 7. [Socket.h](#socketh) <br>
+> 2. [Game.hpp](#gameh) <br>
+> 3. [Menu_instance.hpp](#menuinstanceh) <br>
+> 4. [Object.hpp](#objecth) <br>
+> 5. [Table.hpp](#tableh) <br>
+> 6. [Block.hpp](#blockh) <br>
+> 7. [Socket.hpp](#socketh) <br>
 >>- [Server Side](#server-side) <br>
 >>- [Client Side](#client-side) <br>
 >> ### Main.cpp
@@ -89,17 +89,17 @@ And we divided our game architecture into several parts, listed at the below. <b
 >> 2. Scan keyboard status asynchronously and do cooresponding operation
 >> 3. Control player(class Table) depending on user input via keyboard
 >> 4. Construct pause and quit menu based on Menu.h, providing pause/configuration settings/quit functions
->> ### Menu.h
+>> ### Menu_instance.h
 >> This construct a Menu class that can provide a full functionally Menu, listed at the below<br>
 >> 1. Hover and Highlight when cursor approaching
 >> 2. Capable of include a Menu inside a Menu(sub menu)
->> ### Console.h
+>> ### Object.h
 >> This provide some operations that control the console panel such that clrscr(clear screen), <br>MoveWindow(move the window and adjust console display size), etc...
 >> ### Table.h
 >> This establish a class that can control and display the whole player game board <br>It will scan the keyboard state and does cooresponding operation such that move or rotate the block and verify the validation of this operation <br>Block operations are provided and maintained by Block.h
 >> ### Block.h
 >> This contain struct Point(for coordinate) and class Block(abstract class) <br>Class Block save some general data of each block, <br>and provide some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J, K, O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
->> ### Socket.h
+>> ### Socket.hpp
 >> This is for transmit data of opponent and player
 >>> ### Server Side
 >>> This contain a function that establish socket connection. <br> And provide functions that can transmit and receive data from and to client side.
@@ -108,9 +108,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.5beta-blue">](#20240115b-v85beta)
-- [Version 8](#20240115b-v85beta) SFML cross-platform
-> - [v8.5](#20240115b-v85beta) Pause menu and Game over Table
+[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.5beta-blue">](#20240116a-v851beta)
+- [Version 8](#20240116a-v851beta) SFML cross-platform
+> - [v8.5](#20240116a-v851beta) Pause menu and Game over Table/Fx sound
 > - [v8.4](#20240115a-v84beta) Single Player
 > - [v8.3](#20240114b-v831beta) Menu/BGM Application
 > - [v8.2](#20240111a-v82beta) Socket Application
@@ -142,6 +142,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/16.a (v8.5.1beta)
+> Add pop sound fx when dropping block
+
 > ### 2024/01/15.b (v8.5beta)
 > Pause Menu and Game Over display/record update has finished <br>
 > Multiplayer is waiting to be completed
