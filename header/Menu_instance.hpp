@@ -240,18 +240,40 @@ void single(){ //to be finished
     }
 }
 
-void multi(){ //to be finished
+void thrd_conn(const bool& isHost, const string& ip){
+    Thrd_lock.lock();
+    Thrd_ret = 0;
+    Thrd_lock.unlock();
+    int tmp;
+    if(isHost)
+        tmp = server_connect();
+    else
+        tmp = client_connect(ip.c_str());
+    Thrd_lock.lock();
+    Thrd_ret = tmp;
+    Thrd_lock.unlock();
+}
+
+void conn_dis(const bool& isHost, const string& s = ""){
+    clock_t t_dot = clock();
+    int trd_fetch, dot_cnt = 0;
     set_unit(1, 700);
-    TextBox title(unit * 50, 14);
-    title.setText("To be finished");
+    TextBox title(unit * 50, 12), sub_title;
+    title.setText("Multi Player");
     title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
-    Button button = Button("Return", unit * 20);
-    button.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
+    sub_title.setContext("Connecting");
+    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 100, 200 * unit));
+    Button button = Button("OK", unit * 20);
+    button.setMidPosition(Vector2f(ResX / 2.f, unit * 280));
+    thread thrd(thrd_conn, isHost, s);
     if(button.isMouseOver())
         button.highlight();
     else
         button.dishighlight();
     while(window.isOpen()){
+        Thrd_lock.lock();
+        trd_fetch = Thrd_ret;
+        Thrd_lock.unlock();
         while(window.pollEvent(event)){
             switch (event.type){
                 case Event::TextEntered:{
@@ -270,15 +292,145 @@ void multi(){ //to be finished
                     break;
                 }
                 case Event::MouseButtonPressed:{
-                    if(button.isMouseOver())
+                    if(button.isMouseOver() && trd_fetch){
+                        thrd.join();
                         return;
+                    }
                     break;
                 }
             }
         }
+        if(trd_fetch){
+            conn = (trd_fetch > 0);
+            host = (conn && isHost);
+            sub_title.setContext((trd_fetch>0?"Connecting Suceed!":"Connecting failed!"));
+        }
+        else{
+            if(clock() - t_dot > 800){
+                t_dot = clock();
+                dot_cnt = (dot_cnt + 1) % 4;
+            }
+            sub_title.setContext(string("Connecting") + string(dot_cnt, '.'));
+        }
         window.clear();
         title.Draw();
-        button.Draw();
+        sub_title.Draw();
+        if(trd_fetch)
+            button.Draw();
+        window.display();
+        sleep(milliseconds(flush_tick));
+    }
+}
+
+void multi(){ //to be finished
+    int tLine, tScore;
+    clock_t t_start;
+    short sel = 0;
+    const short opt = 3;
+    set_unit(1, 700);
+    TextBox title(unit * 50, 12), sub_title[2], input;
+    title.setText("Multi Player");
+    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    sub_title[0].setContext("You are disconnected!");
+    sub_title[1].setContext("You are Temp !");
+    for(int i = 0;i < 2;i++){
+        sub_title[i].setFontSize(unit * 20);
+        sub_title[i].setMidPosition(Vector2f(ResX / 2.f, unit * 200));
+    }
+    input.setFontSize(unit * 17);
+    input.setLimit(16);
+    input.setColor(Color(255, 255, 255), Color(100, 100, 100));
+    input.setLeftPosition(Vector2f(ResX / 2.f - unit * 180, unit * 400));
+    Button buttons[opt] = {Button("Be a Host", unit * 20), Button("Connect to the Host", unit * 20), Button("Return", unit * 20)};
+    buttons[0].setMidPosition((Vector2f(ResX / 2.f, unit * 330)));
+    buttons[1].setLeftPosition(Vector2f(ResX / 2.f + unit * 20, unit * 400));
+    buttons[2].setMidPosition((Vector2f(ResX / 2.f, unit * 470)));
+    chk_hover(buttons, opt);
+    Button conn_but[2] = {Button("Start", unit * 20), Button("Return", unit * 20)};
+    conn_but[0].setMidPosition((Vector2f(ResX / 2.f, unit * 330)));
+    conn_but[1].setMidPosition((Vector2f(ResX / 2.f, unit * 400)));
+    while(window.isOpen()){
+        window.clear();
+        if(conn){
+            while(window.pollEvent(event)){
+                switch (event.type){
+                    case Event::Closed:{
+                        window.close();
+                        return;
+                    }
+                    case Event::MouseMoved:{
+                        chk_hover(conn_but, 2);
+                        break;
+                    }
+                    case Event::MouseButtonPressed:{
+                        sel = chk_over(conn_but, 2);
+                        if(sel == 1){
+                            t_start = clock();
+                            try{multiPlayer(tLine, tScore);}
+                            catch(exception &e){
+                                score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
+                            }
+                        }
+                        if(sel == 2)
+                            return;
+                        chk_over(conn_but, 2);
+                        break;
+                    }
+                }
+            }
+            title.Draw();
+            sub_title[1].Draw();
+            for(int i = 0;i < 2;i++) conn_but[i].Draw();
+        }
+        else{
+            while(window.pollEvent(event)){
+                switch (event.type){
+                    case Event::Closed:{
+                        window.close();
+                        return;
+                    }
+                    case Event::TextEntered:{
+                        if(event.text.unicode == VK_ENTER && sel == 2){
+                            conn_dis(0, input.getText());
+                            sub_title[1].setContext(string("You are ") + (host?"Host !":"Guest!"));
+                            chk_hover(conn_but, 2);
+                        }
+                        else if(event.text.unicode == VK_ESC)
+                            return;
+                        else
+                            input.typedOn();
+                        break;
+                    }
+                    case Event::MouseMoved:{
+                        chk_hover(buttons, opt);
+                        break;
+                    }
+                    case Event::MouseButtonPressed:{
+                        sel = chk_over(buttons, opt);
+                        if(sel == 1 || sel == 2){
+                            conn_dis(sel - 2, input.getText());
+                            sub_title[1].setContext(string("You are ") + (host?"Host !":"Guest!"));
+                            chk_hover(conn_but, 2);
+                        }
+                        if(sel == 3)
+                            return;
+                        sel = 0;
+                        if(input.isMouseOver()){
+                            sel = 2;
+                            input.setSelected(1);
+                        }
+                        else
+                            input.setSelected(0);
+                        chk_hover(buttons, opt);
+                        break;
+                    }
+                }
+            }
+            title.Draw();
+            input.Draw();
+            sub_title[host].Draw();
+            for(int i = 0;i < opt;i++) buttons[i].Draw();
+        }
         window.display();
         sleep(milliseconds(flush_tick));
     }
@@ -301,6 +453,7 @@ void record(){
     for(int i = 0;i < opt;i++) buttons[i].setMidPosition(Vector2f(ResX / 2.f, unit * (40 * i + 500)));
     chk_hover(buttons, opt);
     while(window.isOpen()){
+        window.clear();
         while(window.pollEvent(event)){
             switch (event.type){
                 case Event::TextEntered:{
@@ -325,7 +478,6 @@ void record(){
                 }
             }
         }
-        window.clear();
         title.Draw();
         for(int i = 0;i < t_num;i++) rec[i].Draw();
         for(int i = 0;i < opt;i++) buttons[i].Draw();

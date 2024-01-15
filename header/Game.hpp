@@ -31,12 +31,12 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
             if(event.type == Event::Closed)
                 throw runtime_error("Quit");
         }
-    	window.clear();
         //run the game
         if(mode == 1 && clock() - tStart >= goal * 1000)
             throw runtime_error("Goal Achieved");
         else if(mode == 2 && line >= goal)
             throw runtime_error("Goal Achieved");
+        window.clear();
         status = game_cycle(player, line, score, 1);
         if(status < 0)
             throw runtime_error("Game over!");
@@ -44,141 +44,50 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
         sleep(milliseconds(flush_tick));
     }
 }
-/*
+
 void multiPlayer(int& line, int& score){
-    int mode = 0, goal = 0, iTmp, status;
     width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     char BoardData[DataSize], RecvBoard[DataSize];
-    //chk join
-    cout << "Please wait for your opponent joining!\n";
-    do{
-        if(server){
-            if(server_send("Ready"))
-                throw runtime_error("Opponent have exited");
-            server_recv(BoardData);
-        }
-        else{
-            if(client_send("Ready"))
-                throw runtime_error("Opponent have exited");
-            client_recv(BoardData);
-        }
-    }while(strcmp(BoardData, "Ready"));
-    //choose mode
-    if(server){
-        cout << "Please choose your mode!\n1(Infinite Mode)/2(Line Mode):";
-        while(1){
-            cin >> mode;
-            if(mode == 1 || mode == 2){
-                mode--;
-                cout << "Mode choose : " << (mode?"Line Mode\n":"Infinite Mode\n");
-                if(!mode) break;
-                cout << "Please input your goal (line)? ";
-                while(1){
-                    cin >> goal;
-                    if(goal > 0)
-                        break;
-                    else{
-                        cin.clear();
-                        fflush(stdin); //flush the cin buffer to prevent it from reading it again
-                        cout << "Please input a number bigger than 0:\n";
-                    }
-                } 
-                break;
-            }
-            else{
-                cin.clear();
-                fflush(stdin);
-                cout << "Please input 1 or 2: ";
-            }
-        }
-        strcpy(BoardData, "Mode set");
-        BoardData[10] = mode;
-        for(int i = 11, tGoal = goal;i < 15;i++,tGoal>>=7)
-            BoardData[i] = (tGoal & 127);
-        if(server_send(BoardData))
-            throw runtime_error("Opponent have exited");
-    }
-    else{
-        cout << "Please wait for the host select mode...\n";
-        do{
-            client_recv(BoardData);
-            if(client_send("chk"))
-                throw runtime_error("Opponent have exited");
-        }while(strcmp(BoardData, "Mode set"));
-        mode = BoardData[10];
-        goal = 0;
-        for(int i = 14;i >= 11;i--){
-            goal <<= 7;
-            goal |= BoardData[i];
-        }
-        cout << "========================\nMode set : " << (mode?"Line Mode\n":"Infinite Mode\n");
-        if(mode)
-            cout << "Goal set(line) : " << goal;
-        cout << "========================\nIf you want to start, please input 1\nIf you want quit, please input 2\n";
-        while(1){
-            cin >> iTmp;
-            if(iTmp == 1){
-                client_send("Start");
-                break;
-            }
-            else if(iTmp ==2){
-                client_send("quit");
-                client_disconn();
-                throw runtime_error("Quit");
-            }
-            else{
-                cin.clear();
-                fflush(stdin);
-                cout << "Please input 1 or 2: ";
-            }
-        }
-    }
     //initialize the game
-    Player player;Opponent opponent; //create table for player and opponent
-    player.set_position(2, 2);
-    opponent.set_position(35, 2);
-    player.init(clock());
+    Player player; Opponent opponent; //create table for player and opponent
+    set_unit(800, 450);
+    player.set_position(2 * unit, 2 * unit);
+    opponent.set_position(401 * unit, 2 * unit);
+    player.init(clock(), 1);
     opponent.init();
     player.new_block();
-    thrd_token = 0, ret_thrd_val = 0;
-    set_color(7);
-    if(server){
-        cout << "Please wait for your opponent starting!";
-        do{
-            server_recv(BoardData);
-        	if(server_send("chk"))
-        		throw runtime_error("Opponent have exited");
-        }while(strcmp(BoardData, "Start"));
+    Thrd_token = 0, Thrd_ret = 0;
+    while(1){
+        while (window.pollEvent(event)){
+            if(event.type == Event::Closed)
+                throw runtime_error("Quit");
+        }
+        socket_send("chk");
+        if(socket_recv(RecvBoard) < 0)
+            throw runtime_error("Opponent Exit, you win!");
+        else{
+            if(!strcmp(RecvBoard, "chk"))
+                break;
+        }
     }
-    clrscr();
-    SetFont(1, 68, 30);
     player.print_table();
     opponent.print_table();
     memset(BoardData, 0, sizeof(BoardData));
     memset(RecvBoard, 0, sizeof(RecvBoard));
     thread Socket_thrd(Table_Trans, ref(BoardData), ref(RecvBoard));
     while (1) {
-        //run the multi-player game
-        status = game_cycle(player, line, score, 0);
-        if(mode == 1 && line >= goal){
-        	if(server)
-        		server_send("win");
-        	else
-        		client_send("win");
-        	thrd_token = -1;
-            Socket_thrd.join();
-            throw runtime_error("You win!");
+        while (window.pollEvent(event)){
+            if(event.type == Event::Closed)
+                throw runtime_error("Quit");
         }
-        if(status == -10)
-			opponent.print_table();
-        else if(status == -1){
-            thrd_token = -1;
-            if(server)
-                server_send("lose");
-            else
-                client_send("lose");
+        //run the multi-player game
+        window.clear();
+        status = game_cycle(player, line, score, 0);
+        if(status == -1){
+            Thrd_token = -1;
+            socket_send("lose");
             Socket_thrd.join();
             throw runtime_error("You lose!");
         }
@@ -187,30 +96,32 @@ void multiPlayer(int& line, int& score){
             BoardData[110] += status;
         player.SendTable(BoardData);
         Thrd_lock.unlock();
-        if(ret_thrd_val == 1){
+        if(Thrd_ret == 1){
             Thrd_lock.lock();
             if(!strcmp(RecvBoard, "win")){
-                thrd_token = -1;
+                Thrd_token = -1;
                 Socket_thrd.join();
             	throw runtime_error("You lose!");
             }
             else if(!strcmp(RecvBoard, "lose")){
-                thrd_token = -1;
+                Thrd_token = -1;
                 Socket_thrd.join();
             	throw runtime_error("You win!");
             }
             player.get_garbage(RecvBoard[110]);
             opponent.RecvTable(RecvBoard);
-            ret_thrd_val = 0;
+            Thrd_ret = 0;
             Thrd_lock.unlock();
         }
-        else if(ret_thrd_val < 0){
+        else if(Thrd_ret < 0){
             Socket_thrd.join();
             throw runtime_error("Opponent Exit, you win!");
         }
-        thrd_token = 1;
+        opponent.print_table();
+        window.display();
+        sleep(milliseconds(flush_tick));
     }
-}*/
+}
 
 short game_cycle(Player& player, int& line, int& score, const bool& single){
     ClearCnt = 0;

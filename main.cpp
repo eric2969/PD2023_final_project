@@ -23,11 +23,12 @@ using namespace std;
 using namespace sf;
 
 const short flush_tick = 5, DataSize = 130;
+bool conn, host;
 short ResX, ResY, width, height, conf[4]; //0:das, 1:arr, 2:gravity
 double unit;
-int RecData[6]; //0: playcnt, 1:time, 2:line, 3:score, 4:h_line, 5:h_score
+int RecData[6], Thrd_ret, Thrd_token; //0: playcnt, 1:time, 2:line, 3:score, 4:h_line, 5:h_score
 Mutex Thrd_lock;
-RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!", Style::Fullscreen);
+RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!"); //, Style::Fullscreen
 Music music, fx[2];
 Event event;
 Font font;
@@ -72,6 +73,7 @@ void game_init(){
 	DisableIME();
 #endif
 	srand(time(NULL));
+    conn = 0, Thrd_ret = 0, Thrd_token = 0;
 	ResX = VideoMode::getDesktopMode().width;
 	ResY = VideoMode::getDesktopMode().height;
 	width = 10; height = 20;

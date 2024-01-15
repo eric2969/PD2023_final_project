@@ -46,6 +46,7 @@ public:
 		bg.setFillColor(bgc);
 		bg.setOutlineColor(bgc);
 	}
+	void setContext(const string& s) {setLimit(s.length()); text.str(""); text << s; textbox.setString(text.str() + (isSel?"_":""));}
 	void setText(const string& s){text.str(""); text << s; textbox.setString(text.str() + (isSel?"_":""));}
 	void setLimit(const int& lim){Limit = lim; textbox.setString(string(max(1,lim), 'A')); bg.setSize(Vector2f(textbox.getGlobalBounds().width, bg.getSize().y)); textbox.setString(text.str() + (isSel?"_":""));}
 	void setLeftPosition(const Vector2f& pos) {textbox.setPosition(pos); bg.setPosition(pos);}

@@ -12,7 +12,7 @@ int server_connect(const int& port = 9487){
     if (listener.accept(sock) != Socket::Done){
         return -2;
     }
-    return 0; //suceed
+    return 1; //suceed
 }
 
 //let the client connect to server by ip and port
@@ -20,7 +20,7 @@ int client_connect(const char ip[], const int& port = 9487){
     //trying connect to server
     if (sock.connect(ip, port) != Socket::Done)
         return -1;
-    return 0;
+    return 1;
 }
 
 void socket_disconnect(){
@@ -33,7 +33,7 @@ int socket_send(const char mes[]){
     //trying to send data
     if (sock.send(mes, DataSize) != Socket::Done)
         return -1;
-    return 0;
+    return 1;
 }
 
 //receive cstring from socket
@@ -42,7 +42,7 @@ int socket_recv(char mes[]){
     size_t received;
     if(sock.receive(mes, DataSize, received) != Socket::Done)
         return -1;
-    return 0;
+    return 1;
 }
 
 void chk_conn(int& ret, int& token, const int& chk_rate = 500){
@@ -62,27 +62,27 @@ void chk_conn(int& ret, int& token, const int& chk_rate = 500){
     }
 }
 
-void Table_Trans(int& ret, int& token, char Snd[], char Rec[]){
-    while(token != 1) {Sleep(flush_tick);}
+void Table_Trans(char Snd[], char Rec[]){
+    while(Thrd_token != 1) {sleep(milliseconds(flush_tick));}
     char tmp[DataSize];
-    while(token > 0){
+    while(Thrd_token > 0){
         Thrd_lock.lock();
         for(int i = 0;i < DataSize;i++) tmp[i] = Snd[i];
         Snd[110] = 0; //[110] for garbage
         Thrd_lock.unlock();
-        if(socket_send(tmp)){
-            ret = -1;
+        if(socket_send(tmp) < 0){
+            Thrd_ret = -1;
             break;
         }
-        if(socket_recv(tmp)){
-            ret = -1;
+        if(socket_recv(tmp) < 0){
+            Thrd_ret = -1;
             break;
         }
         if(!strcmp(tmp, "chk"))
             continue;
         Thrd_lock.lock();
         for(int i = 0;i < DataSize;i++) Rec[i] = tmp[i];
-        ret = 1;
+        Thrd_ret = 1;
         Thrd_lock.unlock();
     }
 }

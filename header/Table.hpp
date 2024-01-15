@@ -536,15 +536,15 @@ void Opponent::print_table(){
         }
     }
 	//set status
-	text.setCharacterSize(unit * 15);
+	text.setCharacterSize(unit * 12);
 	text.setOrigin(0, 0);
-	text.setString("Level:         " + to_string(level));
+	text.setString("Level:     " + to_string(level));
 	text.setPosition(x + unit * (104 + width * 20), y + unit * 108);
 	window.draw(text);
-	text.setString("Score:        " + to_string(score));
+	text.setString("Score:     " + to_string(score));
 	text.setPosition(x + unit * (104 + width * 20), y + unit * 123);
 	window.draw(text);
-	text.setString("Clear Line: " + to_string(clear_line));
+	text.setString("Clear Line:" + to_string(clear_line));
 	text.setPosition(x + unit * (104 + width * 20), y + unit * 138);
 	window.draw(text);
     return;
