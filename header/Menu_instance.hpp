@@ -12,6 +12,12 @@ const string RecTitle[6] = {
     "Best Score:       "
 };
 
+const string OverDisplay[3] = {
+    "Duration(s):",
+    "Clear Line: ",
+    "Score:      "
+};
+
 void chk_hover(Button btns[], const int num){
     for(int i = 0;i < num;i++)
         if(btns[i].isMouseOver())
@@ -41,9 +47,74 @@ string itos_plus(int a, int width, char sym = ' '){
 }
 void record_reset() {for(int i = 0;i < 6;i++) RecData[i] = 0;}
 void record_update(const int& clr, const int& score, const int& time);
-void set_unit(double cols, double lns){unit = min(ResX/(double)cols,ResY/(double)lns); return;}
+void score_display(const string& over, const int& time, const int& line, const int& score){
+    record_update(line, score, time);
+    const short t_num = 3;
+    set_unit(1, 700);
+    TextBox title(unit * 50, over.length()), rec[t_num];
+    title.setText(over);
+    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    Button button = Button("Return", unit * 20);
+    for(int i = 0;i < t_num;i++){
+        rec[i].setFontSize(unit * 20);
+        rec[i].setColor(Color(255, 255, 255), Color(100, 100, 100));
+        rec[i].setLimit(19);
+        switch (i){
+            case 0:{
+                rec[i].setText(OverDisplay[i] + itos_plus(time, 7));
+                break;
+            }
+            case 1:{
+                rec[i].setText(OverDisplay[i] + itos_plus(line, 7));
+                break;
+            }
+            case 2:{
+                rec[i].setText(OverDisplay[i] + itos_plus(score, 7));
+                break;
+            }
+        }
+        rec[i].setMidPosition(Vector2f(ResX / 2.f, unit * (47 * i + 250)));
+    }
+    button.setMidPosition(Vector2f(ResX / 2.f, unit * 400));
+    if(button.isMouseOver())
+        button.highlight();
+    else
+        button.dishighlight();
+    while(window.isOpen()){
+        while(window.pollEvent(event)){
+            switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC)
+                        return;
+                }
+                case Event::Closed:{
+                    window.close();
+                    return;
+                }
+                case Event::MouseMoved:{
+                    if(button.isMouseOver())
+                        button.highlight();
+                    else
+                        button.dishighlight();
+                    break;
+                }
+                case Event::MouseButtonPressed:{
+                    if(button.isMouseOver()) return;
+                    break;
+                }
+            }
+        }
+        window.clear();
+        title.Draw();
+        for(int i = 0;i < t_num;i++) rec[i].Draw();
+        button.Draw();
+        window.display();
+        sleep(milliseconds(flush_tick));
+    }
+}
 
 void single(){ //to be finished
+    clock_t t_start;
     int tLine, tScore, goal;
     short sel = 0;
     const short opt = 6;
@@ -82,7 +153,7 @@ void single(){ //to be finished
             switch (event.type){
                 case Event::Closed:{
                     window.close();
-                    break;
+                    return;
                 }
                 case Event::TextEntered:{
                     if(event.text.unicode == VK_ENTER){
@@ -116,27 +187,19 @@ void single(){ //to be finished
                         input[1].setText(to_string(height));
                     }
                     else if(sel == 2){
+                        t_start = clock();
                         try{singlePlayer(tLine, tScore);}
                         catch(exception &e){
-                            title.setText(e.what());
-                            window.clear();
-                            title.Draw();
-                            window.display();
-                            sleep(milliseconds(1000));
-                            title.setText("Single Player");
+                            score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
                         }
                     }
                     else if(sel == 3 || sel == 4){ //to be finished(time)
+                        t_start = clock();
                         input[sel-1].setFontColor(Color(255, 255, 255));
                         goal = ston(input[sel-1].getText());
                         try{singlePlayer(tLine, tScore, sel - 2, goal);}
                         catch(exception &e){
-                            title.setText(e.what());
-                            window.clear();
-                            title.Draw();
-                            window.display();
-                            sleep(milliseconds(1000));
-                            title.setText("Single Player");
+                            score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
                         }
                     }
                     else if(sel == 5)
@@ -177,7 +240,47 @@ void single(){ //to be finished
 }
 
 void multi(){ //to be finished
-
+    set_unit(1, 700);
+    TextBox title(unit * 50, 14);
+    title.setText("To be finished");
+    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    Button button = Button("Return", unit * 20);
+    button.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
+    if(button.isMouseOver())
+        button.highlight();
+    else
+        button.dishighlight();
+    while(window.isOpen()){
+        while(window.pollEvent(event)){
+            switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC)
+                        return;
+                }
+                case Event::Closed:{
+                    window.close();
+                    return;
+                }
+                case Event::MouseMoved:{
+                    if(button.isMouseOver())
+                        button.highlight();
+                    else
+                        button.dishighlight();
+                    break;
+                }
+                case Event::MouseButtonPressed:{
+                    if(button.isMouseOver())
+                        return;
+                    break;
+                }
+            }
+        }
+        window.clear();
+        title.Draw();
+        button.Draw();
+        window.display();
+        sleep(milliseconds(flush_tick));
+    }
 }
 
 void record(){
@@ -205,7 +308,7 @@ void record(){
                 }
                 case Event::Closed:{
                     window.close();
-                    break;
+                    return;
                 }
                 case Event::MouseMoved:{
                     chk_hover(buttons, opt);
@@ -262,7 +365,7 @@ void setting(){
             switch (event.type){
                 case Event::Closed:{
                     window.close();
-                    break;
+                    return;
                 }
                 case Event::TextEntered:{
                     if(event.text.unicode == VK_ENTER){
@@ -336,6 +439,7 @@ void main_menu(){ //700 row
                         return;
                 }
                 case Event::Closed:{
+                    window.close();
                     return;
                 }
                 case Event::MouseMoved:{
@@ -349,6 +453,49 @@ void main_menu(){ //700 row
                         case 3: {record(); break;}
                         case 4: {setting(); break;}
                         case 5: {return;}
+                    }
+                    chk_hover(buttons, opt);
+                    break;
+                }
+            }
+        }
+        window.clear();
+        title.Draw();
+        for(int i = 0;i < opt;i++) buttons[i].Draw();
+        window.display();
+        sleep(milliseconds(flush_tick));
+    }
+}
+
+void pause_menu(){
+    const short opt = 3;
+    set_unit(1, 700);
+    TextBox title(unit * 50, 6);
+    title.setText("Pause");
+    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    Button buttons[opt] = {Button("Rseume", unit * 20), Button("Setting", unit * 20), Button("Quit", unit * 20)};
+    for(int i = 0;i < opt;i++) buttons[i].setMidPosition(Vector2f(ResX / 2.f, unit * 70 * (i + 4)));
+    chk_hover(buttons, opt);
+    while(window.isOpen()){
+        while(window.pollEvent(event)){
+            switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC)
+                        return;
+                }
+                case Event::Closed:{
+                    window.close();
+                    return;
+                }
+                case Event::MouseMoved:{
+                    chk_hover(buttons, opt);
+                    break;
+                }
+                case Event::MouseButtonPressed:{
+                    switch (chk_over(buttons, opt)){
+                        case 1: {return; break;}
+                        case 2: {setting(); break;}
+                        case 3: {throw runtime_error("Quit"); break;}
                     }
                     chk_hover(buttons, opt);
                     break;

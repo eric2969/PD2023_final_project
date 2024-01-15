@@ -1,8 +1,8 @@
 #pragma once
 
-#define KeyCnt 11
-//Up, Down, Left, Right, Space, Z, X, C, Shift, P(pause), Q(quit)
-const Keyboard::Key KeyCode[KeyCnt] = {Keyboard::Up, Keyboard::Down, Keyboard::Left, Keyboard::Right, Keyboard::Space, Keyboard::Z, Keyboard::X, Keyboard::C, Keyboard::LShift, Keyboard::P, Keyboard::Q};
+#define KeyCnt 10
+//Up, Down, Left, Right, Space, Z, X, C, Shift, ESC(pause)
+const Keyboard::Key KeyCode[KeyCnt] = {Keyboard::Up, Keyboard::Down, Keyboard::Left, Keyboard::Right, Keyboard::Space, Keyboard::Z, Keyboard::X, Keyboard::C, Keyboard::LShift, Keyboard::Escape};
 double speed;
 bool KeyPressed[KeyCnt] = {}, KeyState[KeyCnt] = {}, stuck, clr, f_exit; //exit flag
 const short fTick = 1000, sLimit = 10;
@@ -12,6 +12,7 @@ clock_t before, tStuck, tArrow, tDas, tStart;
 //thread para and return value
 int thrd_token, ret_thrd_val;
 
+void pause_menu();
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = Keyboard::isKeyPressed(KeyCode[i]);}
 void Table_Trans(char Snd[], char Rec[]);
 short game_cycle(Player& player, int& line, int& score,const bool& single);
@@ -24,6 +25,7 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
     player.init(clock(), 0);
     player.new_block();
     player.print_table();
+    set_unit(20 * width + 200.f, 20 * height + 50.f);
     while (1) {
     	while (window.pollEvent(event)){
             if(event.type == Event::Closed)
@@ -301,44 +303,11 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
     }
     else
         KeyState[4] = 0; //change the key state back
-    /*p:pause (9)
-    if(single){
-        if (KeyPressed[9]){
-            if (!KeyState[9]){
-                clrscr();
-                SetFont(0, 100);
-                Menu PauseMenu; SettingMenu SM;//make the pause menu
-                PauseMenu.settitle("Pause\nIf want to resume, please right click!").add(SM, "Settings").add(Quit, "Quit");
-                PauseMenu.start(); //execute the menu
-                clrscr();
-                SetFont(1, width + 30, height + 7);
-                player.print_table();
-            }
-            KeyState[9] = 1;
-        }
-        else
-            KeyState[9] = 0;
+    //p:pause (9)
+    if(single && KeyPressed[9]){
+        pause_menu();
+        set_unit(20 * width + 200.f, 20 * height + 50.f);
     }
-    //q:quit(10)
-    if (KeyPressed[10]){
-        if(!KeyState[10]){
-            clrscr();
-            SetFont(0, 100);
-            Menu QuitMenu;//make the quit menu
-			QuitMenu.settitle("Are you sure you want to quit?\nIf no, please right click!").add(Quit, "Quit");
-			QuitMenu.start(); // execute the menu
-            clrscr();
-            if(single)
-            	SetFont(1, width + 20, height + 7);
-            else
-            	SetFont(1, 70, 30);
-            player.print_table();
-            return -10;
-        }
-        KeyState[10] = 1;
-    }
-    else
-        KeyState[10] = 0;*/
     player.print_table(); //print out the block
     speed = (1.0 - 0.032 * player.get_level()); //set the speed of the block
     return ClearCnt;

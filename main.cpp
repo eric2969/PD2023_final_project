@@ -31,6 +31,7 @@ RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!", Style::Fu
 Music music;
 Event event;
 Font font;
+void set_unit(double cols, double lns){unit = min(ResX/(double)cols,ResY/(double)lns); return;}
 
 #define BGM_PATH "src/bgm.flac"
 #define FONT_PATH "src/font.ttf"
