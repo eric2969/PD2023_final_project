@@ -48,6 +48,7 @@ string itos_plus(int a, int width, char sym = ' '){
 void record_reset() {for(int i = 0;i < 6;i++) RecData[i] = 0;}
 void record_update(const int& clr, const int& score, const int& time);
 void score_display(const string& over, const int& time, const int& line, const int& score){
+	fx[1].play();
     record_update(line, score, time);
     const short t_num = 3;
     set_unit(1, 700);
