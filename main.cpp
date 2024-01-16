@@ -252,11 +252,14 @@ struct option2{ //option from multi-player
     static int sub_option2(){
         clrscr();
         set_color(7);
+        
         if(conn)
             cout << "You have connected\n";
         else{
             int status;
             char title[256];
+            status = client_join(); 
+            cout << status << endl;
             cout << "Please input opponent's ip\n";
             cin >> ip;
             cout << "Waiting for connection...\n";

@@ -162,9 +162,9 @@ int server_broadcast(){
 	char buf[1024] = "Tetris:";
 	strcat(buf,hostName);
 	//set server address
-    Server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    Server_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
     Server_addr.sin_family      = AF_INET;
-    Server_addr.sin_port        = PORT;
+    Server_addr.sin_port        = htons(PORT);
     char so_broadcast = 1;
     //set up connecting socket
     sListen = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -217,10 +217,10 @@ int client_join(){
 	//set server address
     Server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     Server_addr.sin_family      = AF_INET;
-    Server_addr.sin_port        = PORT;
+    Server_addr.sin_port        = htons(PORT);
     char so_broadcast = 1;
     //set up connecting socket
-    sListen = socket(AF_INET, SOCK_DGRAM, 0);
+    sListen = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     /*SO_BROADCAST: broadcast attribute*/
     if(setsockopt(sListen, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof(so_broadcast))<0){
         perror("setsockopt");
@@ -241,10 +241,11 @@ int client_join(){
         /*sendto() doesn't need to be connected*/
         
         int addr_len = sizeof(Ser_addr);
-        std::cout << "IP sent: " << inet_ntoa(Ser_addr.sin_addr);
+
         int sz = recvfrom(sListen, buf, 128, 0, (sockaddr *)&Ser_addr, &addr_len);
-        if (sz > 0) {
-          buf[sz] = 0;
+        std::cout << "IP sent: " << inet_ntoa(Ser_addr.sin_addr);
+        if (sz != SOCKET_ERROR) {
+          buf[sz] = '\0';
           printf("Get Message:\n %s\n", buf);
           printf("get IP %s \n", inet_ntoa(Ser_addr.sin_addr));
           printf("get Port %d \n\n", ntohs(Ser_addr.sin_port));
