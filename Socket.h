@@ -1,3 +1,4 @@
+#define PORT 9487
 //declare server address and client address
 SOCKADDR_IN Server_addr, Ser_addr;;
 //declare socket for listen and connection
@@ -93,7 +94,7 @@ int client_connect(const char ip[], const int& port = 9487){
     Ser_addr.sin_family      = AF_INET;
     Ser_addr.sin_port        = htons(port);
     //set up connecting socket
-    sConnect = socket(AF_INET, SOCK_STREAM, 0);
+    sListen = socket(AF_INET, SOCK_STREAM, 0);
     //trying connect to server
     if(connect(sConnect, (SOCKADDR*)&Ser_addr, sizeof(Ser_addr)) == SOCKET_ERROR)
         return -1; //if fail, return -1
@@ -150,4 +151,108 @@ string getIP()
 	
 	}  	
 	return "Get IP failed.";  
+}
+
+int server_broadcast(){
+    char hostName[256] = "Unknown";
+	if(gethostname(hostName,sizeof(hostName)))
+	{
+		std::cout << "Get Host Name Failed" << endl; 
+	}
+	char buf[1024] = "Tetris:";
+	strcat(buf,hostName);
+	//set server address
+    Server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    Server_addr.sin_family      = AF_INET;
+    Server_addr.sin_port        = PORT;
+    char so_broadcast = 1;
+    //set up connecting socket
+    sListen = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    /*SO_BROADCAST: broadcast attribute*/
+    if(setsockopt(sListen, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof(so_broadcast)) == SOCKET_ERROR){
+        perror("setsockopt");
+        cout << WSAGetLastError() << '\n';
+        return -1;
+    }
+    int iResult = bind(sListen, (SOCKADDR*)&Server_addr, sizeof(Server_addr));
+    //if fail, return -2, terminate socket and clean up connection data
+    if (iResult == SOCKET_ERROR){
+        closesocket(sListen);
+        return -2;
+    }
+    
+    
+    while(1){
+        Ser_addr.sin_family = AF_INET; /*IPv4*/
+        Ser_addr.sin_port = htons(PORT);  /*Set port number*/
+        Ser_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST); /*The broadcast address*/
+        /*sendto() doesn't need to be connected*/
+        std::cout << "hi "; 
+        if((sendto(sListen, buf, strlen(buf), 0, (struct sockaddr*)&Ser_addr, sizeof(Ser_addr))) == SOCKET_ERROR){
+            perror("sendto");
+            std::cout << "Message Sent Failed\n";
+            return -1;
+        }
+        int addr_len = sizeof(Ser_addr);
+        std::cout << "IP sent: " << inet_ntoa(Ser_addr.sin_addr) << '\n';
+        int sz = recvfrom(sListen, buf, 128, 0, (sockaddr *)&Ser_addr, &addr_len);
+        if (sz > 0) {
+          buf[sz] = 0;
+          printf("Get Message:\n %s\n", buf);
+          printf("get IP %s \n", inet_ntoa(Ser_addr.sin_addr));
+          printf("get Port %d \n\n", ntohs(Ser_addr.sin_port));
+        }
+        Sleep(500);
+    } 
+    
+}
+
+int client_join(){
+    char hostName[256] = "Unknown";
+	if(gethostname(hostName,sizeof(hostName)))
+	{
+		std::cout << "Get Host Name Failed" << endl; 
+	}
+	char buf[1024];
+	//set server address
+    Server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    Server_addr.sin_family      = AF_INET;
+    Server_addr.sin_port        = PORT;
+    char so_broadcast = 1;
+    //set up connecting socket
+    sListen = socket(AF_INET, SOCK_DGRAM, 0);
+    /*SO_BROADCAST: broadcast attribute*/
+    if(setsockopt(sListen, SOL_SOCKET, SO_BROADCAST, &so_broadcast, sizeof(so_broadcast))<0){
+        perror("setsockopt");
+        return -1;
+    }
+    int iResult = bind(sListen, (SOCKADDR*)&Server_addr, sizeof(Server_addr));
+    //if fail, return -2, terminate socket and clean up connection data
+    if (iResult == SOCKET_ERROR){
+        closesocket(sListen);
+        return -2;
+    }
+    
+    
+    while(1){
+        Ser_addr.sin_family = AF_INET; /*IPv4*/
+        Ser_addr.sin_port = htons(PORT);  /*Set port number*/
+        Ser_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST); /*The broadcast address*/
+        /*sendto() doesn't need to be connected*/
+        
+        int addr_len = sizeof(Ser_addr);
+        std::cout << "IP sent: " << inet_ntoa(Ser_addr.sin_addr);
+        int sz = recvfrom(sListen, buf, 128, 0, (sockaddr *)&Ser_addr, &addr_len);
+        if (sz > 0) {
+          buf[sz] = 0;
+          printf("Get Message:\n %s\n", buf);
+          printf("get IP %s \n", inet_ntoa(Ser_addr.sin_addr));
+          printf("get Port %d \n\n", ntohs(Ser_addr.sin_port));
+          if((sendto(sListen, buf, strlen(buf), 0, (struct sockaddr*)&Ser_addr, sizeof(Ser_addr))) < 0){
+              perror("sendto");
+              return -1;
+          }
+        }
+        Sleep(500);
+    }
 }

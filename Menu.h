@@ -21,8 +21,8 @@ using std::endl;
 struct node { //menu's options
     COORD pos_;
     std::string display_;
-    const std::function<void(void)> &pf_;
-    node(std::string d, const std::function<void(void)> &func) : display_(d), pf_(func){};
+    const std::function<int(void)> &pf_;
+    node(std::string d, const std::function<int(void)> &func) : display_(d), pf_(func){};
 };
 
 class Menu
@@ -32,7 +32,7 @@ private:
     std::string title_; //title of the menu
 protected:
     void recordposition(); //record the position of the mouse
-    bool implement(COORD clickpos); //execute the selected option
+    int implement(COORD clickpos); //execute the selected option
     void highlight(COORD hang); //make the hovered option blue
 public:
     //constructor
@@ -43,7 +43,7 @@ public:
     //methods
     Menu &settitle(std::string s);
     //add an option to the menu
-    Menu &add(const std::function<void(void)> &p, std::string d);
+    Menu &add(const std::function<int(void)> &p, std::string d);
     //run the menu
     void start();
 };
@@ -92,18 +92,18 @@ void Menu::recordposition(){
     }
 }
 //execute
-bool Menu::implement(COORD clickpos){
+int Menu::implement(COORD clickpos){
     for (auto p = nodes_.begin(); p != nodes_.end(); p++){
         if (p->pos_ - clickpos){ //if clicked at the right position
             hidecursor(0);
             clean();
-            p->pf_();
+            int res = p->pf_();
             setmode();
             hidecursor(1);
-            return true;
+            return res;
         }
     }
-    return false;
+    return -1;
 }
 void Menu::highlight(COORD hang){
     COLOR_default;
@@ -121,7 +121,7 @@ void Menu::highlight(COORD hang){
 }
 
 Menu& Menu::settitle(string s){title_ = s; return *this;}
-Menu& Menu::add(const std::function<void(void)> &p, string d){ nodes_.push_back(node(d, p)); return *this;}
+Menu& Menu::add(const std::function<int(void)> &p, string d){ nodes_.push_back(node(d, p)); return *this;}
 
 void Menu::start(){
     setmode();
@@ -138,9 +138,10 @@ void Menu::start(){
         if (mouse.dwEventFlags == MOUSE_MOVED) //if mouse moves
             highlight(mouse.dwMousePosition);
         else if (mouse.dwButtonState == L_BUTTON){
-            implement(mouse.dwMousePosition);
+            int res = implement(mouse.dwMousePosition);
             clrscr();
             highlight(mouse.dwMousePosition);
+            if(res != 0) break;
         }
     }while (mouse.dwButtonState != R_BUTTON);
     while(mouse.dwButtonState == R_BUTTON){ //prevent the clicking affect the other page

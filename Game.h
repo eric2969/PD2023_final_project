@@ -13,7 +13,7 @@ mutex Thrd_lock;
 int thrd_token, ret_thrd_val;
 
 struct SettingMenu{ //settings
-    static void sub_option1(){
+    static int sub_option1(){
         cout << "Current ARR is: " << arr <<"\nPlease Type in the New ARR\n1(slow)-500(fast): ";
         while(1){
             cin >> arr;
@@ -31,8 +31,9 @@ struct SettingMenu{ //settings
                 cout << "Please input a number between than 1 and 500: ";
             }
         }
+        return 0;
     }
-    static void sub_option2(){
+    static int sub_option2(){
         cout << "Current DAS is: " << das <<"\nPlease Type in the New DAS\n1(slow)-1000(fast): ";
         while(1){
             cin >> das;
@@ -50,9 +51,9 @@ struct SettingMenu{ //settings
                 cout << "Please input a number between than 1 and 1000: ";
             }
         }
-
+        return 0;
     }
-    static void sub_option3(){
+    static int sub_option3(){
          cout << "Current Gravity Level is: " << gravity <<"\nPlease Type in the New Gravity Level\n1(slow)-50(fast): ";
          while(1){
             cin >> gravity;
@@ -70,8 +71,9 @@ struct SettingMenu{ //settings
                 cout << "Please input a number between than 1 and 50: ";
             }
          }
+         return 0;
     }
-    static void sub_option4(){
+    static int sub_option4(){
     	int iTmp;
         cout << "Current Bright Mode is: " << (bright?"Bright":"Dark") <<"\nPlease Type in the New Bright Mode\n1(Dark)/2(Bright): ";
         while(1){
@@ -91,8 +93,9 @@ struct SettingMenu{ //settings
                 cout << "Please input 1 or 2: ";
             }
         }
+        return 0;
     }
-    static void sub_option5() {
+    static int sub_option5() {
     	int iTmp;
         cout << "Are you sure you want to reset the settings? 1(No)/2(Yes): ";
         while(1){
@@ -112,8 +115,9 @@ struct SettingMenu{ //settings
                 cout << "Please input 1 or 2: ";
             }
         }
+        return 0;
 	}
-    void operator() (){
+    int operator() (){
         Menu sub_menu;
         clrscr();
         sub_menu.settitle("Game Setting\nRight click for return to main menu").add(sub_option1, "ARR").add(sub_option2, "DAS").add(sub_option3, "Gravity").add(sub_option4, "Bright").add(sub_option5, "Reset");
@@ -121,10 +125,11 @@ struct SettingMenu{ //settings
         ofstream setting(SET_PATH);
         setting << das << ' ' << arr << ' ' << gravity << ' ' << bright;
         setting.close();
+        return 0;
     }
 };
 
-static void Quit() {
+static int Quit() {
     if(multi){
         if(server)
             server_send("lose");
@@ -134,6 +139,7 @@ static void Quit() {
     }
     else
     	throw runtime_error("Quit");
+   	return 0;
 }
 
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = GetAsyncKeyState(KeyCode[i]) & 0x8000;}

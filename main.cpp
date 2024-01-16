@@ -11,6 +11,7 @@
 #include <vector>
 #include <queue>
 #include <windows.h>
+#include <winsock2.h>
 
 using namespace std;
 
@@ -35,7 +36,7 @@ const short flush_tick = 5, DataSize = 130;
 int playCnt, TimeCnt, clearCnt, scoreCnt, highClear, highScore;
 
 void game_init();
-void game_exit();
+int game_exit();
 void record_reset() {playCnt = 0, TimeCnt = 0, clearCnt = 0, scoreCnt = 0, highClear = 0, highScore = 0;}
 void record_update(int& clr, int& score, const int& time);
 void print_pic();
@@ -67,11 +68,12 @@ struct option1{ //option from single player mode
         }
         record_update(line, score, usedTime); //update record
     }
-    static void sub_option1(){ //infinite mode
+    static int sub_option1(){ //infinite mode
         gameMode = 0;
         run();
+        return 0;
     }
-    static void sub_option2(){ //line mode
+    static int sub_option2(){ //line mode
         cout << "Please input your goal (line)?: ";
         while(1){
             cin >> goal;
@@ -85,8 +87,9 @@ struct option1{ //option from single player mode
         }
         gameMode = 1;
         run();
+        return 0;
     }
-    static void sub_option3(){ //time mode
+    static int sub_option3(){ //time mode
         cout << "Please input your time (second)?: " ;
         while(1){
             cin >> goal;
@@ -100,8 +103,9 @@ struct option1{ //option from single player mode
         }
         gameMode = 2;
         run();
+        return 0;
     }
-    static void set_size(){
+    static int set_size(){
         cout << "Please input Table width (5-50, default:10)?: ";
         while(1){
             cin >> width;
@@ -136,8 +140,9 @@ struct option1{ //option from single player mode
         sub_menu.settitle(title);
         Sleep(800);
         pause();
+        return 0;
     }
-    void operator() (){
+    int operator() (){
         clrscr();
         char title[256], tmp[5];
         sub_menu.init();
@@ -151,6 +156,7 @@ struct option1{ //option from single player mode
         sub_menu.settitle(title);
         sub_menu.add(sub_option1, "Infinite Mode").add(sub_option2, "Clear Line Mode").add(sub_option3, "Time Mode").add(set_size, "Set Table Size");
         sub_menu.start();
+        return 0;
     }
 };
 int option1::gameMode = 0;
@@ -167,14 +173,14 @@ struct option2{ //option from multi-player
     static int line, score, usedTime;
     static clock_t t;
     static char ip[16];
-    static void run(){ //execute sub-menu
+    static int run(){ //execute sub-menu
         if(!conn){
             clrscr();
             set_color(7);
             cout << "Please connect to another player first\n";
             Sleep(800);
             pause();
-            return;
+            return 0;
         }
         multi = 1;
     	t = clock();
@@ -204,8 +210,9 @@ struct option2{ //option from multi-player
             pause();
         }
         record_update(line, score, usedTime); //update record
+        return 0;
 	}  
-    static void sub_option1(){
+    static int sub_option1(){
         clrscr();
         set_color(7);
         if(conn)
@@ -227,7 +234,8 @@ struct option2{ //option from multi-player
                 cin >> ip;
             }   
             cout << "Waiting for connection...\n";
-            status = server_connect(ip);
+            status = server_broadcast();
+            //status = server_connect(ip);
             if(status)
                 cout << "Connect Error, error code : " << status << endl;
             else{
@@ -239,8 +247,9 @@ struct option2{ //option from multi-player
         }
         Sleep(800);
         pause();
+        return 0;
     }
-    static void sub_option2(){
+    static int sub_option2(){
         clrscr();
         set_color(7);
         if(conn)
@@ -268,8 +277,9 @@ struct option2{ //option from multi-player
         }
         Sleep(800);
         pause();
+        return 0;
     }
-    static void sub_option3(){
+    static int sub_option3(){
         clrscr();
         set_color(7);
         if(conn){
@@ -284,8 +294,9 @@ struct option2{ //option from multi-player
             cout << "No connection\n";
         Sleep(800);
         pause();
+        return 0;
     }
-    void operator() (){
+    int operator() (){
         char title[256];
         clrscr();
         sub_menu.init();
@@ -310,6 +321,7 @@ struct option2{ //option from multi-player
             sub_menu.settitle("Multi Game\nYou are disconnected\nRight click for return to main menu");
         sub_menu.add(sub_option1, "Be a Host").add(sub_option2, "Connect to the Host").add(sub_option3, "Disconnect").add(run, "Game Start");
         sub_menu.start();
+        return 0;
     }
 };
 Menu option2::sub_menu;
@@ -320,7 +332,7 @@ char option2::ip[16];
 clock_t option2::t = 0;
 
 struct option3{ //record option
-    static void sub_option1(){ //show record
+    static int sub_option1(){ //show record
         clrscr();
         set_color(7);
         cout << "Records\n\n";
@@ -332,8 +344,9 @@ struct option3{ //record option
         cout << "Best Score:          " << highScore << endl << endl;
         Sleep(800);
         pause(); //press any key to continue
+        return 0;
     }
-    static void sub_option2(){ //reset record
+    static int sub_option2(){ //reset record
         int iTmp;
         cout << "Are you sure you want to reset your record?\n[1(No)/2(Yes)]: ";
         while(1){
@@ -359,12 +372,14 @@ struct option3{ //record option
                 cout << "Please input 1 or 2: ";
             }
         }
+        return 0;
     }
-    void operator() (){
+    int operator() (){
         Menu sub_menu; //create sub-menu
         clrscr();
         sub_menu.settitle("Record\nRight click for return to main menu").add(sub_option1, "See Record").add(sub_option2, "Reset Record");
         sub_menu.start();
+        return 0;
     }
 };
 
@@ -429,7 +444,7 @@ void game_init(){
     record.close();
 }
 
-void game_exit(){
+int game_exit(){
 	//close socket
 	if(conn){
 		if(server)
@@ -444,6 +459,7 @@ void game_exit(){
     setting.close();
     record.close();
     exit(0);
+    return 0;
 }
 
 void record_update(int& clr, int& score,const int& time){
