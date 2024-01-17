@@ -2,7 +2,7 @@
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/sfml-%238CC445.svg?&style=for-the-badge&logo=sfml&logoColor=black" /> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
 <!--[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1>)    [<img src="https://img.shields.io/badge/Download-v8.6.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1.zip>) -->
-<br>[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1beta>) [<img src="https://img.shields.io/badge/Download-v8.6.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1beta.zip>) <br>
+[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1beta>) [<img src="https://img.shields.io/badge/Download-v8.6.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -59,12 +59,12 @@ We about to use some techniques like File I/O, Polymorphism, Operator Overloadin
 And we divided our game architecture into several parts, listed at the below. <br>
 > ![mind-set](assets/architecture.png) 
 > 1. [Main.cpp](#maincpp) <br>
-> 2. [Game.hpp](#gameh) <br>
-> 3. [Menu_instance.hpp](#menuinstanceh) <br>
-> 4. [Object.hpp](#objecth) <br>
-> 5. [Table.hpp](#tableh) <br>
-> 6. [Block.hpp](#blockh) <br>
-> 7. [Socket.hpp](#socketh) <br>
+> 2. [Game.hpp](#gamehpp) <br>
+> 3. [Menu_instance.hpp](#menuinstancehpp) <br>
+> 4. [Object.hpp](#objecthpp) <br>
+> 5. [Table.hpp](#tablehpp) <br>
+> 6. [Block.hpp](#blockhpp) <br>
+> 7. [Socket.hpp](#sockethpp) <br>
 >> ### Main.cpp
 >> This contain game initailize and exit function that can input and output the data in the src <br>
 >> And establish main menu based on Menu.h, providing below functions<br>
@@ -72,31 +72,32 @@ And we divided our game architecture into several parts, listed at the below. <b
 >> 2. Record, you can see your playing record and reset it
 >> 3. Settings, which can adjust setting in the game
 >> 4. Quit, safely exit the game
->> ### Game.h
+>> ### Game.hpp
 >> This establish a whole gaming environment by some ways, listed at the below<br>
 >> 1. Construct and maintain a class Table from Table.h
 >> 2. Scan keyboard status asynchronously and do cooresponding operation
 >> 3. Control player(class Table) depending on user input via keyboard
 >> 4. Construct pause and quit menu based on Menu.h, providing pause/configuration settings/quit functions
->> ### Menu_instance.h
+>> ### Menu_instance.hpp
 >> This construct a Menu class that will be used in the software, providing some features below<br>
 >> 1. Hover and Highlight when cursor approaching
 >> 2. Input text or number(can limit range) in the text box
 >> 3. Enable Enter Key and Esc Key in the menu
->> ### Object.h
+>> ### Object.hpp
 >> This provide some objects that will be used in Menu, such as Textbox and Button
->> ### Table.h
+>> ### Table.hpp
 >> This establish a class that can control and display the whole player game board <br>It will scan the keyboard state and does cooresponding operation such that move or rotate the block and verify the validation of this operation <br>Block operations are provided and maintained by Block.h
->> ### Block.h
+>> ### Block.hpp
 >> This contain struct Point(for coordinate) and class Block(abstract class) <br>Class Block save some general data of each block, <br>and provide some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J, K, O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
 >> ### Socket.hpp
 >> This is the header file including some api or functions which will be used by thread that can transmit data on the socket connections
 
 ## Version History
 ---
-<!--[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen">](#20240118a-v861)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](#20240118a-v861beta)
-- [Version 8](#20240118a-v861beta) SFML cross-platform
-> - [v8.6](#20240118a-v861beta) Multi Playing construction
+<!--[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen">](#20240118a-v861)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](#20240118b-v861beta)
+- [Version 8](#20240118b-v861beta) SFML cross-platform
+> - [v8.6](#20240118b-v861beta) Multi Playing construction
 > - [v8.5](#20240116b-v852beta) Pause menu and Game over Table/Fx sound
 > - [v8.4](#20240115a-v84beta) Single Player
 > - [v8.3](#20240114b-v831beta) Menu/BGM Application
@@ -129,7 +130,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
-> ### 2024/01/18.a (v8.6.1beta)
+> ### 2024/01/18.b (v8.6.1beta)
+> Refine README.md
+
+> ### 2024/01/18.a
 > Menu is well constructed <br>
 > Garbage throwing is available <br>
 > Software still need to be verified <br>
