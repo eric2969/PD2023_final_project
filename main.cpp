@@ -28,7 +28,7 @@ short ResX, ResY, width, height, conf[4]; //0:das, 1:arr, 2:gravity
 double unit;
 int RecData[6], Thrd_ret, Thrd_token; //0: playcnt, 1:time, 2:line, 3:score, 4:h_line, 5:h_score
 Mutex Thrd_lock;
-RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!"); //, Style::Fullscreen
+RenderWindow window(VideoMode(VideoMode::getDesktopMode()), "Tetris!", Style::Fullscreen);
 Music music, fx[2];
 Event event;
 Font font;
