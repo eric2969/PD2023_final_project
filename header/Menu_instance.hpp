@@ -254,6 +254,83 @@ void thrd_conn(const bool& isHost, const string& ip){
     Thrd_lock.unlock();
 }
 
+void ready_conn(){
+    char tmp[DataSize];
+    while(1){
+        socket_send("chk");
+        if(socket_recv(tmp) < 0){
+            Thrd_lock.lock();
+            Thrd_ret = -1;
+            Thrd_lock.unlock();
+            return;
+        }
+        else if(!strcmp(tmp, "chk")){
+            Thrd_lock.lock();
+            Thrd_ret = 1;
+            Thrd_lock.unlock();
+            return;
+        }
+        Thrd_lock.lock();
+        if(Thrd_token < 0){
+            socket_disconnect();
+            Thrd_ret = -2;
+            Thrd_lock.unlock();
+            return;
+        }
+        Thrd_lock.unlock();
+    }
+}
+
+void wait_display(){
+    clock_t t_dot = clock();
+    int trd_fetch, dot_cnt = 0;
+    set_unit(1, 700);
+    TextBox title(unit * 50, 12), sub_title;
+    title.setText("Multi Player");
+    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    sub_title.setFontSize(unit * 18);
+    sub_title.setContext("Waiting for your opponent");
+    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 130, 200 * unit));
+    while(window.isOpen()){
+        Thrd_lock.lock();
+        trd_fetch = Thrd_ret;
+        Thrd_lock.unlock();
+        while(window.pollEvent(event)){
+            switch (event.type){
+                case Event::TextEntered:{
+                    if(event.text.unicode == VK_ESC){
+                        Thrd_lock.lock();
+                        Thrd_token = -1;
+                        Thrd_lock.unlock();
+                        return;
+                    }
+                }
+                case Event::Closed:{
+                    Thrd_lock.lock();
+                    Thrd_token = -1;
+                    Thrd_lock.unlock();
+                    window.close();
+                    return;
+                }
+            }
+        }
+        if(trd_fetch)
+            return;
+        else{
+            if(clock() - t_dot > 800){
+                t_dot = clock();
+                dot_cnt = (dot_cnt + 1) % 4;
+            }
+            sub_title.setContext(string("Waiting for your opponent") + string(dot_cnt, '.'));
+        }
+        window.clear();
+        title.Draw();
+        sub_title.Draw();
+        window.display();
+        sleep(milliseconds(flush_tick));
+    }
+}
+
 void conn_dis(const bool& isHost, const string& s = ""){
     clock_t t_dot = clock();
     int trd_fetch, dot_cnt = 0;
@@ -261,8 +338,9 @@ void conn_dis(const bool& isHost, const string& s = ""){
     TextBox title(unit * 50, 12), sub_title;
     title.setText("Multi Player");
     title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    sub_title.setFontSize(unit * 18);
     sub_title.setContext("Connecting");
-    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 100, 200 * unit));
+    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 80, 200 * unit));
     Button button = Button("OK", unit * 20);
     button.setMidPosition(Vector2f(ResX / 2.f, unit * 280));
     thread thrd(thrd_conn, isHost, s);
@@ -277,8 +355,10 @@ void conn_dis(const bool& isHost, const string& s = ""){
         while(window.pollEvent(event)){
             switch (event.type){
                 case Event::TextEntered:{
-                    if(event.text.unicode == VK_ESC)
+                    if(event.text.unicode == VK_ENTER && trd_fetch){
+                        thrd.join();
                         return;
+                    }
                 }
                 case Event::Closed:{
                     window.close();
@@ -300,11 +380,8 @@ void conn_dis(const bool& isHost, const string& s = ""){
                 }
             }
         }
-        if(trd_fetch){
-            conn = (trd_fetch > 0);
-            host = (conn && isHost);
+        if(trd_fetch)
             sub_title.setContext((trd_fetch>0?"Connecting Suceed!":"Connecting failed!"));
-        }
         else{
             if(clock() - t_dot > 800){
                 t_dot = clock();
@@ -354,6 +431,17 @@ void multi(){ //to be finished
         if(conn){
             while(window.pollEvent(event)){
                 switch (event.type){
+                    case Event::TextEntered:{
+                        if(event.text.unicode == VK_ESC)
+                            return;
+                        else if(event.text.unicode == VK_ENTER){
+                            t_start = clock();
+                            try{multiPlayer(tLine, tScore);}
+                            catch(exception &e){
+                                score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
+                            }
+                        }
+                    }
                     case Event::Closed:{
                         window.close();
                         return;

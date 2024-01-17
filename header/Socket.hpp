@@ -12,6 +12,7 @@ int server_connect(const int& port = 9487){
     if (listener.accept(sock) != Socket::Done){
         return -2;
     }
+    conn = 1, host = 1;
     return 1; //suceed
 }
 
@@ -20,19 +21,24 @@ int client_connect(const char ip[], const int& port = 9487){
     //trying connect to server
     if (sock.connect(ip, port) != Socket::Done)
         return -1;
+    conn = 1, host = 0;
     return 1;
 }
 
 void socket_disconnect(){
 	listener.close();
     sock.disconnect();
+    conn = 0;
 }
 
 //sending cstring via socket
 int socket_send(const char mes[]){
     //trying to send data
-    if (sock.send(mes, DataSize) != Socket::Done)
+    if (sock.send(mes, DataSize) != Socket::Done){
+        socket_disconnect();
+        conn = 0;
         return -1;
+    }
     return 1;
 }
 
@@ -40,8 +46,11 @@ int socket_send(const char mes[]){
 int socket_recv(char mes[]){
     //try to receiving data
     size_t received;
-    if(sock.receive(mes, DataSize, received) != Socket::Done)
+    if(sock.receive(mes, DataSize, received) != Socket::Done){
+        socket_disconnect();
+        conn = 0;
         return -1;
+    }
     return 1;
 }
 
@@ -72,17 +81,22 @@ void Table_Trans(char Snd[], char Rec[]){
         Thrd_lock.unlock();
         if(socket_send(tmp) < 0){
             Thrd_ret = -1;
-            break;
+            return;
         }
         if(socket_recv(tmp) < 0){
             Thrd_ret = -1;
-            break;
+            return;
         }
         if(!strcmp(tmp, "chk"))
             continue;
         Thrd_lock.lock();
-        for(int i = 0;i < DataSize;i++) Rec[i] = tmp[i];
+        for(int i = 0;i < DataSize;i++)
+            if(i == 110)
+                Rec[i] += tmp[i];
+            else
+                Rec[i] = tmp[i];
         Thrd_ret = 1;
         Thrd_lock.unlock();
     }
 }
+

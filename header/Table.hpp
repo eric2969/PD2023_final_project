@@ -132,7 +132,7 @@ public:
     //printing
     void print_table() override; //print table on windows.h (x,y) is the origin of the table
     //checking
-    bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || (board[i.y][i.x]&7) ) return 0; return 1;}
+    bool isValid(const Block& tmp) const {for(auto i : tmp.block_position()) if(i.x < 0 || i.x >= width || i.y < 0 || board[i.y][i.x] ) return 0; return 1;}
     bool check_block(const Point &p) const;
     //filled check
     short chk_clear(int& line, int& score);
@@ -377,7 +377,7 @@ short Player::chk_clear(int& line, int& tscore){
     }
     if(garbage){
         if(cnt)
-            garbage = std::max(0, garbage - cnt);
+            garbage = max(0, garbage - cnt);
         else{
             int cleavage = rand() % 10;
             garbage = min(20, garbage);
@@ -386,7 +386,7 @@ short Player::chk_clear(int& line, int& tscore){
                     board[i][j] = board[i-garbage][j];
             for(int i = 0;i < garbage;i++)
                 for(int j = 0;j < width;j++)
-                    board[i][j] = ((cleavage==j)?8:9);
+                    board[i][j] = (!(cleavage==j) << 3);
             garbage = 0;
         }
     }
@@ -568,6 +568,7 @@ void Opponent::RecvTable(const char str[]){
     //hold 100 first 3
     hold = ((str[100] >> 3) & 7);
     //level [101,103)
+    level = 0, score = 0, clear_line = 0;
     for(int i = 102;i >= 101;i--){
         level <<= 7;
         level |= (str[i] & 127);

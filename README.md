@@ -1,8 +1,8 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/sfml-%238CC445.svg?&style=for-the-badge&logo=sfml&logoColor=black" /> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-v7.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v7.1>)    [<img src="https://img.shields.io/badge/Download-v7.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v7.1.zip>)
-<br>[<img src="https://img.shields.io/badge/Beta-v8.6beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6beta>) [<img src="https://img.shields.io/badge/Download-v8.6beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6beta.zip>) <br>
+[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1>)    [<img src="https://img.shields.io/badge/Download-v8.6.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1.zip>)
+<!--br>[<img src="https://img.shields.io/badge/Beta-v8.6beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6beta>) [<img src="https://img.shields.io/badge/Download-v8.6.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6beta.zip>) <br-->
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -35,34 +35,25 @@ This application is required to be running on OS supporting SFML. <br>
 >> 1. Just click the main.exe in the repo, Enjoy <br>
 >> ![execute](assets/execution.png)
 >> ### Mac OS
->> 1. Open the settings in your computer, it may be in the Start Menu <br>
->> ![setting](assets/win11-setting.png)
->> 2. Click the search bar and type "terminal" or "終端機", and click the first one. <br>
->> ![terminal](assets/win11-terminal.png)
->> 3. Click the terminal, and select the second one. <br>
->> ![console](assets/win11-console.png)
->> 4. Go to the repo folder, and click the main.exe, Enjoy <br>
->> ![execute](assets/execution.png)
+>> To be continue...
 >> ### Linux
->> 1. Just click the main.exe in the repo, Enjoy <br>
->> ![execute](assets/execution.png)
-<br>
+>> To be continue...
 
 > Keyboard Operation
-> | KeyBoard | Left/Right Arrow | Down Arrow | Space | Up Arrow<br>X | Z | C/Shift | P | Q |
-> | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
-> | Function | Move Left/Right | Falling faster | Hard Drop | Rotate CW | Rotate CCW | Hold | Pause | Quit |
+> | KeyBoard | Left/Right Arrow | Down Arrow | Space | Up Arrow<br>X | Z | C/Shift | ESC |
+> | :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+> | Function | Move Left/Right | Falling faster | Hard Drop | Rotate CW | Rotate CCW | Hold | Pause |
 <br>
 
 > Configurations Setting
 > | Configuration Name | DAS | ARR | Gravity |
-> | :--: | :--: | :--: | :--: | :--: |
+> | :--: | :--: | :--: | :--: |
 > | Function | Delay auto shift | Auto repeat rate | Dropping rate(down arrow) |
 > | Adjust Range | 1(slow)-1000(fast) | 1(slow)-500(fast) | 1(slow)-50(fast) |
 
 ## Architecture
 ---
-Our game is based on cpp, and UI/UX is powered by "windows.h". <br>
+Our game is based on cpp, and UI/UX is powered by SFML. <br>
 We would like to use socket as our api to transmit enemy player data by TCP protocol <br>
 We about to use some techniques like File I/O, Polymorphism, Operator Overloading, Inheritance, Exception Handling, etc... <br>
 And we divided our game architecture into several parts, listed at the below. <br>
@@ -74,8 +65,6 @@ And we divided our game architecture into several parts, listed at the below. <b
 > 5. [Table.hpp](#tableh) <br>
 > 6. [Block.hpp](#blockh) <br>
 > 7. [Socket.hpp](#socketh) <br>
->>- [Server Side](#server-side) <br>
->>- [Client Side](#client-side) <br>
 >> ### Main.cpp
 >> This contain game initailize and exit function that can input and output the data in the src <br>
 >> And establish main menu based on Menu.h, providing below functions<br>
@@ -90,27 +79,24 @@ And we divided our game architecture into several parts, listed at the below. <b
 >> 3. Control player(class Table) depending on user input via keyboard
 >> 4. Construct pause and quit menu based on Menu.h, providing pause/configuration settings/quit functions
 >> ### Menu_instance.h
->> This construct a Menu class that can provide a full functionally Menu, listed at the below<br>
+>> This construct a Menu class that will be used in the software, providing some features below<br>
 >> 1. Hover and Highlight when cursor approaching
->> 2. Capable of include a Menu inside a Menu(sub menu)
+>> 2. Input text or number(can limit range) in the text box
+>> 3. Enable Enter Key and Esc Key in the menu
 >> ### Object.h
->> This provide some operations that control the console panel such that clrscr(clear screen), <br>MoveWindow(move the window and adjust console display size), etc...
+>> This provide some objects that will be used in Menu, such as Textbox and Button
 >> ### Table.h
 >> This establish a class that can control and display the whole player game board <br>It will scan the keyboard state and does cooresponding operation such that move or rotate the block and verify the validation of this operation <br>Block operations are provided and maintained by Block.h
 >> ### Block.h
 >> This contain struct Point(for coordinate) and class Block(abstract class) <br>Class Block save some general data of each block, <br>and provide some functions such that moving or rotating, etc...<br> And there are seven types of Block(I, J, K, O, Z, T, S) derived from Block <br> Some block which is special will override some function in the abstract class Block.
 >> ### Socket.hpp
->> This is for transmit data of opponent and player
->>> ### Server Side
->>> This contain a function that establish socket connection. <br> And provide functions that can transmit and receive data from and to client side.
->>> ### Client Side
->>> This contain a function that can establish a socket connected to server side. <br> And provide functions that can trasmit and receive data from and to server side.
+>> This is the header file including some api or functions which will be used by thread that can transmit data on the socket connections
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-7.1-brightgreen">](#20240107a-v71)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.6beta-blue">](#20240116c-v86beta)
-- [Version 8](#20240116c-v86beta) SFML cross-platform
-> - [v8.6](#20240116c-v86beta) Multi Playing construction
+[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen">](#20240118a-v861)<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.6beta-blue">](#20240116c-v86beta)-->
+- [Version 8](#20240118a-v861) SFML cross-platform
+> - [v8.6](#20240118a-v861) Multi Playing construction
 > - [v8.5](#20240116b-v852beta) Pause menu and Game over Table/Fx sound
 > - [v8.4](#20240115a-v84beta) Single Player
 > - [v8.3](#20240114b-v831beta) Menu/BGM Application
@@ -143,6 +129,12 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/18.a (v8.6.1)
+> Menu is well constructed <br>
+> Garbage throwing is available <br>
+> Software is verified <br>
+> Additional feature will be constructed later
+
 > ### 2024/01/16.c (v8.6beta)
 > Multi Playing construction <br>
 > Some bugs in socket thread <br>

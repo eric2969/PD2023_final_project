@@ -13,8 +13,9 @@ clock_t before, tStuck, tArrow, tDas, tStart;
 int thrd_token, ret_thrd_val;
 
 void pause_menu();
+void ready_conn();
+void wait_display();
 void getKeyState() {for(int i = 0;i < KeyCnt;i++) KeyPressed[i] = Keyboard::isKeyPressed(KeyCode[i]);}
-void Table_Trans(char Snd[], char Rec[]);
 short game_cycle(Player& player, int& line, int& score,const bool& single);
 
 void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 60){ //mode:0(infinite), 1 (line, line), 2(time, second)
@@ -46,10 +47,18 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
 }
 
 void multiPlayer(int& line, int& score){
+    char BoardData[DataSize], RecvBoard[DataSize];
     width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
-    char BoardData[DataSize], RecvBoard[DataSize];
+    Thrd_token = 0, Thrd_ret = 0;
+    thread wait_thrd(ready_conn);
+    wait_display();
+    wait_thrd.join();
+    if(Thrd_ret == -1)
+        throw runtime_error("Opponent Exit, you win!");
+    else if(Thrd_ret == -2)
+        throw runtime_error("Quit, you lose!");
     //initialize the game
     Player player; Opponent opponent; //create table for player and opponent
     set_unit(800, 450);
@@ -58,20 +67,7 @@ void multiPlayer(int& line, int& score){
     player.init(clock(), 1);
     opponent.init();
     player.new_block();
-    Thrd_token = 0, Thrd_ret = 0;
-    while(1){
-        while (window.pollEvent(event)){
-            if(event.type == Event::Closed)
-                throw runtime_error("Quit");
-        }
-        socket_send("chk");
-        if(socket_recv(RecvBoard) < 0)
-            throw runtime_error("Opponent Exit, you win!");
-        else{
-            if(!strcmp(RecvBoard, "chk"))
-                break;
-        }
-    }
+    Thrd_token = 1, Thrd_ret = 0;
     player.print_table();
     opponent.print_table();
     memset(BoardData, 0, sizeof(BoardData));
@@ -79,44 +75,53 @@ void multiPlayer(int& line, int& score){
     thread Socket_thrd(Table_Trans, ref(BoardData), ref(RecvBoard));
     while (1) {
         while (window.pollEvent(event)){
-            if(event.type == Event::Closed)
-                throw runtime_error("Quit");
+            if(event.type == Event::Closed){
+                Thrd_lock.lock();
+                Thrd_token = -1;
+                Thrd_lock.unlock();
+                Socket_thrd.join();
+                throw runtime_error("Quit, you lose!");
+            }
         }
         //run the multi-player game
         window.clear();
         status = game_cycle(player, line, score, 0);
         if(status == -1){
+            Thrd_lock.lock();
             Thrd_token = -1;
+            Thrd_lock.unlock();
             socket_send("lose");
             Socket_thrd.join();
             throw runtime_error("You lose!");
         }
         Thrd_lock.lock();
+        player.SendTable(BoardData);
         if(status > 0)
             BoardData[110] += status;
-        player.SendTable(BoardData);
-        Thrd_lock.unlock();
         if(Thrd_ret == 1){
-            Thrd_lock.lock();
             if(!strcmp(RecvBoard, "win")){
                 Thrd_token = -1;
+                Thrd_lock.unlock();
                 Socket_thrd.join();
             	throw runtime_error("You lose!");
             }
             else if(!strcmp(RecvBoard, "lose")){
                 Thrd_token = -1;
+                Thrd_lock.unlock();
                 Socket_thrd.join();
             	throw runtime_error("You win!");
             }
             player.get_garbage(RecvBoard[110]);
+            RecvBoard[110] = 0;
             opponent.RecvTable(RecvBoard);
             Thrd_ret = 0;
-            Thrd_lock.unlock();
         }
         else if(Thrd_ret < 0){
+            Thrd_lock.unlock();
             Socket_thrd.join();
             throw runtime_error("Opponent Exit, you win!");
         }
+        Thrd_lock.unlock();
         opponent.print_table();
         window.display();
         sleep(milliseconds(flush_tick));
@@ -152,7 +157,6 @@ short game_cycle(Player& player, int& line, int& score, const bool& single){
         if (KeyPressed[2 + i]) {
             if (KeyState[2 + i]){
                 //the button haven't been released
-                
                 //if the arrow key is pressed for too long
                 if(clock() - tDas > (1001 - conf[0]) * speed && clock() - tArrow > (501 - conf[1]) * speed){
                     tArrow = clock(); //reset arr timer
