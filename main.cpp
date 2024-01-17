@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <random>
 #include <algorithm>
 #include <functional>
@@ -39,7 +40,6 @@ void set_unit(double cols, double lns){unit = min(ResX/(double)cols,ResY/(double
 #define FONT_PATH "src/font.ttf"
 #define SET_PATH "src/settings.txt"
 #define RECORD_PATH "src/records.txt"
-
 
 #include "header/Socket.hpp"
 #include "header/Block.hpp"
@@ -132,6 +132,3 @@ void game_exit(){
     if(window.isOpen()) window.close();
     exit(0);
 }
-
-
-
