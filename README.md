@@ -1,8 +1,8 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/sfml-%238CC445.svg?&style=for-the-badge&logo=sfml&logoColor=black" /> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1>)    [<img src="https://img.shields.io/badge/Download-v8.6.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1.zip>)
-<!--br>[<img src="https://img.shields.io/badge/Beta-v8.6beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6beta>) [<img src="https://img.shields.io/badge/Download-v8.6.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6beta.zip>) <br-->
+<!--[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1>)    [<img src="https://img.shields.io/badge/Download-v8.6.1-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1.zip>) -->
+<br>[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1beta>) [<img src="https://img.shields.io/badge/Download-v8.6.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1beta.zip>) <br>
 1. [What](#what)
 2. [Team Member](#team-member)
 3. [Requirement](#requirement)
@@ -94,9 +94,9 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen">](#20240118a-v861)<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<img src="https://img.shields.io/badge/Beta-v8.6beta-blue">](#20240116c-v86beta)-->
-- [Version 8](#20240118a-v861) SFML cross-platform
-> - [v8.6](#20240118a-v861) Multi Playing construction
+<!--[<img src="https://img.shields.io/badge/Release-v8.6.1-brightgreen">](#20240118a-v861)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](#20240118a-v861beta)
+- [Version 8](#20240118a-v861beta) SFML cross-platform
+> - [v8.6](#20240118a-v861beta) Multi Playing construction
 > - [v8.5](#20240116b-v852beta) Pause menu and Game over Table/Fx sound
 > - [v8.4](#20240115a-v84beta) Single Player
 > - [v8.3](#20240114b-v831beta) Menu/BGM Application
@@ -129,10 +129,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
-> ### 2024/01/18.a (v8.6.1)
+> ### 2024/01/18.a (v8.6.1beta)
 > Menu is well constructed <br>
 > Garbage throwing is available <br>
-> Software is verified <br>
+> Software still need to be verified <br>
 > Additional feature will be constructed later
 
 > ### 2024/01/16.c (v8.6beta)
