@@ -60,7 +60,7 @@ And we divided our game architecture into several parts, listed at the below. <b
 > ![mind-set](assets/architecture.png) 
 > 1. [Main.cpp](#maincpp) <br>
 > 2. [Game.hpp](#gamehpp) <br>
-> 3. [Menu_instance.hpp](#menuinstancehpp) <br>
+> 3. [Menu_instance.hpp](#menu_instancehpp) <br>
 > 4. [Object.hpp](#objecthpp) <br>
 > 5. [Table.hpp](#tablehpp) <br>
 > 6. [Block.hpp](#blockhpp) <br>
