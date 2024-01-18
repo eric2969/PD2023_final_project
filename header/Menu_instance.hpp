@@ -85,8 +85,9 @@ void score_display(const string& over, const int& time, const int& line, const i
         while(window.pollEvent(event)){
             switch (event.type){
                 case Event::TextEntered:{
-                    if(event.text.unicode == VK_ESC)
+                    if(event.text.unicode == VK_ESC || event.text.unicode == VK_ENTER)
                         return;
+                    break;
                 }
                 case Event::Closed:{
                     window.close();
@@ -333,7 +334,7 @@ void wait_display(){
 
 void conn_dis(const bool& isHost, const string& s = ""){
     clock_t t_dot = clock();
-    int trd_fetch, dot_cnt = 0;
+    int trd_fetch = 0, dot_cnt = 0;
     set_unit(1, 700);
     TextBox title(unit * 50, 12), sub_title;
     title.setText("Multi Player");
@@ -343,6 +344,7 @@ void conn_dis(const bool& isHost, const string& s = ""){
     sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 80, 200 * unit));
     Button button = Button("OK", unit * 20);
     button.setMidPosition(Vector2f(ResX / 2.f, unit * 280));
+    Thrd_ret = 0;
     thread thrd(thrd_conn, isHost, s);
     if(button.isMouseOver())
         button.highlight();
@@ -359,6 +361,7 @@ void conn_dis(const bool& isHost, const string& s = ""){
                         thrd.join();
                         return;
                     }
+                    break;
                 }
                 case Event::Closed:{
                     window.close();
@@ -423,9 +426,10 @@ void multi(){ //to be finished
     buttons[1].setLeftPosition(Vector2f(ResX / 2.f + unit * 20, unit * 400));
     buttons[2].setMidPosition((Vector2f(ResX / 2.f, unit * 470)));
     chk_hover(buttons, opt);
-    Button conn_but[2] = {Button("Start", unit * 20), Button("Return", unit * 20)};
+    Button conn_but[3] = {Button("Start", unit * 20), Button("Disconnect", unit * 20), Button("Return", unit * 20)};
     conn_but[0].setMidPosition((Vector2f(ResX / 2.f, unit * 330)));
     conn_but[1].setMidPosition((Vector2f(ResX / 2.f, unit * 400)));
+    conn_but[2].setMidPosition((Vector2f(ResX / 2.f, unit * 470)));
     while(window.isOpen()){
         window.clear();
         if(conn){
@@ -435,40 +439,41 @@ void multi(){ //to be finished
                         if(event.text.unicode == VK_ESC)
                             return;
                         else if(event.text.unicode == VK_ENTER){
-                            t_start = clock();
-                            try{multiPlayer(tLine, tScore);}
+                            try{multiPlayer(tLine, tScore, t_start);}
                             catch(exception &e){
                                 score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
                             }
                         }
+                        break;
                     }
                     case Event::Closed:{
                         window.close();
                         return;
                     }
                     case Event::MouseMoved:{
-                        chk_hover(conn_but, 2);
+                        chk_hover(conn_but, 3);
                         break;
                     }
                     case Event::MouseButtonPressed:{
-                        sel = chk_over(conn_but, 2);
+                        sel = chk_over(conn_but, 3);
                         if(sel == 1){
-                            t_start = clock();
-                            try{multiPlayer(tLine, tScore);}
+                            try{multiPlayer(tLine, tScore, t_start);}
                             catch(exception &e){
                                 score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
                             }
                         }
-                        if(sel == 2)
+                        else if(sel == 2)
+                            socket_disconnect();
+                        else if(sel == 3)
                             return;
-                        chk_over(conn_but, 2);
+                        chk_over(conn_but, 3);
                         break;
                     }
                 }
             }
-            title.Draw();
-            sub_title[1].Draw();
-            for(int i = 0;i < 2;i++) conn_but[i].Draw();
+            if(socket_send("chk") < 0)
+                socket_disconnect();
+            for(int i = 0;i < 3;i++) conn_but[i].Draw();
         }
         else{
             while(window.pollEvent(event)){
@@ -485,8 +490,10 @@ void multi(){ //to be finished
                         }
                         else if(event.text.unicode == VK_ESC)
                             return;
-                        else
+                        else{
                             input.typedOn();
+                            input.setFontColor(Color(255, 255, 255));
+                        }
                         break;
                     }
                     case Event::MouseMoved:{
@@ -514,11 +521,11 @@ void multi(){ //to be finished
                     }
                 }
             }
-            title.Draw();
             input.Draw();
-            sub_title[host].Draw();
             for(int i = 0;i < opt;i++) buttons[i].Draw();
         }
+        title.Draw();
+        sub_title[conn].Draw();
         window.display();
         sleep(milliseconds(flush_tick));
     }

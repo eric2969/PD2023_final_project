@@ -3,23 +3,34 @@
 TcpListener listener;
 // accept a new connection
 TcpSocket sock;
+//selector
+SocketSelector selector;
 
 //let this server connect to input ip and input port
-int server_connect(const int& port = 9487){
+int server_connect(const int& port = 9487, const int& timeout = 10000){
     // bind the listener to a port
     if (listener.listen(port) != Socket::Done)
         return -1;
-    if (listener.accept(sock) != Socket::Done){
-        return -2;
+    //add listener to selector
+    selector.add(listener);
+    if (selector.wait(milliseconds(timeout))){
+        // Test the listener
+        if (selector.isReady(listener)){
+            if (listener.accept(sock) == sf::Socket::Done){
+                conn = 1, host = 1;
+                return 1; //suceed
+            }
+            else
+                return -3;
+        }
     }
-    conn = 1, host = 1;
-    return 1; //suceed
+    return -2;
 }
 
 //let the client connect to server by ip and port
-int client_connect(const char ip[], const int& port = 9487){
+int client_connect(const char ip[], const int& port = 9487, const int& timeout = 10000){
     //trying connect to server
-    if (sock.connect(ip, port) != Socket::Done)
+    if (sock.connect(ip, port, milliseconds(timeout)) != Socket::Done)
         return -1;
     conn = 1, host = 0;
     return 1;
@@ -54,23 +65,6 @@ int socket_recv(char mes[]){
     return 1;
 }
 
-void chk_conn(int& ret, int& token, const int& chk_rate = 500){
-    while(1){
-        Thrd_lock.lock();
-        if(token != 1){
-            Thrd_lock.unlock();
-            break;
-        }
-        if(socket_send("chk")){
-            Thrd_lock.lock();
-            ret = -1;
-            Thrd_lock.unlock();
-            break;
-        }
-        sleep(milliseconds(chk_rate));
-    }
-}
-
 void Table_Trans(char Snd[], char Rec[]){
     while(Thrd_token != 1) {sleep(milliseconds(flush_tick));}
     char tmp[DataSize];
@@ -97,6 +91,8 @@ void Table_Trans(char Snd[], char Rec[]){
                 Rec[i] = tmp[i];
         Thrd_ret = 1;
         Thrd_lock.unlock();
+        if(!strcmp(tmp, "lose") || !strcmp(tmp, "win"))
+            return;
     }
 }
 

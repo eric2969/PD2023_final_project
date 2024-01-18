@@ -46,7 +46,7 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
     }
 }
 
-void multiPlayer(int& line, int& score){
+void multiPlayer(int& line, int& score, clock_t& tStart){
     char BoardData[DataSize], RecvBoard[DataSize];
     width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
@@ -72,6 +72,7 @@ void multiPlayer(int& line, int& score){
     opponent.print_table();
     memset(BoardData, 0, sizeof(BoardData));
     memset(RecvBoard, 0, sizeof(RecvBoard));
+    tStart = clock();
     thread Socket_thrd(Table_Trans, ref(BoardData), ref(RecvBoard));
     while (1) {
         while (window.pollEvent(event)){
@@ -80,6 +81,7 @@ void multiPlayer(int& line, int& score){
                 Thrd_token = -1;
                 Thrd_lock.unlock();
                 Socket_thrd.join();
+                socket_send("lose");
                 throw runtime_error("Quit, you lose!");
             }
         }
@@ -90,8 +92,8 @@ void multiPlayer(int& line, int& score){
             Thrd_lock.lock();
             Thrd_token = -1;
             Thrd_lock.unlock();
-            socket_send("lose");
             Socket_thrd.join();
+            socket_send("lose");
             throw runtime_error("You lose!");
         }
         Thrd_lock.lock();
