@@ -306,7 +306,6 @@ void conn_dis(const bool& isHost, const string& s = ""){
             }
         }
         if(trd_fetch){
-            thrd.join();
             if(isHost){
                 switch (trd_fetch){
                 case 1:
