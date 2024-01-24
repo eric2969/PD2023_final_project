@@ -306,20 +306,24 @@ void conn_dis(const bool& isHost, const string& s = ""){
             }
         }
         if(trd_fetch){
-            switch (trd_fetch){
-            case 1:
-                sub_title.setContext("Connection Suceed!");
-                break;
-            case -1:
-                sub_title.setContext("Socket listening failed");
-                break;
-            case -2:
-                sub_title.setContext("Connection Timeout");
-                break;
-            case -3:
-                sub_title.setContext("Connection Failed");
-                break;
+            if(isHost){
+                switch (trd_fetch){
+                case 1:
+                    sub_title.setContext("Connection Suceed!");
+                    break;
+                case -1:
+                    sub_title.setContext("Socket listening failed!");
+                    break;
+                case -2:
+                    sub_title.setContext("Connection Timeout!");
+                    break;
+                case -3:
+                    sub_title.setContext("Connection Failed!");
+                    break;
+                }
             }
+            else
+                sub_title.setContext(string("Connection ") + (trd_fetch>0?"Suceed!":"Failed!"));
             sub_title.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
         }
         else{
@@ -377,7 +381,7 @@ void mode_dis(const bool& host, const int& mode = 0, const int& goal = 0){
         wait_text.setMidPosition(Vector2f(ResX / 2.f, 262 * unit));
         strcpy(tmp, "mode");
         tmp[5] = mode;
-        for(int i = 8;i >= 6;i--){
+        for(int i = 15;i >= 6;i--){
             tmp[i] = tGoal & 127;
             tGoal >>= 7;
         }
@@ -526,7 +530,7 @@ void multi(){ //to be finished
     input.setLeftPosition(Vector2f(ResX / 2.f - unit * 180, unit * 400));
     wait_text.setFontSize(unit * 18);
     wait_text.setContext("Please wait for your opponent!");
-    wait_text.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
+    wait_text.setMidPosition(Vector2f(ResX / 2.f, unit * 270));
     Button buttons[opt] = {Button("Be a Host", unit * 20), Button("Connect to the Host", unit * 20), Button("Return", unit * 20)};
     buttons[0].setMidPosition((Vector2f(ResX / 2.f, unit * 330)));
     buttons[1].setLeftPosition(Vector2f(ResX / 2.f + unit * 20, unit * 400));
@@ -551,8 +555,14 @@ void multi(){ //to be finished
     mode_but[0].setMidPosition(Vector2f(ResX / 2.f, unit * 270));
     for(int i = 1;i < 3;i++)
         mode_but[i].setLeftPosition(Vector2f(ResX / 2.f + unit * 30, unit * (70 * i + 270)));
-    mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 480));
-    mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 480));
+    if(host){
+        mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 480));
+        mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 480));
+    }
+    else{
+        mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 340));
+        mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 340));
+    }
     while(window.isOpen()){
         window.clear();
         if(conn){
@@ -579,14 +589,23 @@ void multi(){ //to be finished
                         break;
                     }
                     case Event::MouseButtonPressed:{
-                        sel = chk_over(mode_but, 5);
-                        if((sel == 1 || sel == 2 || sel == 3) && host){
-                            mode_dis(1, sel - 1, ston(mode_input[max(0, sel - 2)].getText()));
+                        if(host){
+                            sel = chk_over(mode_but, 5);
+                            if((sel == 1 || sel == 2 || sel == 3) && host){
+                                mode_dis(1, sel - 1, ston(mode_input[max(0, sel - 2)].getText()));
+                            }
+                            else if(sel == 4)
+                                socket_disconnect();
+                            else if(sel == 5)
+                                return;
                         }
-                        else if(sel == 4)
-                            socket_disconnect();
-                        else if(sel == 5)
-                            return;
+                        else{
+                            sel = chk_over(&mode_but[3], 2);
+                            if(sel == 1)
+                                socket_disconnect();
+                            else if(sel == 2)
+                                return;
+                        }
                         if(host){
                             sel = 0;
                             for(int i = 1;i <= 2;i++){
@@ -631,7 +650,7 @@ void multi(){ //to be finished
                 }
                 wait_text.Draw();
             }
-            if(clock() - t_chk >= 500){
+            if(clock() - t_chk >= 150){
                 t_chk = clock();
                 if(socket_send("chk") < 0)
                     socket_disconnect();
@@ -649,6 +668,14 @@ void multi(){ //to be finished
                             conn_dis(0, input.getText());
                             sub_title[1].setContext(string("You are ") + (host?"Host! Peer IP:":"Guest! Peer IP:") + getIPAdr());
                             sub_title[1].setMidPosition(Vector2f(ResX / 2.f, 200 * unit));
+                            if(host){
+                                mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 480));
+                                mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 480));
+                            }
+                            else{
+                                mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 340));
+                                mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 340));
+                            }
                             chk_hover(mode_but, 5);
                         }
                         else if(event.text.unicode == VK_ESC)
@@ -669,6 +696,14 @@ void multi(){ //to be finished
                             conn_dis(sel - 2, input.getText());
                             sub_title[1].setContext(string("You are ") + (host?"Host! Peer IP:":"Guest! Peer IP:") + getIPAdr());
                             sub_title[1].setMidPosition(Vector2f(ResX / 2.f, 200 * unit));
+                            if(host){
+                                mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 480));
+                                mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 480));
+                            }
+                            else{
+                                mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 340));
+                                mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 340));
+                            }
                             chk_hover(mode_but, 5);
                         }
                         if(sel == 3)
