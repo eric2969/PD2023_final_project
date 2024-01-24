@@ -1,7 +1,7 @@
 **2023 IM Program Designing Final Project - Tetris**
 ===
 <img src="https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white"> <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white"> <img src="https://img.shields.io/badge/sfml-%238CC445.svg?&style=for-the-badge&logo=sfml&logoColor=black" /> <img src="https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white"> <br><br>
-[<img src="https://img.shields.io/badge/Release-v8.6.2-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.2>)    [<img src="https://img.shields.io/badge/Download-v8.6.2-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.2.zip>) <br>
+[<img src="https://img.shields.io/badge/Release-v8.7-brightgreen" >](<https://github.com/eric2969/PD2023_final_project/tree/v8.7>)    [<img src="https://img.shields.io/badge/Download-v8.7-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.7.zip>) <br>
 <!--[<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](<https://github.com/eric2969/PD2023_final_project/tree/v8.6.1beta>) [<img src="https://img.shields.io/badge/Download-v8.6.1beta-red">](<https://github.com/eric2969/PD2023_final_project/archive/refs/tags/v8.6.1beta.zip>) <br-->
 1. [What](#what)
 2. [Team Member](#team-member)
@@ -94,9 +94,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Version History
 ---
-[<img src="https://img.shields.io/badge/Release-v8.6.2-brightgreen">](#20240118c-v862)<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="https://img.shields.io/badge/Release-v8.7-brightgreen">](#20240124a-v87)<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="https://img.shields.io/badge/Beta-v8.6.1beta-blue">](#20240118b-v861beta)-->
-- [Version 8](#20240118c-v862) SFML cross-platform
+- [Version 8](#20240124a-v87) SFML cross-platform
+> - [v8.7](#20240124a-v87) Multi Playing mode
 > - [v8.6](#20240118c-v862) Multi Playing construction
 > - [v8.5](#20240116b-v852beta) Pause menu and Game over Table/Fx sound
 > - [v8.4](#20240115a-v84beta) Single Player
@@ -130,6 +131,10 @@ And we divided our game architecture into several parts, listed at the below. <b
 
 ## Update Log
 ---
+> ### 2024/01/24.a (v8.7)
+> Add mode choosing feature in multiplayer playing <br>
+> Socket received timeout is available in Socket.hpp's api
+
 > ### 2024/01/18.c (v8.6.2)
 > Validation of Software <br>
 > Finish disconnection and dynamic connection checking feature <br>

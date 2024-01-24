@@ -117,7 +117,7 @@ void score_display(const string& over, const int& time, const int& line, const i
 
 void single(){ //to be finished
     clock_t t_start;
-    int tLine, tScore, goal;
+    int tLine, tScore;
     short sel = 0;
     const short opt = 6;
     set_unit(1, 700);
@@ -127,7 +127,7 @@ void single(){ //to be finished
     for(int i = 0;i < 3;i++){
         sub_title[i].setFontSize(unit * 20);
         sub_title[i].setLimit(25);
-        sub_title[i].setMidPosition(Vector2f(ResX / 2.f, unit * (80 * (i + bool(i)) + 220)));
+        sub_title[i].setMidPosition(Vector2f(ResX / 2.f, unit * (70 * (i + bool(i)) + 225)));
     }
     sub_title[0].setText("Width (5-50)  Height (15-40)");
     sub_title[1].setText("Goal: (Seconds)");
@@ -136,7 +136,7 @@ void single(){ //to be finished
         input[i].setFontSize(unit * 17);
         input[i].setLimit(8);
         input[i].setColor(Color(255, 255, 255), Color(100, 100, 100));
-        input[i].setLeftPosition(Vector2f(ResX / 2.f - unit * (120 - (i==1?140:0)), unit * (80 * (i - (i==1)) + 250)));
+        input[i].setLeftPosition(Vector2f(ResX / 2.f - unit * (120 - (i==1?140:0)), unit * (70 * (i - (i==1)) + 250)));
     }
     input[0].setText(to_string(width)); input[0].setRange(5, 50);
     input[1].setText(to_string(height)); input[1].setRange(15, 40);
@@ -144,10 +144,10 @@ void single(){ //to be finished
     input[3].setText("40"); input[3].setRange(1, 99999999);
     Button buttons[opt] = {Button("Set", unit * 20), Button("Infinite Mode", unit * 20), Button("Time Mode", unit * 20), Button("Clear Line Mode", unit * 20), Button("Return", unit * 20), Button("Reset", unit * 20)};
     buttons[0].setLeftPosition(Vector2f(ResX / 2.f + unit * 220, unit * 250));
-    buttons[1].setMidPosition(Vector2f(ResX / 2.f, unit * 330));
+    buttons[1].setMidPosition(Vector2f(ResX / 2.f, unit * 320));
     for(int i = 2;i < 4;i++)
-        buttons[i].setLeftPosition(Vector2f(ResX / 2.f + unit * 70, unit * (80 * i + 250)));
-    buttons[4].setMidPosition(Vector2f(ResX / 2.f, unit * 570));
+        buttons[i].setLeftPosition(Vector2f(ResX / 2.f + unit * 70, unit * (70 * i + 250)));
+    buttons[4].setMidPosition(Vector2f(ResX / 2.f, unit * 530));
     buttons[5].setLeftPosition(Vector2f(ResX / 2.f + unit * 150, unit * 250));
     chk_hover(buttons, opt);
     while(window.isOpen()){
@@ -167,11 +167,22 @@ void single(){ //to be finished
                             input[0].setText(to_string(width));
                             input[1].setText(to_string(height));
                         }
+                        else if(sel == 3 || sel == 4){
+                            t_start = clock();
+                            input[sel-1].setFontColor(Color(255, 255, 255));
+                            try{singlePlayer(tLine, tScore, sel - 2, ston(input[sel-1].getText()));}
+                            catch(exception &e){
+                                score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
+                            }
+                        }
                     }
                     else if(event.text.unicode == VK_ESC)
                         return;
-                    else if(sel)
+                    else if(sel){
                         input[sel - 1].typedOn();
+                        if(sel == 3 || sel == 4)
+                            input[sel - 1].setFontColor(Color(255, 255, 255));
+                    }
                     break;
                 }
                 case Event::MouseMoved:{
@@ -198,8 +209,7 @@ void single(){ //to be finished
                     else if(sel == 3 || sel == 4){ //to be finished(time)
                         t_start = clock();
                         input[sel-1].setFontColor(Color(255, 255, 255));
-                        goal = ston(input[sel-1].getText());
-                        try{singlePlayer(tLine, tScore, sel - 2, goal);}
+                        try{singlePlayer(tLine, tScore, sel - 2, ston(input[sel-1].getText()));}
                         catch(exception &e){
                             score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
                         }
@@ -241,109 +251,21 @@ void single(){ //to be finished
     }
 }
 
-void thrd_conn(const bool& isHost, const string& ip){
-    Thrd_lock.lock();
-    Thrd_ret = 0;
-    Thrd_lock.unlock();
-    int tmp;
-    if(isHost)
-        tmp = server_connect();
-    else
-        tmp = client_connect(ip.c_str());
-    Thrd_lock.lock();
-    Thrd_ret = tmp;
-    Thrd_lock.unlock();
-}
-
-void ready_conn(){
-    char tmp[DataSize];
-    while(1){
-        socket_send("chk");
-        if(socket_recv(tmp) < 0){
-            Thrd_lock.lock();
-            Thrd_ret = -1;
-            Thrd_lock.unlock();
-            return;
-        }
-        else if(!strcmp(tmp, "chk")){
-            Thrd_lock.lock();
-            Thrd_ret = 1;
-            Thrd_lock.unlock();
-            return;
-        }
-        Thrd_lock.lock();
-        if(Thrd_token < 0){
-            socket_disconnect();
-            Thrd_ret = -2;
-            Thrd_lock.unlock();
-            return;
-        }
-        Thrd_lock.unlock();
-    }
-}
-
-void wait_display(){
-    clock_t t_dot = clock();
-    int trd_fetch, dot_cnt = 0;
-    set_unit(1, 700);
-    TextBox title(unit * 50, 12), sub_title;
-    title.setText("Multi Player");
-    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
-    sub_title.setFontSize(unit * 18);
-    sub_title.setContext("Waiting for your opponent");
-    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 130, 200 * unit));
-    while(window.isOpen()){
-        Thrd_lock.lock();
-        trd_fetch = Thrd_ret;
-        Thrd_lock.unlock();
-        while(window.pollEvent(event)){
-            switch (event.type){
-                case Event::TextEntered:{
-                    if(event.text.unicode == VK_ESC){
-                        Thrd_lock.lock();
-                        Thrd_token = -1;
-                        Thrd_lock.unlock();
-                        return;
-                    }
-                }
-                case Event::Closed:{
-                    Thrd_lock.lock();
-                    Thrd_token = -1;
-                    Thrd_lock.unlock();
-                    window.close();
-                    return;
-                }
-            }
-        }
-        if(trd_fetch)
-            return;
-        else{
-            if(clock() - t_dot > 800){
-                t_dot = clock();
-                dot_cnt = (dot_cnt + 1) % 4;
-            }
-            sub_title.setContext(string("Waiting for your opponent") + string(dot_cnt, '.'));
-        }
-        window.clear();
-        title.Draw();
-        sub_title.Draw();
-        window.display();
-        sleep(milliseconds(flush_tick));
-    }
-}
-
 void conn_dis(const bool& isHost, const string& s = ""){
     clock_t t_dot = clock();
     int trd_fetch = 0, dot_cnt = 0;
     set_unit(1, 700);
-    TextBox title(unit * 50, 12), sub_title;
+    TextBox title(unit * 50, 12), sub_title, IP_title;
     title.setText("Multi Player");
     title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    IP_title.setFontSize(unit * 18);
+    IP_title.setContext(string("Your IP:") + IpAddress::getLocalAddress().toString());
+    IP_title.setMidPosition(Vector2f(ResX / 2.f, unit * 200));
     sub_title.setFontSize(unit * 18);
-    sub_title.setContext("Connecting");
-    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 80, 200 * unit));
+    sub_title.setContext("Waiting for connection");
+    sub_title.setLeftPosition(Vector2f(ResX / 2.f - unit * 70, 250 * unit));
     Button button = Button("OK", unit * 20);
-    button.setMidPosition(Vector2f(ResX / 2.f, unit * 280));
+    button.setMidPosition(Vector2f(ResX / 2.f, unit * 290));
     Thrd_ret = 0;
     thread thrd(thrd_conn, isHost, s);
     if(button.isMouseOver())
@@ -383,8 +305,23 @@ void conn_dis(const bool& isHost, const string& s = ""){
                 }
             }
         }
-        if(trd_fetch)
-            sub_title.setContext((trd_fetch>0?"Connecting Suceed!":"Connecting failed!"));
+        if(trd_fetch){
+            switch (trd_fetch){
+            case 1:
+                sub_title.setContext("Connection Suceed!");
+                break;
+            case -1:
+                sub_title.setContext("Socket listening failed");
+                break;
+            case -2:
+                sub_title.setContext("Connection Timeout");
+                break;
+            case -3:
+                sub_title.setContext("Connection Failed");
+                break;
+            }
+            sub_title.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
+        }
         else{
             if(clock() - t_dot > 800){
                 t_dot = clock();
@@ -395,6 +332,8 @@ void conn_dis(const bool& isHost, const string& s = ""){
         window.clear();
         title.Draw();
         sub_title.Draw();
+        if(isHost)
+            IP_title.Draw();
         if(trd_fetch)
             button.Draw();
         window.display();
@@ -402,34 +341,218 @@ void conn_dis(const bool& isHost, const string& s = ""){
     }
 }
 
+const string mode_title[3] = {
+    "Infinite Mode",
+    "Time Mode, Goal(Seconds): ",
+    "Clear Line Mode, Goal(Lines): " 
+};
+
+void mode_dis(const bool& host, const int& mode = 0, const int& goal = 0){
+    clock_t t_dot = clock(), tStart;
+    char tmp[DataSize];
+    int trd_fetch, dot_cnt = 0, tGoal = goal, tLine, tScore, sel;
+    TextBox title(unit * 50, 12), sub_title, mode_text;
+    Button buttons[3] = {Button("Disconnect", unit * 20),Button("Start", unit * 20), Button("Return", unit * 20)};
+    title.setText("Multi Player");
+    title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
+    sub_title.setFontSize(unit * 18);
+    sub_title.setContext(string("You are ") + (host?"Host! Peer IP:":"Guest! Peer IP:") + getIPAdr());
+    sub_title.setMidPosition(Vector2f(ResX / 2.f, unit * 200));
+    mode_text.setFontSize(unit * 18);
+    if(mode)
+        mode_text.setContext(mode_title[mode] + to_string(goal));
+    else
+        mode_text.setContext(mode_title[0]);
+    if(host)
+        mode_text.setMidPosition(Vector2f(ResX / 2.f, unit * 230));
+    else
+        mode_text.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
+    buttons[0].setMidPosition(Vector2f(ResX / 2.f - unit * 80 , unit * 300));
+    buttons[1].setMidPosition(Vector2f(ResX / 2.f + unit * 80 , unit * 300));
+    buttons[2].setMidPosition(Vector2f(ResX / 2.f, unit * 300));
+    if(host){
+        TextBox wait_text;
+        wait_text.setFontSize(unit * 18);
+        wait_text.setContext("Please wait for your opponent");
+        wait_text.setMidPosition(Vector2f(ResX / 2.f, 262 * unit));
+        strcpy(tmp, "mode");
+        tmp[5] = mode;
+        for(int i = 8;i >= 6;i--){
+            tmp[i] = tGoal & 127;
+            tGoal >>= 7;
+        }
+        if(socket_send(tmp) < 0)
+            return;
+        Thrd_token = 1; Thrd_ret = 0;
+        thread wait_rdy(wait_ready);
+        while(window.isOpen()){
+            window.clear();
+            Thrd_lock.lock();
+            trd_fetch = Thrd_ret;
+            Thrd_lock.unlock();
+            if(trd_fetch < 0){
+                wait_rdy.join();
+                return;
+            }
+            else if(trd_fetch > 0){
+                wait_rdy.join();
+                try{multiPlayer(tLine, tScore, tStart, mode, goal);}
+                catch(exception &e){
+                    score_display(e.what(), (clock() - tStart) / 1000, tLine, tScore);
+                }
+                return;
+            }
+            while(window.pollEvent(event)){
+                switch (event.type){
+                    case Event::TextEntered:{
+                        if(event.text.unicode == VK_ESC){
+                            Thrd_lock.lock();
+                            Thrd_token = -1;
+                            Thrd_lock.unlock();
+                            wait_rdy.join();
+                            return;
+                        }
+                    }
+                    case Event::Closed:{
+                        Thrd_lock.lock();
+                        Thrd_token = -1;
+                        Thrd_lock.unlock();
+                        wait_rdy.join();
+                        window.close();
+                        return;
+                    }
+                    case Event::MouseMoved:{
+                        chk_hover(&buttons[2], 1);
+                        break;
+                    }
+                    case Event::MouseButtonPressed:{
+                        if(buttons[2].isMouseOver()){
+                            Thrd_lock.lock();
+                            Thrd_token = -1;
+                            Thrd_lock.unlock();
+                            wait_rdy.join();
+                            return;
+                        }
+                        chk_hover(&buttons[2], 1);
+                        break;
+                    }
+                }
+            }
+            title.Draw();
+            wait_text.Draw();
+            sub_title.Draw();
+            mode_text.Draw();
+            buttons[2].Draw();
+            window.display();
+            sleep(milliseconds(flush_tick));
+        }
+    }
+    else{
+        while(window.isOpen()){
+            window.clear();
+            if(socket_recv(tmp, 10) < 0)
+                return;
+            if(!strcmp(tmp, "chk"))
+                return;
+            if(socket_send("chk") < 0)
+                return;
+            while(window.pollEvent(event)){
+                switch (event.type){
+                    case Event::TextEntered:{
+                        if(event.text.unicode == VK_ENTER){
+                            if(socket_send("rdy") < 0)
+                                return;
+                            try{multiPlayer(tLine, tScore, tStart, mode, goal);}
+                            catch(exception &e){score_display(e.what(), (clock() - tStart) / 1000, tLine, tScore);}
+                            return;
+                        }
+                        break;
+                    }
+                    case Event::MouseMoved:{
+                        chk_hover(buttons, 2);
+                        break;
+                    }
+                    case Event::MouseButtonPressed:{
+                        sel = chk_over(buttons, 2);
+                        if(sel == 1){
+                            socket_disconnect();
+                            return;
+                        }
+                        else if(sel == 2){
+                            if(socket_send("rdy") < 0)
+                                return;
+                            try{multiPlayer(tLine, tScore, tStart, mode, goal);}
+                            catch(exception &e){score_display(e.what(), (clock() - tStart) / 1000, tLine, tScore);}
+                            return;
+                        }
+                        chk_hover(buttons, 2);
+                        break;
+                    }
+                }
+            }
+            title.Draw();
+            sub_title.Draw();
+            mode_text.Draw();
+            for(int i = 0;i < 2;i++)
+                buttons[i].Draw();
+            window.display();
+        }
+
+    }
+}
+
 void multi(){ //to be finished
-    int tLine, tScore;
-    clock_t t_start;
+    char rec[DataSize];
+    int status, tMode, tGoal; 
+    clock_t t_chk = 500;
     short sel = 0;
     const short opt = 3;
     set_unit(1, 700);
-    TextBox title(unit * 50, 12), sub_title[2], input;
+    TextBox title(unit * 50, 12), sub_title[2], IP_title, wait_text, input;
     title.setText("Multi Player");
     title.setMidPosition(Vector2f(ResX / 2.f, 100 * unit));
     sub_title[0].setContext("You are disconnected!");
-    sub_title[1].setContext("You are Temp !");
+    sub_title[1].setContext(string("You are ") + (host?"Host! Peer IP:":"Guest! Peer IP:") + getIPAdr());
     for(int i = 0;i < 2;i++){
         sub_title[i].setFontSize(unit * 20);
         sub_title[i].setMidPosition(Vector2f(ResX / 2.f, unit * 200));
     }
+    IP_title.setFontSize(unit * 18);
+    IP_title.setContext(string("Your IP:") + IpAddress::getLocalAddress().toString());
+    IP_title.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
     input.setFontSize(unit * 17);
     input.setLimit(16);
     input.setColor(Color(255, 255, 255), Color(100, 100, 100));
     input.setLeftPosition(Vector2f(ResX / 2.f - unit * 180, unit * 400));
+    wait_text.setFontSize(unit * 18);
+    wait_text.setContext("Please wait for your opponent!");
+    wait_text.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
     Button buttons[opt] = {Button("Be a Host", unit * 20), Button("Connect to the Host", unit * 20), Button("Return", unit * 20)};
     buttons[0].setMidPosition((Vector2f(ResX / 2.f, unit * 330)));
     buttons[1].setLeftPosition(Vector2f(ResX / 2.f + unit * 20, unit * 400));
     buttons[2].setMidPosition((Vector2f(ResX / 2.f, unit * 470)));
     chk_hover(buttons, opt);
-    Button conn_but[3] = {Button("Start", unit * 20), Button("Disconnect", unit * 20), Button("Return", unit * 20)};
-    conn_but[0].setMidPosition((Vector2f(ResX / 2.f, unit * 330)));
-    conn_but[1].setMidPosition((Vector2f(ResX / 2.f, unit * 400)));
-    conn_but[2].setMidPosition((Vector2f(ResX / 2.f, unit * 470)));
+    TextBox mode_text[2], mode_input[2];
+    for(int i = 0;i < 2;i++){
+        mode_text[i].setFontSize(unit * 18);
+        mode_text[i].setLimit(25);
+        mode_text[i].setMidPosition(Vector2f(ResX / 2.f, unit * (70 * i + 315)));
+    }
+    mode_text[0].setText("Goal: (Seconds)");
+    mode_text[1].setText("Goal: (Lines)");
+    for(int i = 0;i < 2;i++){
+        mode_input[i].setFontSize(unit * 17);
+        mode_input[i].setLimit(10);
+        mode_input[i].setColor(Color(255, 255, 255), Color(100, 100, 100));
+        mode_input[i].setLeftPosition(Vector2f(ResX / 2.f - unit * 120, unit * (70 * i + 340)));
+        mode_input[i].setText("60"); mode_input[i].setRange(1, 999999999);
+    }
+    Button mode_but[5] = {Button("Infinite Mode", unit * 20), Button("Time Mode", unit * 20), Button("Clear Line Mode", unit * 20), Button("Disconnect", unit * 20), Button("Return", unit * 20)};
+    mode_but[0].setMidPosition(Vector2f(ResX / 2.f, unit * 270));
+    for(int i = 1;i < 3;i++)
+        mode_but[i].setLeftPosition(Vector2f(ResX / 2.f + unit * 30, unit * (70 * i + 270)));
+    mode_but[3].setMidPosition(Vector2f(ResX / 2.f - unit * 70, unit * 480));
+    mode_but[4].setMidPosition(Vector2f(ResX / 2.f + unit * 70, unit * 480));
     while(window.isOpen()){
         window.clear();
         if(conn){
@@ -438,11 +561,12 @@ void multi(){ //to be finished
                     case Event::TextEntered:{
                         if(event.text.unicode == VK_ESC)
                             return;
-                        else if(event.text.unicode == VK_ENTER){
-                            try{multiPlayer(tLine, tScore, t_start);}
-                            catch(exception &e){
-                                score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
-                            }
+                        else if(event.text.unicode == VK_ENTER && sel && host){
+                            mode_dis(1, sel, ston(mode_input[sel - 1].getText()));
+                        }
+                        else if(sel){
+                            mode_input[sel - 1].typedOn();
+                            mode_input[sel - 1].setFontColor(Color(255, 255, 255));
                         }
                         break;
                     }
@@ -451,29 +575,67 @@ void multi(){ //to be finished
                         return;
                     }
                     case Event::MouseMoved:{
-                        chk_hover(conn_but, 3);
+                        chk_hover(mode_but, 5);
                         break;
                     }
                     case Event::MouseButtonPressed:{
-                        sel = chk_over(conn_but, 3);
-                        if(sel == 1){
-                            try{multiPlayer(tLine, tScore, t_start);}
-                            catch(exception &e){
-                                score_display(e.what(), (clock() - t_start) / 1000, tLine, tScore);
+                        sel = chk_over(mode_but, 5);
+                        if((sel == 1 || sel == 2 || sel == 3) && host){
+                            mode_dis(1, sel - 1, ston(mode_input[max(0, sel - 2)].getText()));
+                        }
+                        else if(sel == 4)
+                            socket_disconnect();
+                        else if(sel == 5)
+                            return;
+                        if(host){
+                            sel = 0;
+                            for(int i = 1;i <= 2;i++){
+                                if(mode_input[i-1].isMouseOver()){
+                                    sel = i;
+                                    mode_input[i-1].setSelected(1);
+                                }
+                                else{
+                                    mode_input[i-1].setSelected(0);
+                                    mode_input[i-1].verifyRange();
+                                    mode_input[i-1].setFontColor(Color(255, 255, 255));
+                                }
                             }
                         }
-                        else if(sel == 2)
-                            socket_disconnect();
-                        else if(sel == 3)
-                            return;
-                        chk_over(conn_but, 3);
+                        chk_hover(mode_but, 5);
                         break;
                     }
                 }
             }
-            if(socket_send("chk") < 0)
-                socket_disconnect();
-            for(int i = 0;i < 3;i++) conn_but[i].Draw();
+            if(host){
+                for(int i = 0;i < 2;i++)
+                    mode_text[i].Draw();
+                for(int i = 0;i < 2;i++)
+                    mode_input[i].Draw();
+                for(int i = 0;i < 3;i++)
+                    mode_but[i].Draw();
+            }
+            for(int i = 3;i < 5;i++)
+                mode_but[i].Draw();
+            if(!host){
+                status = socket_recv(rec, 10);
+                if(status > 0){
+                    if(!strcmp("mode", rec)){
+                        tMode = rec[5];
+                        tGoal = 0;
+                        for(int i = 6;i < 9;i++){
+                            tGoal <<= 7;
+                            tGoal += (static_cast<int>(rec[i]) & 127);
+                        }
+                        mode_dis(0, tMode, tGoal);
+                    }
+                }
+                wait_text.Draw();
+            }
+            if(clock() - t_chk >= 500){
+                t_chk = clock();
+                if(socket_send("chk") < 0)
+                    socket_disconnect();
+            }
         }
         else{
             while(window.pollEvent(event)){
@@ -485,8 +647,9 @@ void multi(){ //to be finished
                     case Event::TextEntered:{
                         if(event.text.unicode == VK_ENTER && sel == 2){
                             conn_dis(0, input.getText());
-                            sub_title[1].setContext(string("You are ") + (host?"Host !":"Guest!"));
-                            chk_hover(conn_but, 2);
+                            sub_title[1].setContext(string("You are ") + (host?"Host! Peer IP:":"Guest! Peer IP:") + getIPAdr());
+                            sub_title[1].setMidPosition(Vector2f(ResX / 2.f, 200 * unit));
+                            chk_hover(mode_but, 5);
                         }
                         else if(event.text.unicode == VK_ESC)
                             return;
@@ -504,8 +667,9 @@ void multi(){ //to be finished
                         sel = chk_over(buttons, opt);
                         if(sel == 1 || sel == 2){
                             conn_dis(sel - 2, input.getText());
-                            sub_title[1].setContext(string("You are ") + (host?"Host !":"Guest!"));
-                            chk_hover(conn_but, 2);
+                            sub_title[1].setContext(string("You are ") + (host?"Host! Peer IP:":"Guest! Peer IP:") + getIPAdr());
+                            sub_title[1].setMidPosition(Vector2f(ResX / 2.f, 200 * unit));
+                            chk_hover(mode_but, 5);
                         }
                         if(sel == 3)
                             return;
@@ -522,6 +686,7 @@ void multi(){ //to be finished
                 }
             }
             input.Draw();
+            IP_title.Draw();
             for(int i = 0;i < opt;i++) buttons[i].Draw();
         }
         title.Draw();

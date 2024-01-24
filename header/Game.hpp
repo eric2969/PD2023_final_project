@@ -46,20 +46,12 @@ void singlePlayer(int& line, int& score, const int& mode = 0, const int& goal = 
     }
 }
 
-void multiPlayer(int& line, int& score, clock_t& tStart){
+void multiPlayer(int& line, int& score, clock_t& tStart, const int& mode = 0, const int& goal = 40){
     char BoardData[DataSize], RecvBoard[DataSize];
     width = 10, height = 20; //reset table size
     speed = 1.0, stuck = 0, line = 0, score = 0;
     tStart = before = clock();
     Thrd_token = 0, Thrd_ret = 0;
-    thread wait_thrd(ready_conn);
-    wait_display();
-    wait_thrd.join();
-    if(Thrd_ret == -1)
-        throw runtime_error("Opponent Exit, you win!");
-    else if(Thrd_ret == -2)
-        throw runtime_error("Quit, you lose!");
-    //initialize the game
     Player player; Opponent opponent; //create table for player and opponent
     set_unit(800, 450);
     player.set_position(2 * unit, 2 * unit);
@@ -80,10 +72,37 @@ void multiPlayer(int& line, int& score, clock_t& tStart){
                 Thrd_lock.lock();
                 Thrd_token = -1;
                 Thrd_lock.unlock();
-                Socket_thrd.join();
                 socket_send("lose");
+                Socket_thrd.join();
                 throw runtime_error("Quit, you lose!");
             }
+        }
+        if(mode == 1 && ((clock() - tStart) / 1000) >= goal){
+            Thrd_lock.lock();
+            Thrd_token = -1;
+            Thrd_lock.unlock();
+            if(player.get_score() > opponent.get_score()){
+                socket_send("win");
+                Socket_thrd.join();
+                throw runtime_error("You win!");
+            }
+            else if(player.get_score() < opponent.get_score()){
+                socket_send("lose");
+                Socket_thrd.join();
+                throw runtime_error("You lose!");
+            }
+            else{
+                Socket_thrd.join();
+                throw runtime_error("Tied");
+            }
+        }
+        else if(mode == 2 && line >= goal){
+            Thrd_lock.lock();
+            Thrd_token = -1;
+            Thrd_lock.unlock();
+            socket_send("win");
+            Socket_thrd.join();
+            throw runtime_error("You win!");
         }
         //run the multi-player game
         window.clear();
