@@ -22,12 +22,18 @@ int server_connect(const int& port = 9487, const int& timeout = 12000){
                 conn = 1, host = 1;
                 selector.clear();
                 selector.add(sock);
+                listener.close();
                 return 1; //suceed
             }
-            else
+            else{
+                selector.clear();
+                listener.close();
                 return -3;
+            }
         }
     }
+    selector.clear();
+    listener.close();
     return -2;
 }
 

@@ -253,7 +253,7 @@ void single(){ //to be finished
 
 void conn_dis(const bool& isHost, const string& s = ""){
     clock_t t_dot = clock();
-    int trd_fetch = 0, dot_cnt = 0;
+    int trd_fetch = 0, dot_cnt = 0; bool close = 0;
     set_unit(1, 700);
     TextBox title(unit * 50, 12), sub_title, IP_title;
     title.setText("Multi Player");
@@ -286,8 +286,8 @@ void conn_dis(const bool& isHost, const string& s = ""){
                     break;
                 }
                 case Event::Closed:{
-                    window.close();
-                    return;
+                    close = 1;
+                    break;
                 }
                 case Event::MouseMoved:{
                     if(button.isMouseOver())
@@ -306,6 +306,7 @@ void conn_dis(const bool& isHost, const string& s = ""){
             }
         }
         if(trd_fetch){
+            thrd.join();
             if(isHost){
                 switch (trd_fetch){
                 case 1:
@@ -325,13 +326,18 @@ void conn_dis(const bool& isHost, const string& s = ""){
             else
                 sub_title.setContext(string("Connection ") + (trd_fetch>0?"Suceed!":"Failed!"));
             sub_title.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
+            if(close){
+                window.close();
+                return;
+            }
         }
         else{
             if(clock() - t_dot > 800){
                 t_dot = clock();
                 dot_cnt = (dot_cnt + 1) % 4;
             }
-            sub_title.setContext(string("Connecting") + string(dot_cnt, '.'));
+            sub_title.setContext((close?"Please wait for closing":"Connecting") + string(dot_cnt, '.'));
+            sub_title.setMidPosition(Vector2f(ResX / 2.f, unit * 250));
         }
         window.clear();
         title.Draw();
