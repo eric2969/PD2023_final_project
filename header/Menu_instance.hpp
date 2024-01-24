@@ -641,7 +641,7 @@ void multi(){ //to be finished
                     if(!strcmp("mode", rec)){
                         tMode = rec[5];
                         tGoal = 0;
-                        for(int i = 6;i < 9;i++){
+                        for(int i = 6;i < 16;i++){
                             tGoal <<= 7;
                             tGoal += (static_cast<int>(rec[i]) & 127);
                         }

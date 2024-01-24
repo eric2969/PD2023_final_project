@@ -9,7 +9,7 @@ TcpSocket sock;
 SocketSelector selector;
 
 //let this server connect to input ip and input port
-int server_connect(const int& port = 9487, const int& timeout = 20000){
+int server_connect(const int& port = 9487, const int& timeout = 12000){
     // bind the listener to a port
     if (listener.listen(port) != Socket::Done)
         return -1;
