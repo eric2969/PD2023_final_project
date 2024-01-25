@@ -397,8 +397,12 @@ short Player::chk_clear(int& line, int& tscore){
     this -> clear_line += cnt;
     combo = (cnt?(combo+1):0);
     point = ((cnt?(point<<cnt):0));
-    multiplier *= pow(2,(tSpin + b2b * 3));
+    multiplier *= pow(2,(tSpin + b2b * 2));
     multiplier *= combo?pow(1.1, combo-1):0;
+    if(tSpin || cnt == 4)
+        fx[2].play();
+    if(b2b)
+        fx[3].play();
     if(cnt){
         t_score = point * multiplier;
         t_line = cnt;
